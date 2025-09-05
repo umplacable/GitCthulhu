@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <meta
+      http-equiv="X-Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/CreatorStyle.css">
+    <title>Create / Open</title>
+  </head>
+  <body class="horyzontal container">
+    <main>
+        <div>
+            <h4>Create a new repository</h4>
+            <form id="createForm" action="#" method="post" class="flexrow">
+                <fieldset>
+                    <label for="repoName">Dossier local:</label>
+                    <input type="text" id="repoName" name="repoName" required />
+                    <br />
+                    <label for="repoPath">Dépot distant: (optionel)</label>
+                    <input type="text" id="repoPath" name="repoPath" />
+                    <br />
+                </fieldset>
+                <button type="submit" class="fillUp">Create Repository</button>
+            </form>
+        </div>
+
+        <div>
+            <form id="openForm" action="#" method="post">
+                <fieldset>
+                <h4>Open an existing repository</h4>
+                <label for="existingRepoPath">Repository path:</label>
+                <input
+                    type="text"
+                    id="existingRepoPath"
+                    name="existingRepoPath"
+                    required
+                />
+                <br />
+                <button type="submit">Open Repository</button>
+                </fieldset>
+            </form>
+        </div>
+    </main>
+    <script src="js/GitCreator.js"></script>
+  </body>
+</html>

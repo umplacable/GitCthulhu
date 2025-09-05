@@ -1,6 +1,24 @@
 const { app, BrowserWindow } = require('electron/main')
 
-const creatGitSelectorWindow = () => {
+const createGitCreatorWindow = () => {
+    const win = new BrowserWindow({
+        width: 600,
+        height: 450,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false
+        },
+        // désactivation du menu
+        autoHideMenuBar: true,
+        //désactive la possibilité de redimensionner la fenêtre
+        resizable: false
+
+    })
+
+    win.loadFile('public/GitCreator.html')
+}
+
+const createGitSelectorWindow = () => {
     const win = new BrowserWindow({
         width: 600,
         height: 450,
@@ -33,8 +51,10 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
 
-    createWindow()
-    creatGitSelectorWindow()
+    //createWindow()
+    //createGitSelectorWindow()
+    createGitCreatorWindow()
+
 })
 
 app.on('window-all-closed', () => {
