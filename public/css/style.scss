@@ -4,12 +4,46 @@
 
 .mainSelectWin{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    margin: 5px;
+    margin-left: calc(30% + 10px); // pour laisser la place a la sidebar
 } 
 
-.sideBar{
-    width: 20%;
-    border-right: 1px solid #ccc;
+.sideBar{ // permet de gérer la sidebar
+    width: 30%;
+    height: 100%;
+    // toujojurs a l'écrant et au dessus
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
 
-    
+
+body.horyzontal{
+    display: flex;
+    flex-direction: column;
+}
+
+article.sectionRecherche{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-left: calc(30% + 10px);
+
+    width: 100%;
+    // toujours a l'écrant et au dessus
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.listRepo{
+    margin-top: calc(20% + 10px); // pour laisser la place a la section de recherche
+}
+
+input:not([type=checkbox], [type=radio]), select, textarea{
+    margin-bottom: 0px;
 }
