@@ -1,5 +1,14 @@
 const { app, BrowserWindow } = require('electron/main')
 
+const creatGitSelectorWindow = () => {
+    const win = new BrowserWindow({
+        width: 400,
+        height: 400
+    })
+
+    win.loadFile('public/GitSelector.html')
+}
+
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
@@ -12,6 +21,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
 
     createWindow()
+    creatGitSelectorWindow()
 })
 
 app.on('window-all-closed', () => {

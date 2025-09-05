@@ -1,1 +1,15 @@
-@use "pico";
+@use "pico" with (
+  $theme-color: "jade"
+);
+
+.mainSelectWin{
+    display: flex;
+    flex-direction: row;
+} 
+
+.sideBar{
+    width: 20%;
+    border-right: 1px solid #ccc;
+
+    
+}
