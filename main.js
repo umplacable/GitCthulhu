@@ -5,7 +5,7 @@ const createGitCreatorWindow = () => {
         width: 600,
         height: 450,
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: true, 
             contextIsolation: false
         },
         // désactivation du menu
@@ -15,6 +15,7 @@ const createGitCreatorWindow = () => {
 
     })
 
+    // win.loadFile('public/header.html')
     win.loadFile('public/GitCreator.html')
 }
 

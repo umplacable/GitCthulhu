@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
@@ -13,11 +13,12 @@
     />
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/CreatorStyle.css">
+    <link rel="stylesheet" href="css/extras.css">
+
     <title>Create / Open</title>
   </head>
   <body class="horyzontal container">
-    <main>
-        <div>
+        <!--div>
             <h4>Create a new repository</h4>
             <form id="createForm" action="#" method="post" class="flexrow">
                 <fieldset>
@@ -30,6 +31,25 @@
                 </fieldset>
                 <button type="submit" class="fillUp">Create Repository</button>
             </form>
+        </div-->
+
+        <div id="barre_de_taches">
+            <nav class="GitCthulhu">
+              <ul>
+                <li><a href="#" class="secondary">...</a></li>
+              </ul>
+              <ul>
+                <li><a href="#">Terminal</a></li>
+              </ul>
+            </nav>
+        </div>
+
+        <div>
+          <ul>
+            <li>Repository 1</li>
+            <li>Repository 2</li>
+            <li>Repository 3</li>
+          </ul>
         </div>
 
         <div>
@@ -48,7 +68,6 @@
                 </fieldset>
             </form>
         </div>
-    </main>
     <script src="js/GitCreator.js"></script>
   </body>
 </html>
