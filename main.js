@@ -46,13 +46,13 @@ const createWindow = () => {
             contextIsolation: false
         }
     })
-
+    
     win.loadFile('public/index.html')
 }
 
 app.whenReady().then(() => {
 
-    //createWindow()
+    createWindow()
     //createGitSelectorWindow()
     createGitCreatorWindow()
 

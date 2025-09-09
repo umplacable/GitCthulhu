@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "sass": "sass --load-path=node_modules/@picocss/pico/scss/ --watch public/scss:public/css"
+    "sass": "sass --load-path=node_modules/@picocss/pico/scss/ --watch public/scss:public/css",
+    "build": "webpack --mode production"
   },
   "keywords": [],
   "author": "",
@@ -13,14 +14,23 @@
   "type": "commonjs",
   "dependencies": {
     "electron": "^30.0.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "sass": "^1.92.0",
     "simple-git": "^3.20.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
     "@picocss/pico": "^2.1.1",
+    "babel-loader": "^10.0.0",
     "babel-plugin-react-compiler": "^19.1.0-rc.3",
     "electron": "^38.0.0",
-    "react": "^18.3.1",
-    "simple-git": "^3.20.0"
+    "html-webpack-plugin": "^5.6.4",
+    "simple-git": "^3.20.0",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
   }
 }
