@@ -16,7 +16,7 @@ const createGitCreatorWindow = () => {
     })
 
     // win.loadFile('public/header.html')
-    win.loadFile('public/GitCreator.html')
+    win.loadFile('dist/GitCreator.html')
 }
 
 const createGitSelectorWindow = () => {
@@ -34,7 +34,7 @@ const createGitSelectorWindow = () => {
 
     })
 
-    win.loadFile('public/GitSelector.html')
+    win.loadFile('dist/GitSelector.html')
 }
 
 const createWindow = () => {
@@ -47,7 +47,7 @@ const createWindow = () => {
         }
     })
     
-    win.loadFile('public/index.html')
+    win.loadFile('dist/index.html')
 }
 
 app.whenReady().then(() => {

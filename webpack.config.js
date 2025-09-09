@@ -3,10 +3,13 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.jsx",
+  entry: {
+    creatorApp: "./src/creatorApp.jsx",
+    GitCreatorApp: "./src/GitCreatorApp.jsx",
+  },
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "bundle.js",
+    filename: "[name].bundle.js",
   },
   module: {
     rules: [
@@ -25,6 +28,13 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+      filename: "index.html",
+      chunks: ["creatorApp"],
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/GitCreator.html",
+      filename: "GitCreator.html",
+      chunks: ["GitCreatorApp"],
     }),
   ],
   devServer: {

@@ -1,0 +1,35 @@
+.mainSelectWin {
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+  margin-left: calc(30% + 10px);
+}
+
+body.horyzontal {
+  display: flex;
+  flex-direction: column;
+  -ms-flex-align: center;
+}
+
+.listRepo {
+  margin-top: calc(20% + 10px);
+}
+
+input:not([type=checkbox], [type=radio]), select, textarea {
+  margin-bottom: 0px;
+}
+
+form.flexrow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+form > button.fillUp {
+  height: 100%;
+  width: 30%;
+}
+
+/*# sourceMappingURL=CreatorStyle.css.map */
