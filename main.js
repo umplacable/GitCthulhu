@@ -1,4 +1,4 @@
-const { app, BrowserWindow, nativeTheme  } = require('electron/main')
+const { app, BrowserWindow, nativeTheme, ipcMain } = require('electron/main')
 const path = require("path");
 
 let win = [];
@@ -12,7 +12,8 @@ const createGitCreatorWindow = () => {
             : "favicon-dark.ico",
         webPreferences: {
             nodeIntegration: true, 
-            contextIsolation: false
+            contextIsolation: true,
+            preload: path.join(__dirname, "preload.js"), // ⚡ important pour la sécurité
         },
         // désactivation du menu
         autoHideMenuBar: true,
@@ -34,7 +35,8 @@ const createGitSelectorWindow = () => {
             : "favicon-dark.ico",
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: true,
+            preload: path.join(__dirname, "preload.js"), // ⚡ important pour la sécurité
         },
         // désactivation du menu
         autoHideMenuBar: true,
@@ -55,7 +57,8 @@ const createWindow = () => {
             : "favicon-dark.ico",
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: true,
+            preload: path.join(__dirname, "preload.js"), // ⚡ important pour la sécurité
         }
     }))
 
@@ -66,7 +69,7 @@ app.whenReady().then(() => {
 
     createWindow()
     //createGitSelectorWindow()
-    createGitCreatorWindow()
+    //createGitCreatorWindow()
 
 })
 
@@ -87,3 +90,13 @@ nativeTheme.on("updated", () => {
       app.dock.setIcon(newIcon); // macOS
     }
   });
+
+ipcMain.on('open-select-window', (event) => {
+  createGitCreatorWindow()
+});
+
+ipcMain.on("close-window", (event) => {
+  const senderWin = BrowserWindow.fromWebContents(event.sender);
+  if (senderWin) senderWin.close();
+});
+

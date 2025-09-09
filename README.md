@@ -49,3 +49,9 @@ new HtmlWebpackPlugin({
       chunks: ["NomDuFichier"], // nom de l'entry associer
     }),
 ```
+
+## Comunication avec le main
+la communication entre les fichiers [**React**](src) et le [**Main.js**](main.js) ce fait par le fichier [preload.js](preload.js).
+
+- Dans [**preload.js**](preload.js), la classe **contextBridge** de electron permet de généraliser une fonction, et la classe **ipcRenderer** permet d'appeller une fonction du main.
+- Dans [**Main.js**](main.js), la classe **ipcMain** de electron, permet de recevoir une fonction envoyer par **ipcRenderer**.
