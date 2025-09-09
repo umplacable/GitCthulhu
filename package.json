@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "sass": "sass --load-path=node_modules/@picocss/pico/scss/ --watch public/css/style.scss:public/css/style.css"
+    "sass": "sass --load-path=node_modules/@picocss/pico/scss/ --watch public/css:public/css"
   },
   "keywords": [],
   "author": "",

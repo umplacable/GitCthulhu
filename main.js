@@ -53,7 +53,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
 
     //createWindow()
-    //createGitSelectorWindow()
+    createGitSelectorWindow()
     createGitCreatorWindow()
 
 })
