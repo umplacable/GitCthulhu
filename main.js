@@ -1,9 +1,15 @@
-const { app, BrowserWindow } = require('electron/main')
+const { app, BrowserWindow, nativeTheme  } = require('electron/main')
+const path = require("path");
+
+let win = [];
 
 const createGitCreatorWindow = () => {
-    const win = new BrowserWindow({
+    win.push(new BrowserWindow({
         width: 600,
         height: 450,
+        icon: nativeTheme.shouldUseDarkColors
+            ? "favicon-light.ico"
+            : "favicon-dark.ico",
         webPreferences: {
             nodeIntegration: true, 
             contextIsolation: false
@@ -13,16 +19,19 @@ const createGitCreatorWindow = () => {
         //désactive la possibilité de redimensionner la fenêtre
         resizable: false
 
-    })
+    }))
 
     // win.loadFile('public/header.html')
-    win.loadFile('dist/GitCreator.html')
+    win[win.length - 1].loadFile('dist/GitCreator.html')
 }
 
 const createGitSelectorWindow = () => {
-    const win = new BrowserWindow({
+    win.push(new BrowserWindow({
         width: 600,
         height: 450,
+        icon: nativeTheme.shouldUseDarkColors
+            ? "favicon-light.ico"
+            : "favicon-dark.ico",
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
@@ -32,22 +41,25 @@ const createGitSelectorWindow = () => {
         //désactive la possibilité de redimensionner la fenêtre
         resizable: false
 
-    })
+    }))
 
-    win.loadFile('dist/GitSelector.html')
+    win[win.length - 1].loadFile('dist/GitSelector.html')
 }
 
 const createWindow = () => {
-    const win = new BrowserWindow({
+   win.push(new BrowserWindow({
         width: 800,
         height: 600,
+        icon: nativeTheme.shouldUseDarkColors
+            ? "favicon-light.ico"
+            : "favicon-dark.ico",
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
         }
-    })
-    
-    win.loadFile('dist/index.html')
+    }))
+
+    win[win.length - 1].loadFile('dist/index.html');
 }
 
 app.whenReady().then(() => {
@@ -64,3 +76,14 @@ app.on('window-all-closed', () => {
         app.quit()
     }
 })
+
+nativeTheme.on("updated", () => {
+    const newIcon = nativeTheme.shouldUseDarkColors
+        ? "favicon-light.ico"
+        : "favicon-dark.ico"
+
+    win.forEach((elt) => {elt.setIcon(newIcon)}); // Windows et Linux
+    if (process.platform === "darwin") {
+      app.dock.setIcon(newIcon); // macOS
+    }
+  });
