@@ -2,11 +2,12 @@
     display: flex;
     flex-direction: column;
     margin: 5px;
-    margin-left: calc(30% + 10px); 
+    margin-left: calc(30% + 10px);
 }
 
 body.horyzontal{
     display: flex;
+    height : 100%;
     flex-direction: column;
     -ms-flex-align: center;
 }
@@ -17,6 +18,10 @@ body.horyzontal{
 
 input:not([type=checkbox], [type=radio]), select, textarea{
     margin-bottom: 0px;
+}
+
+ul {
+    padding : 0;
 }
 
 form.flexrow{

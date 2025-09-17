@@ -1,30 +1,88 @@
 @charset "UTF-8";
+/*variables*/
+$bg-col-dark: rgba(19, 22, 30, 1);
+$nav-col-dark: lighten($bg-col-dark, 6%);
+$height-nav: 10%;
+$height-foot: 15%;
+$width-left: 45%;
 
-
+/*styles*/
 body {
-    text-align : center;
+    text-align : left;
+}
+
+h4 {
+    padding-top : 10px;
+    padding-left : 30px;
 }
 
 nav.GitCthulhu {
     overflow : hidden;
     border-bottom : solid 2px rgba(136,207,182, 0.30);
     width : 100%;
-    background: linear-gradient(0deg,rgba(88, 91, 94, 0.08) 0%, rgba(19, 22, 30, 1) 70%);
+    height : $height-nav;
+    background: linear-gradient(180deg,rgba(88, 91, 94, 0.10) 0%, $nav-col-dark 40%);
     padding-left: 10px;
     padding-right: 10px;
 }
 
+div.GitCthulhuFoot {
+    overflow : hidden;
+    border-top : solid 2px rgba(136,207,182, 0.30);
+    width : 100%;
+    height : $height-foot;
+    background: linear-gradient(0deg,rgba(88, 91, 94, 0.10) 0%, $nav-col-dark 40%);
+    padding-left: 10px;
+    padding-right: 10px;
+    position : fixed;
+    bottom : 0;
+}
 
-$bg-col-dark: rgba(19, 22, 30, 1);
+div.GitCthulhuLeft {
+    width : $width-left;
+    background : $bg-col-dark;
+    position : fixed;
+    top : calc(10% + 20px);
+    bottom : 15%;
+}
+
+div.GitCthulhuSideshow {
+    width: calc(100% - $width-left);
+    background : $bg-col-dark;
+    position : fixed;
+    top : calc(10% + 20px);
+    bottom : 15%;
+    left : $width-left;
+    border-left : solid 1px rgba(136,207,182, 0.25);
+}
+
+div.GitCthulhuSideshow > div {
+    margin : 4%;
+}
+
+div.mainOperations {
+    display : flex;
+    text-align : right;
+    align-items : right;
+    margin-right : 4%; 
+    margin-left : 63%;
+    flex-direction: row;
+    margin-top : 0.2%;
+    gap: 10px;
+}
+
+div.mainOperations > button {
+    margin-top : 0.8%;
+}
+
 ul li.GitCthulhu{
     text-align: left;
-    list-style : square;
-    margin: 0;
-    padding:0px;
-    padding-left: 10px;
+    list-style : none;
+    margin: 5;
 }
+
 ul li.GitCthulhu:nth-child(odd) {
-    background-color : lighten($bg-col-dark, 3%);
+    background-color : lighten($bg-col-dark, 5%);
 }
 ul li.GitCthulhu:nth-child(even) {
     background-color : lighten($bg-col-dark, 1%);
