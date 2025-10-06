@@ -1,3 +1,47 @@
 @use "pico" with (
   $theme-color: "jade"
 );
+
+.mainSelectWin{
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    margin-left: calc(30% + 10px); 
+} 
+
+.sideBar{ 
+    width: 30%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+
+body.horyzontal{
+    display: flex;
+    flex-direction: column;
+}
+
+article.sectionRecherche{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-left: calc(30% + 10px);
+
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.listRepo{
+    margin-top: calc(20% + 10px);
+}
+
+input:not([type=checkbox], [type=radio]), select, textarea{
+    margin-bottom: 0px;
+}

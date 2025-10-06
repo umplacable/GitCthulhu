@@ -2,36 +2,14 @@
     display: flex;
     flex-direction: column;
     margin: 5px;
-    margin-left: calc(30% + 10px); 
-} 
-
-.sideBar{ 
-    width: 30%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 2;
+    margin-left: calc(30% + 10px);
 }
-
 
 body.horyzontal{
     display: flex;
+    height : 100%;
     flex-direction: column;
-}
-
-article.sectionRecherche{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-
-    padding-left: calc(30% + 10px);
-
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
+    -ms-flex-align: center;
 }
 
 .listRepo{
@@ -40,4 +18,37 @@ article.sectionRecherche{
 
 input:not([type=checkbox], [type=radio]), select, textarea{
     margin-bottom: 0px;
+}
+
+ul {
+    padding : 0;
+}
+
+form.flexrow{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+form>button.fillUp{
+    height: 100%;
+    width: 30%;
+}
+
+ul.GitList>*{
+    padding-left: 30px;
+}
+
+.GitCthulhuLeft>*>h4{
+    padding-left: 10px;
+}
+div.GitCthulhuLeft {
+    width : max(200px, 15%);
+}
+
+div.GitCthulhuSideshow {
+    width: calc(100% - max(200px, 15%));
+    left : max(200px, 15%);
 }
