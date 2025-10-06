@@ -110,3 +110,37 @@ ipcMain.handle("get-config", () => {
   const content = fs.readFileSync("config.ini", "utf-8");
   return ini.parse(content);
 });
+ipcMain.on('add-repository', (event) => {
+    
+    const path = selectDirectory(event);
+    if (!path) return;
+    const content = fs.readFileSync("config.ini", "utf-8");
+    const config = ini.parse(content);
+    if (config.Depo.paths) {
+        config.Depo.paths += `,${path}`;
+        config.Depo.names += `,${path.split(/[\\/]/).pop()}`;
+    } else {
+        config.Depo.paths = path;
+        config.Depo.names = `,${path.split(/[\\/]/).pop()}`;
+    }
+    fs.writeFileSync("config.ini", ini.stringify(config));
+
+    // reload les pages
+    win.forEach((elt) => {
+        if (elt && !elt.isDestroyed()){
+            elt.reload()
+        }
+    });
+});
+
+async function selectDirectory(event){
+    let path = null;
+    try {
+        const directoryHandle = await event.showDirectoryPicker();
+        path = directoryHandle.path;
+    } catch (error) {
+        console.error('Erreur ou action annulée :', error);
+    }
+
+    return path
+}

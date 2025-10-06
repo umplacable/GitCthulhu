@@ -33,7 +33,7 @@ export default function CreateGitCreatorWindow() {
     <div class="GitCthulhuFoot">
       <div class="mainOperations">
         <button class="secondary">quand selec</button>
-        <button>+</button>
+        <GitAddDirectory/>
       </div>
     </div>
 
@@ -77,6 +77,15 @@ class GitList extends React.Component {
           </li>
         ))}
       </ul>
+    );
+  }
+}
+
+class GitAddDirectory extends React.Component {
+
+  render() {
+    return (
+      <button onClick={window.electronAPI.addRepository()}>Add</button>
     );
   }
 }

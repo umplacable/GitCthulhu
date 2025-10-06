@@ -6,4 +6,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getConfig: () => ipcRenderer.invoke("get-config"),
   openSelectWindow: () => ipcRenderer.send('open-select-window'),
   closeWindow: () => ipcRenderer.send('close-window'),
+  addRepository: () => ipcRenderer.send('add-repository'),
 });
