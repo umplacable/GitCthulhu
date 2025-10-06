@@ -1,5 +1,7 @@
 const { app, BrowserWindow, nativeTheme, ipcMain } = require('electron/main')
 const path = require("path");
+const fs = require('fs');
+const ini = require('ini');
 
 let win = [];
 
@@ -60,6 +62,7 @@ const createWindow = () => {
             contextIsolation: true,
             preload: path.join(__dirname, "preload.js"), // ⚡ important pour la sécurité
         }
+        ,autoHideMenuBar: true
     }))
 
     win[win.length - 1].loadFile('dist/index.html');
@@ -103,3 +106,7 @@ ipcMain.on("close-window", (event) => {
   if (senderWin) senderWin.close();
 });
 
+ipcMain.handle("get-config", () => {
+  const content = fs.readFileSync("config.ini", "utf-8");
+  return ini.parse(content);
+});

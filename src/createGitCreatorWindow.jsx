@@ -43,27 +43,39 @@ export default function CreateGitCreatorWindow() {
 // création d'un élément listant les dépôts
 
 class GitList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      repos: [],
+      paths: [],
+    };
+  }
 
-  getListItems() {
-    return ['Repository 1', 'Repository 2', 'Repository 3']
+  async componentDidMount() {
+    const config = await window.electronAPI.getConfig();
+    const paths = config.Depo.paths.split(",").map((x) => x.trim());
+    const repos = config.Depo.names.split(",").map((x) => x.trim());
+    this.setState({ repos , paths });
   }
 
   render() {
-
-    const listItems = this.getListItems().map(
-      (item) => <li 
-                  class="GitCthulhu" 
-                  onClick={() => {
-                    window.electronAPI.openSelectWindow();
-                    window.electronAPI.closeWindow();
-                  }}>
-                {item}
-                </li>
-    );
+    const { repos } = this.state;
 
     return (
-      <ul class="GitList">
-        {listItems}
+      <ul className="GitList">
+        {repos.map((item) => (
+          <li
+            className="GitCthulhu"
+            onClick={() => {
+              window.electronAPI.openSelectWindow();
+              window.electronAPI.closeWindow();
+            }}
+          >
+            {item}
+            <br/>
+            {this.state.paths[repos.indexOf(item)]}
+          </li>
+        ))}
       </ul>
     );
   }
