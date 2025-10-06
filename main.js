@@ -66,15 +66,14 @@ const createWindow = () => {
 }
 
 app.whenReady().then(() => {
-
-    createWindow()
+    
+    //createWindow()
     //createGitSelectorWindow()
-    //createGitCreatorWindow()
+    createGitCreatorWindow()
 
 })
 
 app.on('window-all-closed', () => {
-
     if (process.platform !== 'darwin') {
         app.quit()
     }
@@ -85,14 +84,18 @@ nativeTheme.on("updated", () => {
         ? "favicon-light.ico"
         : "favicon-dark.ico"
 
-    win.forEach((elt) => {elt.setIcon(newIcon)}); // Windows et Linux
+    win.forEach((elt) => {
+        if (elt && !elt.isDestroyed()){
+            elt.setIcon(newIcon)
+        }
+    }); // Windows et Linux
     if (process.platform === "darwin") {
       app.dock.setIcon(newIcon); // macOS
     }
   });
 
 ipcMain.on('open-select-window', (event) => {
-  createGitCreatorWindow()
+  createWindow()
 });
 
 ipcMain.on("close-window", (event) => {

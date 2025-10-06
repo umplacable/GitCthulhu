@@ -20,11 +20,7 @@ export default function CreateGitCreatorWindow() {
         <h4>Repositories</h4>
       </div>
 
-      <ul class="GitList">
-        <li class="GitCthulhu">Repository 1</li>
-        <li class="GitCthulhu">Repository 2</li>
-        <li class="GitCthulhu">Repository 3</li>
-      </ul>
+      <GitList/>
 
     </div>
 
@@ -42,4 +38,33 @@ export default function CreateGitCreatorWindow() {
     </div>
 
   </>);
+}
+
+// création d'un élément listant les dépôts
+
+class GitList extends React.Component {
+
+  getListItems() {
+    return ['Repository 1', 'Repository 2', 'Repository 3']
+  }
+
+  render() {
+
+    const listItems = this.getListItems().map(
+      (item) => <li 
+                  class="GitCthulhu" 
+                  onClick={() => {
+                    window.electronAPI.openSelectWindow();
+                    window.electronAPI.closeWindow();
+                  }}>
+                {item}
+                </li>
+    );
+
+    return (
+      <ul class="GitList">
+        {listItems}
+      </ul>
+    );
+  }
 }
