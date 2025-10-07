@@ -37,6 +37,10 @@ div.GitCthulhuFoot {
     margin-bottom: 5px;
     position : fixed;
     bottom : 0;
+
+    display: flex;
+    align-items: end;
+    //flex-direction: row-reverse // pour placer les boutons a droite ou a gauche
 }
 
 div.GitCthulhuFoot>*>button, div.GitCthulhuFoot>button{
@@ -81,7 +85,7 @@ div.mainOperations {
     gap: 10px;
 }
 
-ul li.GitCthulhu{
+ul li.GitCthulhu, ul li.GitCthulhuSelected{
     text-align: left;
     list-style : none;
     padding-bottom: 4.5px;
@@ -95,7 +99,7 @@ ul li.GitCthulhu:nth-child(even) {
     background-color : lighten($bg-col-dark, 1%);
 }
 
-ul li.GitCthulhu:hover {
+ul li.GitCthulhu:hover, ul li.GitCthulhuSelected {
     background-color : lighten($bg-col-dark, 10%);
     cursor: pointer;
 }

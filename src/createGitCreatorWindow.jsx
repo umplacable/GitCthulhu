@@ -7,9 +7,10 @@ export default function CreateGitCreatorWindow() {
       <nav class="GitCthulhu">
         <ul>
           <li><a href="#" class="secondary">...</a></li>
+          <li><a href="#">Connection</a></li>
         </ul>
         <ul>
-          <li><a href="#">Terminal</a></li>
+          <li><a href="#" onClick={() => {openTerminal("/")}}>Terminal</a></li>
         </ul>
       </nav>
     </div>
@@ -32,8 +33,20 @@ export default function CreateGitCreatorWindow() {
 
     <div class="GitCthulhuFoot">
       <div class="mainOperations">
-        <button class="secondary">quand selec</button>
+        <button class="secondary" 
+                onClick={ () => {
+                  // on récupère le dépôt sélectionné
+                  const repos = document.getElementsByClassName("GitCthulhuSelected");
+                  if (repos.length === 0) return;
+                  openRepo(repos[0].id.split(/[\\/]/).pop(), repos[0].id);
+                }}>Ouvrir</button>
         <button onClick={ () => {window.electronAPI.addRepository()}} >Add</button>
+        <button class="contrast" onClick={ () => {
+                                            // on récupère le dépôt sélectionné
+                                            const repos = document.getElementsByClassName("GitCthulhuSelected");
+                                            if (repos.length === 0) return;
+                                            window.electronAPI.deleteRepository(repos[0].id.split(/[\\/]/).pop())
+                                            }} >Delete</button>
       </div>
     </div>
 
@@ -67,11 +80,12 @@ class GitList extends React.Component {
           <li
             className="GitCthulhu"
             onDoubleClick={() => {
-              window.electronAPI.openSelectWindow(item, this.state.paths[repos.indexOf(item)]);
-              window.electronAPI.closeWindow();
+              openRepo(item, this.state.paths[repos.indexOf(item)]);
             }}
             onClick={() => {
               const p = document.getElementsByClassName("repInfo");
+              const list = document.getElementsByClassName("GitList");
+              p[0].innerText = "Loading README.md...";
 
               window.electronAPI.getReadme(this.state.paths[repos.indexOf(item)]).then((data) => {
                 if (data === null) {
@@ -80,7 +94,14 @@ class GitList extends React.Component {
                   p[0].innerHTML = data;
                 }
               });
+
+              const elements = document.getElementsByClassName("GitCthulhuSelected");
+              elements[0]?.classList.replace("GitCthulhuSelected","GitCthulhu");
+              const element = document.getElementById(this.state.paths[repos.indexOf(item)]);
+              element?.classList.replace("GitCthulhu", "GitCthulhuSelected");
+
             }}
+            id={this.state.paths[repos.indexOf(item)]}
           >
             {item}
             <p class="complement">{this.state.paths[repos.indexOf(item)]}</p>
@@ -91,3 +112,11 @@ class GitList extends React.Component {
   }
 }
 
+function openTerminal(path) {
+  window.electronAPI.openTerminal(path);
+}
+
+function openRepo(name, path) {
+  window.electronAPI.openSelectWindow(name, path);
+  window.electronAPI.closeWindow();
+}

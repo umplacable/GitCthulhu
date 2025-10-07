@@ -9,7 +9,7 @@ export default function CreateWindow() {
                 <li><a href="#" class="secondary">...</a></li>
               </ul>
               <ul>
-                <li><a href="#">Terminal</a></li>
+                <li><a href="#" onClick={() => {openTerminal("/")}}>Terminal</a></li>
               </ul>
             </nav>
           </div>
@@ -47,4 +47,8 @@ export default function CreateWindow() {
             </div>
           </div>
       </>);
+}
+
+function openTerminal(path) {
+  window.electronAPI.openTerminal(path);
 }
