@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openSelectWindow: (nom, path) => ipcRenderer.send('open-select-window',nom, path),
   closeWindow: () => ipcRenderer.send('close-window'),
   addRepository: () => ipcRenderer.send('add-repository'),
+  getReadme: async (path) => ipcRenderer.invoke('get-readme', path),
 });

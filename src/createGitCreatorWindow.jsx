@@ -26,7 +26,7 @@ export default function CreateGitCreatorWindow() {
 
     <div class="GitCthulhuSideshow">
       <div>
-        <p> infos sur le dépôt </p>
+        <p class="repInfo"></p>
       </div>
     </div>
 
@@ -66,9 +66,20 @@ class GitList extends React.Component {
         {repos.map((item) => (
           <li
             className="GitCthulhu"
-            onClick={() => {
+            onDoubleClick={() => {
               window.electronAPI.openSelectWindow(item, this.state.paths[repos.indexOf(item)]);
               window.electronAPI.closeWindow();
+            }}
+            onClick={() => {
+              const p = document.getElementsByClassName("repInfo");
+
+              window.electronAPI.getReadme(this.state.paths[repos.indexOf(item)]).then((data) => {
+                if (data === null) {
+                  p[0].innerText = "No README.md found in this repository.";
+                } else {
+                  p[0].innerHTML = data;
+                }
+              });
             }}
           >
             {item}

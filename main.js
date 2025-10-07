@@ -2,6 +2,7 @@ const { app, BrowserWindow, nativeTheme, ipcMain, dialog } = require('electron/m
 const path = require("path");
 const fs = require('fs');
 const ini = require('ini');
+const marked = require('marked');
 
 let win = [];
 
@@ -127,6 +128,11 @@ ipcMain.on('add-repository', async (event) => {
     if (result.canceled) return null;
     const path = result.filePaths[0]; // return selected folder path
 
+    // check si le fichier existe
+    if (!fs.existsSync("config.ini")) {
+        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=");
+    }
+
     if (!path) return;
     let content = fs.readFileSync("config.ini", "utf-8");
     // si le fichier n'existe pas, le créer
@@ -156,4 +162,13 @@ ipcMain.on('add-repository', async (event) => {
             elt.reload()
         }
     });
+});
+
+ipcMain.handle('get-readme', async (event, dirpath) => {
+    try {
+        const data = fs.readFileSync(path.join(dirpath, 'README.md'), 'utf-8');
+        return marked.parse(data);
+    } catch (err) {
+        return null; // si le fichier n'existe pas ou une autre erreur
+    }
 });
