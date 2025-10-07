@@ -1,4 +1,4 @@
-const { app, BrowserWindow, nativeTheme, ipcMain } = require('electron/main')
+const { app, BrowserWindow, nativeTheme, ipcMain, dialog } = require('electron/main')
 const path = require("path");
 const fs = require('fs');
 const ini = require('ini');
@@ -50,8 +50,9 @@ const createGitSelectorWindow = () => {
     win[win.length - 1].loadFile('dist/GitSelector.html')
 }
 
-const createWindow = () => {
+const createWindow = (nom, dirpath) => {
    win.push(new BrowserWindow({
+        name: nom + " - " + dirpath,
         width: 800,
         height: 600,
         icon: nativeTheme.shouldUseDarkColors
@@ -66,6 +67,8 @@ const createWindow = () => {
     }))
 
     win[win.length - 1].loadFile('dist/index.html');
+    win[win.length - 1].setTitle(nom + " - " + dirpath);
+    win[win.length - 1].reload();
 }
 
 app.whenReady().then(() => {
@@ -97,8 +100,8 @@ nativeTheme.on("updated", () => {
     }
   });
 
-ipcMain.on('open-select-window', (event) => {
-  createWindow()
+ipcMain.on('open-select-window', (event, nom, dirpath) => {
+  createWindow(nom, dirpath)
 });
 
 ipcMain.on("close-window", (event) => {
@@ -110,18 +113,40 @@ ipcMain.handle("get-config", () => {
   const content = fs.readFileSync("config.ini", "utf-8");
   return ini.parse(content);
 });
-ipcMain.on('add-repository', (event) => {
+
+ipcMain.on('add-repository', async (event) => {
+
+    // regarde la fenêtre qui a envoyé le message
+    const senderWin = BrowserWindow.fromWebContents(event.sender);
+    if (!senderWin) return;
     
-    const path = selectDirectory(event);
+    // ouvre une boîte de dialogue pour sélectionner un dossier
+    const result = await dialog.showOpenDialog(senderWin, {
+        properties: ['openDirectory']
+    });
+    if (result.canceled) return null;
+    const path = result.filePaths[0]; // return selected folder path
+
     if (!path) return;
-    const content = fs.readFileSync("config.ini", "utf-8");
+    let content = fs.readFileSync("config.ini", "utf-8");
+    // si le fichier n'existe pas, le créer
+    if (!content) {
+        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=");
+        content = fs.readFileSync("config.ini", "utf-8");
+    }
+
     const config = ini.parse(content);
-    if (config.Depo.paths) {
+    // si la section Depo n'existe pas, la créer
+    if (!config.Depo) {
+        config.Depo = { names: "", paths: "" };
+    }
+    // ajoute le nouveau dépôt
+    if (config.Depo.paths ) {
         config.Depo.paths += `,${path}`;
         config.Depo.names += `,${path.split(/[\\/]/).pop()}`;
     } else {
         config.Depo.paths = path;
-        config.Depo.names = `,${path.split(/[\\/]/).pop()}`;
+        config.Depo.names = `${path.split(/[\\/]/).pop()}`;
     }
     fs.writeFileSync("config.ini", ini.stringify(config));
 
@@ -132,15 +157,3 @@ ipcMain.on('add-repository', (event) => {
         }
     });
 });
-
-async function selectDirectory(event){
-    let path = null;
-    try {
-        const directoryHandle = await event.showDirectoryPicker();
-        path = directoryHandle.path;
-    } catch (error) {
-        console.error('Erreur ou action annulée :', error);
-    }
-
-    return path
-}

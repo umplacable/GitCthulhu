@@ -83,7 +83,8 @@ div.mainOperations {
 ul li.GitCthulhu{
     text-align: left;
     list-style : none;
-    margin: 5;
+    padding-bottom: 4.5px;
+    margin-bottom: 0px;
 }
 
 ul li.GitCthulhu:nth-child(odd) {
@@ -100,4 +101,9 @@ ul li.GitCthulhu:hover {
 
 div.GitCthulhuFoot>button{
     height: $height-foot;
+}
+
+.complement {
+    font-size: small;
+    margin-bottom: 0px;
 }

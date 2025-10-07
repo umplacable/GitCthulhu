@@ -4,7 +4,7 @@ console.log('preload loaded'); // debug : doit apparaître dans la console du re
 
 contextBridge.exposeInMainWorld('electronAPI', {
   getConfig: () => ipcRenderer.invoke("get-config"),
-  openSelectWindow: () => ipcRenderer.send('open-select-window'),
+  openSelectWindow: (nom, path) => ipcRenderer.send('open-select-window',nom, path),
   closeWindow: () => ipcRenderer.send('close-window'),
   addRepository: () => ipcRenderer.send('add-repository'),
 });
