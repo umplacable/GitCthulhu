@@ -112,6 +112,7 @@ ipcMain.on("close-window", (event) => {
 
 ipcMain.handle("get-config", () => {
   const content = fs.readFileSync("config.ini", "utf-8");
+  if (!content) return null;
   return ini.parse(content);
 });
 
