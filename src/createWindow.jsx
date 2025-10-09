@@ -9,7 +9,7 @@ export default function CreateWindow() {
                 <li><a href="#" class="secondary">...</a></li>
               </ul>
               <ul>
-                <li><a href="#" onClick={() => {openTerminal("/")}}>Terminal</a></li>
+                <li><a href="#" onClick={() => {openTerminal()}}>Terminal</a></li>
               </ul>
             </nav>
           </div>
@@ -36,12 +36,6 @@ export default function CreateWindow() {
           <div class="GitCthulhuFoot">
             <Status/>
             <div class="mainOperations">
-              <button class="secondary">quand selec</button>
-              <button>+</button>
-              <button onClick={() => window.electronAPI.openSelectWindow()}>
-                Nouvelle fenêtre
-              </button>
-
               <button class="secondary" onClick={() => window.electronAPI.closeWindow()}>
                 Fermer
               </button>
@@ -80,11 +74,11 @@ class Status extends React.Component {
       if(this.state.status != null){
             
         if (this.state.status.ahead == this.state.status.behind) {
-          status = `🟢 Branch : ${this.state.status.current} - Up to date`;
+          status = `🟢 Up to date - Branch : ${this.state.status.current}`;
         } else if (this.state.status.ahead > this.state.status.behind) {
-          status = `🔵 Branch : ${this.state.status.current} - Ahead by ${this.state.status.ahead} commit(s)`;
+          status = `🔵 Ahead by ${this.state.status.ahead} commit(s) - Branch : ${this.state.status.current}`;
         } else if (this.state.status.behind > this.state.status.ahead) {
-          status = `🟠 Branch : ${this.state.status.current} - Behind by ${this.state.status.behind} commit(s)`;
+          status = `🟠 Behind by ${this.state.status.behind} commit(s) - Branch : ${this.state.status.current}`;
         }
       }else{
         status = "🔴 Could not get the status";

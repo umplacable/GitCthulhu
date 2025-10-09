@@ -8,7 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   closeWindow: () => ipcRenderer.send('close-window'),
   addRepository: () => ipcRenderer.send('add-repository'),
   getReadme: async (path) => ipcRenderer.invoke('get-readme', path),
-  openTerminal: (path) => ipcRenderer.send('open-terminal', path),
+  openTerminal: () => ipcRenderer.send('open-terminal'),
   deleteRepository: (name) => ipcRenderer.send('delete-repository', name),
 
   gitActions:{

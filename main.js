@@ -5,7 +5,7 @@ const ini = require('ini');
 const marked = require('marked');
 
 let win = [];
-let gitDirRepo = ""; // répertoire du dépôt git courant
+let gitDirRepo = "~/"; // répertoire du dépôt git courant
 
 // création d'une fenêtre
 
@@ -179,7 +179,7 @@ ipcMain.handle('get-readme', async (event, dirpath) => {
     }
 });
 
-ipcMain.on('open-terminal', (event, dirpath) => {
+ipcMain.on('open-terminal', (event) => {
 
     const senderWin = BrowserWindow.fromWebContents(event.sender);
 
@@ -189,11 +189,11 @@ ipcMain.on('open-terminal', (event, dirpath) => {
     let command;
 
     if (process.platform === 'win32') {
-        command = `start cmd.exe /K "cd /d ${dirpath}"`;
+        command = `start cmd.exe /K "cd /d ${gitDirRepo}"`;
     } else if (process.platform === 'darwin') {
-        command = `open -a Terminal "${dirpath}"`;
+        command = `open -a Terminal "${gitDirRepo}"`;
     } else { // linux
-        command = `x-terminal-emulator --working-directory="${dirpath}"`;
+        command = `x-terminal-emulator --working-directory="${gitDirRepo}"`;
     }
 
     exec(command, (error) => {
