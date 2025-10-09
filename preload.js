@@ -9,5 +9,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
   addRepository: () => ipcRenderer.send('add-repository'),
   getReadme: async (path) => ipcRenderer.invoke('get-readme', path),
   openTerminal: (path) => ipcRenderer.send('open-terminal', path),
-  deleteRepository: (name) => ipcRenderer.send('delete-repository', name)
+  deleteRepository: (name) => ipcRenderer.send('delete-repository', name),
+
+  gitActions:{
+    init: () => ipcRenderer.send('git-init'),
+    clone: (url) => ipcRenderer.send('git-clone', url),
+    add: () => ipcRenderer.send('git-add'),
+    commit: (message) => ipcRenderer.send('git-commit', message),
+    ammend: (message) => ipcRenderer.send('git-commit-ammend', message),
+    status: () => ipcRenderer.invoke('git-status'),
+    log: () => ipcRenderer.invoke('git-log'),
+    diff: (commit1, commit2) => ipcRenderer.invoke('git-diff', commit1, commit2),
+    branch: () => ipcRenderer.invoke('git-branch'),
+    checkout: (branch) => ipcRenderer.send('git-checkout', branch),
+    merge: (branch) => ipcRenderer.send('git-merge', branch),
+    pull: () => ipcRenderer.send('git-pull'),
+    push: () => ipcRenderer.send('git-push'),
+  }
 });

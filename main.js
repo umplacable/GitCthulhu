@@ -5,6 +5,9 @@ const ini = require('ini');
 const marked = require('marked');
 
 let win = [];
+let gitDirRepo = ""; // répertoire du dépôt git courant
+
+// création d'une fenêtre
 
 const createGitCreatorWindow = () => {
     win.push(new BrowserWindow({
@@ -102,7 +105,9 @@ nativeTheme.on("updated", () => {
   });
 
 ipcMain.on('open-select-window', (event, nom, dirpath) => {
-  createWindow(nom, dirpath)
+    createWindow(nom, dirpath)
+    // on enregistre le répertoire courant
+    gitDirRepo = dirpath;
 });
 
 ipcMain.on("close-window", (event) => {
@@ -247,5 +252,129 @@ ipcMain.on('delete-repository', (event, name) => {
         if (elt && !elt.isDestroyed()){
             elt.reload()
         }
+    });
+});
+
+// Git commands
+const simpleGit = require('simple-git');
+
+ipcMain.on('git-init', (event) => {
+    const git = simpleGit(gitDirRepo);
+    git.init().catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not initialize git repository: ${err.message}`);
+    });
+});
+
+ipcMain.on('git-clone', (event, url) => {
+    const git = simpleGit();
+    git.clone(url, gitDirRepo).catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not clone repository: ${err.message}`);
+    });
+});
+
+ipcMain.on('git-add', (event) => {
+    const git = simpleGit(gitDirRepo);
+    git.add('.').catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not add files: ${err.message}`);
+    });
+});
+
+ipcMain.on('git-commit', (event, message) => {
+    const git = simpleGit(gitDirRepo);
+    git.commit(message).catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not commit: ${err.message}`);
+    });
+});
+
+ipcMain.on('git-commit-ammend', (event, message) => {
+    const git = simpleGit(gitDirRepo);
+    git.commit(message, {'--amend': null}).catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not amend commit: ${err.message}`);
+    });
+});
+
+ipcMain.handle('git-status', async (event) => {
+    const git = simpleGit(gitDirRepo);
+    try {
+        const status = await git.status();
+        return JSON.parse(JSON.stringify(status));
+    } catch (err) {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not get status: ${err.message}`);
+        return null;
+    }
+});
+
+ipcMain.handle('git-log', async (event) => {
+    const git = simpleGit(gitDirRepo);
+    try {
+        const log = await git.log();
+        return log;
+    } catch (err) {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not get log: ${err.message}`);
+        return null;
+    }
+});
+
+ipcMain.handle('git-diff', async (event, commit1, commit2) => {
+    const git = simpleGit(gitDirRepo);
+    try {
+        const diff = await git.diff([`${commit1}..${commit2}`]);
+        return diff;
+    } catch (err) {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not get diff: ${err.message}`);
+        return null;
+    }
+});
+
+ipcMain.handle('git-branch', async (event) => {
+    const git = simpleGit(gitDirRepo);
+    try {
+        const branches = await git.branch();
+        return branches;
+    } catch (err) {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not get branches: ${err.message}`);
+        return null;
+    }
+});
+
+ipcMain.on('git-checkout', (event, branch) => {
+    const git = simpleGit(gitDirRepo);
+    git.checkout(branch).catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not checkout branch: ${err.message}`);
+    });
+});
+
+ipcMain.on('git-merge', (event, branch) => {
+    const git = simpleGit(gitDirRepo);
+    git.merge([branch]).catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not merge branch: ${err.message}`);
+        // TODO handle merge conflicts here
+    });
+});
+
+ipcMain.on('git-pull', (event) => {
+    const git = simpleGit(gitDirRepo);
+    git.pull().catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not pull: ${err.message}`);
+    });
+});
+
+ipcMain.on('git-push', (event) => {
+    const git = simpleGit(gitDirRepo);
+    git.push().catch((err) => {
+        console.error(err);
+        dialog.showErrorBox('Error', `Could not push: ${err.message}`);
     });
 });

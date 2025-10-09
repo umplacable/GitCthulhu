@@ -34,6 +34,7 @@ export default function CreateWindow() {
           </div>
 
           <div class="GitCthulhuFoot">
+            <Status/>
             <div class="mainOperations">
               <button class="secondary">quand selec</button>
               <button>+</button>
@@ -51,4 +52,47 @@ export default function CreateWindow() {
 
 function openTerminal(path) {
   window.electronAPI.openTerminal(path);
+}
+
+class Status extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      status: null, 
+      got: true
+    };
+  }
+
+  async componentDidMount() {
+    // à chaque changement de dépôt sélectionné, on met à jour le status
+    await window.electronAPI.gitActions.status().then((status) => {
+      this.setState({status});
+      this.setState({got: true})
+    });
+  }
+
+  render() {
+    let status = "🔴 Could not get the status";
+
+    console.log(this.state);
+
+    if(this.state.got){  
+      if(this.state.status != null){
+            
+        if (this.state.status.ahead == this.state.status.behind) {
+          status = `🟢 Branch : ${this.state.status.current} - Up to date`;
+        } else if (this.state.status.ahead > this.state.status.behind) {
+          status = `🔵 Branch : ${this.state.status.current} - Ahead by ${this.state.status.ahead} commit(s)`;
+        } else if (this.state.status.behind > this.state.status.ahead) {
+          status = `🟠 Branch : ${this.state.status.current} - Behind by ${this.state.status.behind} commit(s)`;
+        }
+      }else{
+        status = "🔴 Could not get the status";
+      }
+    }else{
+      status = "Waiting for status ...";
+    }
+
+    return (<span aria-busy={!this.state.got} class="status">{status}</span>);
+  }
 }
