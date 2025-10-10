@@ -130,6 +130,8 @@ class GitCommitList extends React.Component {
         let dateCommit = new Date(Date.parse(commit.date));
         commit.date = dateCommit.toLocaleString("fr-FR", { timeZone: "UTC" })
       });
+
+      this.setState({ commits });
     }, 1000); // toutes les secondes
     
   }
