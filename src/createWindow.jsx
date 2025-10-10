@@ -120,6 +120,18 @@ class GitCommitList extends React.Component {
     });
 
     this.setState({ commits });
+
+    // Démarre l’intervalle d’actualisation
+    this.interval = setInterval(async() => {
+      const ret = await window.electronAPI.gitActions.log();
+      const commits = ret.all.map((x) => x);
+
+      commits.forEach(commit => {
+        let dateCommit = new Date(Date.parse(commit.date));
+        commit.date = dateCommit.toLocaleString("fr-FR", { timeZone: "UTC" })
+      });
+    }, 1000); // toutes les secondes
+    
   }
 
   render(){
