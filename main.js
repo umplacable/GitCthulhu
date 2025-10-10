@@ -378,3 +378,7 @@ ipcMain.on('git-push', (event) => {
         dialog.showErrorBox('Error', `Could not push: ${err.message}`);
     });
 });
+
+
+
+
