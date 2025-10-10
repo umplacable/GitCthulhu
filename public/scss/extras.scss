@@ -120,3 +120,24 @@ div.GitCthulhuFoot>button{
     font-size: small;
     margin-bottom: 0px;
 }
+
+
+.CommitList{
+    font-size: medium;
+    width: fit-content;
+}
+
+.GitCthulhuSideshow > div.GraphBranches{
+    display: flex;
+    margin: 0px;
+}
+
+table.CommitList td{
+    padding-top: 0.25rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.5rem;
+    width: min-content;
+
+    text-align: start;
+}

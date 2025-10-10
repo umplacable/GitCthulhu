@@ -261,6 +261,15 @@ ipcMain.on('delete-repository', (event, id) => {
     });
 });
 
+
+
+
+
+
+
+
+
+
 // Git commands
 const simpleGit = require('simple-git');
 
@@ -320,7 +329,7 @@ ipcMain.handle('git-log', async (event) => {
     const git = simpleGit(gitDirRepo);
     try {
         const log = await git.log();
-        return log;
+        return JSON.parse(JSON.stringify(log));
     } catch (err) {
         console.error(err);
         dialog.showErrorBox('Error', `Could not get log: ${err.message}`);

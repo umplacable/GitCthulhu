@@ -21,16 +21,15 @@ export default function CreateWindow() {
             </div>
 
             <ul class="GitList">
-              <li class="GitCthulhu">Action 1</li>
-              <li class="GitCthulhu">Action 2</li>
-              <li class="GitCthulhu">Action 3</li>
+              <li tabIndex="0" onClick={() => {window.electronAPI.gitActions.pull()}} class="GitCthulhu">Pull</li>
+              <li tabIndex="0" onClick={() => {window.electronAPI.gitActions.push()}} class="GitCthulhu">Push</li>
+              <li tabIndex="0" class="GitCthulhu">Action 3</li>
             </ul>
 
           </div>
 
           <div class="GitCthulhuSideshow">
-            <h1>Hello from Electron renderer!</h1>
-            <p>👋</p>
+            <GitCommitList/>
           </div>
 
           <div class="GitCthulhuFoot">
@@ -53,22 +52,34 @@ class Status extends React.Component {
     super(props);
     this.state = {
       status: null, 
-      got: true
+      got: true,
     };
   }
 
   async componentDidMount() {
+
     // à chaque changement de dépôt sélectionné, on met à jour le status
     await window.electronAPI.gitActions.status().then((status) => {
       this.setState({status});
       this.setState({got: true})
     });
+
+    // Démarre l’intervalle d’actualisation
+    this.interval = setInterval(async() => {
+      // à chaque changement de dépôt sélectionné, on met à jour le status
+      await window.electronAPI.gitActions.status().then((status) => {
+        this.setState({status});
+      });
+    }, 5000); // toutes les 5 secondes
+  }
+
+  componentWillUnmount() {
+    // Nettoie l’intervalle pour éviter les fuites mémoire
+    clearInterval(this.interval);
   }
 
   render() {
     let status = "";
-
-    console.log(this.state);
 
     if(this.state.got){  
       if(this.state.status != null){
@@ -90,3 +101,54 @@ class Status extends React.Component {
     return (<span aria-busy={!this.state.got} class="status">{status}</span>);
   }
 }
+
+class GitCommitList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      commits: [],
+    };
+  }
+
+  async componentDidMount() {
+    const ret = await window.electronAPI.gitActions.log();
+    const commits = ret.all.map((x) => x);
+
+    commits.forEach(commit => {
+      let dateCommit = new Date(Date.parse(commit.date));
+      commit.date = dateCommit.toLocaleString("fr-FR", { timeZone: "UTC" })
+    });
+
+    this.setState({ commits });
+  }
+
+  render(){
+    console.log(this.state.commits);
+    const commits = this.state.commits;
+
+    return(
+      <div className="GraphBranches">
+        <table className="CommitList">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>User</th>
+              <th>Message</th>
+            </tr>
+          </thead>  
+          
+          <tbody>
+            {commits.map((commit)=>(
+                <tr>
+                  <td className="full">{commit.date}</td>
+                  <td>{commit.author_name}</td>
+                  <td>{commit.message}</td>
+                </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+}
+

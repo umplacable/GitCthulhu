@@ -12,18 +12,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteRepository: (name) => ipcRenderer.send('delete-repository', name),
 
   gitActions:{
-    init: () => ipcRenderer.send('git-init'),
-    clone: (url) => ipcRenderer.send('git-clone', url),
-    add: () => ipcRenderer.send('git-add'),
-    commit: (message) => ipcRenderer.send('git-commit', message),
-    ammend: (message) => ipcRenderer.send('git-commit-ammend', message),
-    status: () => ipcRenderer.invoke('git-status'),
-    log: () => ipcRenderer.invoke('git-log'),
-    diff: (commit1, commit2) => ipcRenderer.invoke('git-diff', commit1, commit2),
-    branch: () => ipcRenderer.invoke('git-branch'),
-    checkout: (branch) => ipcRenderer.send('git-checkout', branch),
-    merge: (branch) => ipcRenderer.send('git-merge', branch),
-    pull: () => ipcRenderer.send('git-pull'),
-    push: () => ipcRenderer.send('git-push'),
+    /* Liste de commandes da la partie MUST */
+    init: () => ipcRenderer.send('git-init'),                                         // pas utilisé
+    clone: (url) => ipcRenderer.send('git-clone', url),                               // pas utilisé            
+    add: () => ipcRenderer.send('git-add'),                                           // pas utilisé
+    commit: (message) => ipcRenderer.send('git-commit', message),                     // pas utilisé
+    ammend: (message) => ipcRenderer.send('git-commit-ammend', message),              // pas utilisé
+    status: () => ipcRenderer.invoke('git-status'),                                   // utilisé
+    log: () => ipcRenderer.invoke('git-log'),                                         // utilisé
+    diff: (commit1, commit2) => ipcRenderer.invoke('git-diff', commit1, commit2),     // pas utilisé
+    branch: () => ipcRenderer.invoke('git-branch'),                                   // pas utilisé
+    checkout: (branch) => ipcRenderer.send('git-checkout', branch),                   // pas utilisé
+    merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé
+    pull: () => ipcRenderer.send('git-pull'),                                         // utilisé
+    push: () => ipcRenderer.send('git-push'),                                         // utilisé
   }
 });

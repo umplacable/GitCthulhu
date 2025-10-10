@@ -39,7 +39,7 @@ export default function CreateGitCreatorWindow() {
                   // on récupère le dépôt sélectionné
                   const repos = document.getElementsByClassName("GitCthulhuSelected");
                   if (repos.length === 0) return;
-                  openRepo(repos[0].value.split(/[\\/]/).pop(), repos[0].id);
+                  openRepo(repos[0].getAttribute('value').split(/[\\/]/).pop(), repos[0].getAttribute('value'));
                 }}>Ouvrir</button>
         <button onClick={ () => {window.electronAPI.addRepository()}} >Add</button>
         <button class="contrast" onClick={ () => {
@@ -81,6 +81,7 @@ class GitList extends React.Component {
       <ul className="GitList">
         {keys.map((item) => (
           <li
+            tabindex = "0"
             className="GitCthulhu"
             onDoubleClick={() => {
               openRepo(this.state.repos[keys.indexOf(item)], this.state.paths[keys.indexOf(item)]);
@@ -103,6 +104,14 @@ class GitList extends React.Component {
               element?.classList.replace("GitCthulhu", "GitCthulhuSelected");
 
             }}
+            
+            onKeyDown={(e)=>{
+              if (e.key == "Enter" || e.key == " ") {
+                const element = document.getElementById(this.state.keys[keys.indexOf(item)]);
+                element.click()
+              }
+            }}
+
             id={this.state.keys[keys.indexOf(item)]}
             value={this.state.paths[keys.indexOf(item)]}
           >
@@ -113,6 +122,8 @@ class GitList extends React.Component {
       </ul>
     );
   }
+
+  
 }
 
 function openTerminal(path) {
