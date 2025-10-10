@@ -116,9 +116,10 @@ ipcMain.on("close-window", (event) => {
 });
 
 ipcMain.handle("get-config", () => {
-  const content = fs.readFileSync("config.ini", "utf-8");
-  if (!content) return null;
-  return ini.parse(content);
+    if (!fs.existsSync("config.ini")) return null;
+    const content = fs.readFileSync("config.ini", "utf-8");
+    if (!content) return null;
+    return ini.parse(content);
 });
 
 ipcMain.on('add-repository', async (event) => {
@@ -132,33 +133,35 @@ ipcMain.on('add-repository', async (event) => {
         properties: ['openDirectory']
     });
     if (result.canceled) return null;
-    const path = result.filePaths[0]; // return selected folder path
+    let dirpath = result.filePaths[0]; // return selected folder path
 
     // check si le fichier existe
     if (!fs.existsSync("config.ini")) {
-        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=");
+        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=\nids=");
     }
 
-    if (!path) return;
+    if (!dirpath) return;
     let content = fs.readFileSync("config.ini", "utf-8");
     // si le fichier n'existe pas, le créer
     if (!content) {
-        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=");
+        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=\nids=");
         content = fs.readFileSync("config.ini", "utf-8");
     }
 
     const config = ini.parse(content);
     // si la section Depo n'existe pas, la créer
     if (!config.Depo) {
-        config.Depo = { names: "", paths: "" };
+        config.Depo = { names: "", paths: "", ids: "" };
     }
     // ajoute le nouveau dépôt
     if (config.Depo.paths ) {
-        config.Depo.paths += `,${path}`;
-        config.Depo.names += `,${path.split(/[\\/]/).pop()}`;
+        config.Depo.paths += `,${dirpath}`;
+        config.Depo.names += `,${dirpath.split(/[\\/]/).pop()}`;
+        config.Depo.ids += `,${(config.Depo.ids ? config.Depo.ids.split(",").length + 1 : 1)}`;
     } else {
-        config.Depo.paths = path;
-        config.Depo.names = `${path.split(/[\\/]/).pop()}`;
+        config.Depo.paths = dirpath;
+        config.Depo.names = `${dirpath.split(/[\\/]/).pop()}`;
+        config.Depo.ids = "1";
     }
     fs.writeFileSync("config.ini", ini.stringify(config));
 
@@ -204,7 +207,7 @@ ipcMain.on('open-terminal', (event) => {
     });
 });
 
-ipcMain.on('delete-repository', (event, name) => {
+ipcMain.on('delete-repository', (event, id) => {
 
     // regarde la fenêtre qui a envoyé le message
     const senderWin = BrowserWindow.fromWebContents(event.sender);
@@ -212,33 +215,36 @@ ipcMain.on('delete-repository', (event, name) => {
 
     // check si le fichier existe
     if (!fs.existsSync("config.ini")) {
-        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=");
+        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=\nids=");
     }
     let content = fs.readFileSync("config.ini", "utf-8");
 
     // si le fichier n'existe pas, le créer
     if (!content) {
-        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=");
+        fs.writeFileSync("config.ini", "[Depo]\nnames=\npaths=\nids=");
         content = fs.readFileSync("config.ini", "utf-8");
     }
     const config = ini.parse(content);
 
     // si la section Depo n'existe pas, la créer
     if (!config.Depo) {
-        config.Depo = { names: "", paths: "" };
+        config.Depo = { names: "", paths: "", ids: "" };
     }
 
     if (!config.Depo.names || !config.Depo.paths) return; // rien à faire
     const names = config.Depo.names.split(",").map((x) => x.trim());
     const paths = config.Depo.paths.split(",").map((x) => x.trim());
-    const index = names.indexOf(name);
+    const ids = config.Depo.ids.split(",").map((x) => x.trim());
+    const index = ids.indexOf(id);
 
     if (index === -1) return; // pas trouvé
 
     names.splice(index, 1);
     paths.splice(index, 1);
+    ids.splice(index, 1);
     config.Depo.names = names.join(",");
     config.Depo.paths = paths.join(",");
+    config.Depo.ids = ids.join(",");
 
     if (config.Depo.names === "" && config.Depo.paths === "") {
         // supprime le fichier si plus de dépôts

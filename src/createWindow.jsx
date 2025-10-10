@@ -66,7 +66,7 @@ class Status extends React.Component {
   }
 
   render() {
-    let status = "🔴 Could not get the status";
+    let status = "";
 
     console.log(this.state);
 

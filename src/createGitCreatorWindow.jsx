@@ -32,20 +32,21 @@ export default function CreateGitCreatorWindow() {
     </div>
 
     <div class="GitCthulhuFoot">
+      <span class="status"></span>
       <div class="mainOperations">
         <button class="secondary" 
                 onClick={ () => {
                   // on récupère le dépôt sélectionné
                   const repos = document.getElementsByClassName("GitCthulhuSelected");
                   if (repos.length === 0) return;
-                  openRepo(repos[0].id.split(/[\\/]/).pop(), repos[0].id);
+                  openRepo(repos[0].value.split(/[\\/]/).pop(), repos[0].id);
                 }}>Ouvrir</button>
         <button onClick={ () => {window.electronAPI.addRepository()}} >Add</button>
         <button class="contrast" onClick={ () => {
                                             // on récupère le dépôt sélectionné
                                             const repos = document.getElementsByClassName("GitCthulhuSelected");
                                             if (repos.length === 0) return;
-                                            window.electronAPI.deleteRepository(repos[0].id.split(/[\\/]/).pop())
+                                            window.electronAPI.deleteRepository(repos[0].id)
                                             }} >Delete</button>
       </div>
     </div>
@@ -61,6 +62,7 @@ class GitList extends React.Component {
     this.state = {
       repos: [],
       paths: [],
+      keys: []
     };
   }
 
@@ -68,26 +70,26 @@ class GitList extends React.Component {
     const config = await window.electronAPI.getConfig();
     const paths = config.Depo.paths.split(",").map((x) => x.trim());
     const repos = config.Depo.names.split(",").map((x) => x.trim());
-    this.setState({ repos , paths });
+    const keys = config.Depo.ids.split(",").map((x) => x.trim());
+    this.setState({ repos , paths , keys });
   }
 
   render() {
-    const { repos } = this.state;
+    const { keys } = this.state;
 
     return (
       <ul className="GitList">
-        {repos.map((item) => (
+        {keys.map((item) => (
           <li
             className="GitCthulhu"
             onDoubleClick={() => {
-              openRepo(item, this.state.paths[repos.indexOf(item)]);
+              openRepo(this.state.repos[keys.indexOf(item)], this.state.paths[keys.indexOf(item)]);
             }}
             onClick={() => {
               const p = document.getElementsByClassName("repInfo");
-              const list = document.getElementsByClassName("GitList");
               p[0].innerText = "Loading README.md...";
 
-              window.electronAPI.getReadme(this.state.paths[repos.indexOf(item)]).then((data) => {
+              window.electronAPI.getReadme(this.state.paths[keys.indexOf(item)]).then((data) => {
                 if (data === null) {
                   p[0].innerText = "No README.md found in this repository.";
                 } else {
@@ -97,14 +99,15 @@ class GitList extends React.Component {
 
               const elements = document.getElementsByClassName("GitCthulhuSelected");
               elements[0]?.classList.replace("GitCthulhuSelected","GitCthulhu");
-              const element = document.getElementById(this.state.paths[repos.indexOf(item)]);
+              const element = document.getElementById(this.state.keys[keys.indexOf(item)]);
               element?.classList.replace("GitCthulhu", "GitCthulhuSelected");
 
             }}
-            id={this.state.paths[repos.indexOf(item)]}
+            id={this.state.keys[keys.indexOf(item)]}
+            value={this.state.paths[keys.indexOf(item)]}
           >
-            {item}
-            <p class="complement">{this.state.paths[repos.indexOf(item)]}</p>
+            {this.state.repos[keys.indexOf(item)]}
+            <p class="complement">{this.state.paths[keys.indexOf(item)]}</p>
           </li>
         ))}
       </ul>
