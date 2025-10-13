@@ -6,14 +6,28 @@
   "scripts": {
     "start": "webpack --mode production && electron .",
     "sass": "sass --load-path=node_modules/@picocss/pico/scss/ --watch public/scss:dist/css",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "package": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.gitcthulhu.app",
+    "productName": "GitCthulhu",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js"
+    ]
+  },
+  "win": {
+    "target": "nsis"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "electron": "^30.0.0",
     "fs": "^0.0.1-security",
     "ini": "^5.0.0",
     "marked": "^16.4.0",
@@ -29,9 +43,12 @@
     "@picocss/pico": "^2.1.1",
     "babel-loader": "^10.0.0",
     "babel-plugin-react-compiler": "^19.1.0-rc.3",
+    "concurrently": "^9.2.1",
     "electron": "^38.0.0",
+    "electron-builder": "^26.0.12",
     "html-webpack-plugin": "^5.6.4",
     "simple-git": "^3.20.0",
+    "wait-on": "^9.0.1",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"

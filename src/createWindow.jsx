@@ -21,7 +21,10 @@ export default function CreateWindow() {
             </div>
 
             <ul class="GitList">
-              <li tabIndex="0" onClick={() => {window.electronAPI.gitActions.pull()}} class="GitCthulhu">Pull</li>
+              <li tabIndex="0" onClick={() => {
+                window.electronAPI.gitActions.pull();
+
+                }} class="GitCthulhu">Pull</li>
               <li tabIndex="0" onClick={() => {window.electronAPI.gitActions.push()}} class="GitCthulhu">Push</li>
               <li tabIndex="0" class="GitCthulhu">Action 3</li>
             </ul>
@@ -166,3 +169,8 @@ class GitCommitList extends React.Component {
   }
 }
 
+function afficheMessage(importance, titre, message){
+  // affichera un message avec un logo diférent selon l'importance
+  console.log(titre);
+  console.log(message);
+}

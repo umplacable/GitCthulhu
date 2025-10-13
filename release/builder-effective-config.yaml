@@ -1,0 +1,10 @@
+directories:
+  output: release
+  buildResources: build
+appId: com.gitcthulhu.app
+productName: GitCthulhu
+files:
+  - filter:
+      - dist/**/*
+      - main.js
+electronVersion: 38.0.0
