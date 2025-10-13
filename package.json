@@ -17,8 +17,23 @@
     },
     "files": [
       "dist/**/*",
-      "main.js"
-    ]
+      "main.js",
+      "node_modules/simple-git/**/*",
+      "node_modules/@kwsites/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/simple-git",
+        "to": "node_modules/simple-git"
+      },
+      {
+        "from": "node_modules/@kwsites",
+        "to": "node_modules/@kwsites"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    }
   },
   "win": {
     "target": "nsis"
@@ -28,6 +43,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@kwsites/file-exists": "^1.1.1",
+    "@kwsites/promise-deferred": "^1.1.1",
     "fs": "^0.0.1-security",
     "ini": "^5.0.0",
     "marked": "^16.4.0",

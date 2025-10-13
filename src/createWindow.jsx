@@ -1,4 +1,7 @@
 import React from "react";
+// import "../public/scss/extras.scss";
+// import "../public/scss/style.scss";
+// import "../public/scss/SelectorStyle.scss";
 
 export default function CreateWindow() {
   return (<>
@@ -21,11 +24,22 @@ export default function CreateWindow() {
             </div>
 
             <ul class="GitList">
-              <li tabIndex="0" onClick={() => {
-                window.electronAPI.gitActions.pull();
+              <li tabIndex="0" aria-busy="false" onClick={async () => {
+                const element = document.getElementById("Pull");
+                element.setAttribute("aria-busy","true");
+                let res = await window.electronAPI.gitActions.pull();
+                element.setAttribute("aria-busy","false");
 
-                }} class="GitCthulhu">Pull</li>
-              <li tabIndex="0" onClick={() => {window.electronAPI.gitActions.push()}} class="GitCthulhu">Push</li>
+                console.log(res);
+                }} class="GitCthulhu" id="Pull">Pull</li>
+              <li tabIndex="0" aria-busy="false" onClick={async() => {
+                const element = document.getElementById("Push");
+                element.setAttribute("aria-busy","true");
+                let res = await window.electronAPI.gitActions.push();
+                element.setAttribute("aria-busy","false");
+
+                console.log(res);
+                }} class="GitCthulhu" id="Push">Push</li>
               <li tabIndex="0" class="GitCthulhu">Action 3</li>
             </ul>
 
@@ -140,7 +154,6 @@ class GitCommitList extends React.Component {
   }
 
   render(){
-    console.log(this.state.commits);
     const commits = this.state.commits;
 
     return(

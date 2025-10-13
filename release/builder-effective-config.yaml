@@ -7,4 +7,13 @@ files:
   - filter:
       - dist/**/*
       - main.js
-electronVersion: 38.0.0
+      - node_modules/simple-git/**/*
+      - node_modules/@kwsites/**/*
+extraResources:
+  - from: node_modules/simple-git
+    to: node_modules/simple-git
+  - from: node_modules/@kwsites
+    to: node_modules/@kwsites
+win:
+  target: nsis
+electronVersion: 38.2.2

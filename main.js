@@ -378,18 +378,23 @@ ipcMain.on('git-merge', (event, branch) => {
     });
 });
 
-ipcMain.on('git-pull', (event) => {
+ipcMain.handle('git-pull', async (event) => {
     const git = simpleGit(gitDirRepo);
-    git.pull().catch((err) => {
+    await git.pull().then((res) => { responce = res }).catch((err) => {
         console.error(err);
         dialog.showErrorBox('Error', `Could not pull: ${err.message}`);
+        responce = err;
     });
+    return responce;
 });
 
-ipcMain.on('git-push', (event) => {
+ipcMain.handle('git-push', async (event) => {
     const git = simpleGit(gitDirRepo);
-    git.push().catch((err) => {
+    let responce;
+    await git.push().then((res) => { responce = res }).catch((err) => {
         console.error(err);
         dialog.showErrorBox('Error', `Could not push: ${err.message}`);
+        responce = err;
     });
+    return responce;
 });

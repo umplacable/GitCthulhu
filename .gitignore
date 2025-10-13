@@ -2,3 +2,5 @@
 node_modules
 dist
 config.ini
+release
+release\builder-effective-config.yaml
