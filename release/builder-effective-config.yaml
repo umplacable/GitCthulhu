@@ -8,8 +8,10 @@ files:
       - dist/**/*
       - main.js
       - preload.js
-      - favicon-dark.ico
-      - favicon-light.ico
+      - public/icons/favicon-dark.ico
+      - public/icons/favicon-light.ico
+      - public/icons/favicon.ico
+      - public/icons/favicon.png
       - node_modules/simple-git/**/*
       - node_modules/@kwsites/**/*
       - node_modules/debug/**/*
@@ -22,6 +24,11 @@ extraResources:
   - from: node_modules/debug
     to: node_modules/debug
 asar: true
+mac:
+  icon: public/icons/favicon.png
 win:
+  icon: public/icons/favicon.ico
   target: nsis
+linux:
+  icon: public/icons/favicon.png
 electronVersion: 38.2.2

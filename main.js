@@ -10,12 +10,13 @@ const simpleGit = require('simple-git');
 let win = [];
 let gitDirRepo = '~/'; // répertoire du dépôt git courant
 const isDev = !app.isPackaged;
+let configPath;
 
 // --- FONCTION UTILITAIRE POUR LES CHEMINS ---
 function getFilePath(filename) {
   if (isDev) {
     // En dev : on charge depuis webpack dev server (vite ou autre)
-    return `http://localhost:3000/${filename}`;
+    return `./dist/${filename}`;
   } else {
     // En prod : on charge depuis le dossier dist dans app.asar
     return `file://${path.join(__dirname, 'dist', filename)}`;
@@ -27,7 +28,7 @@ function createGitCreatorWindow() {
   const creatorWin = new BrowserWindow({
     width: 600,
     height: 450,
-    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -45,7 +46,7 @@ function createGitSelectorWindow() {
   const selectorWin = new BrowserWindow({
     width: 600,
     height: 450,
-    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -63,7 +64,7 @@ function OpenRepoInit() {
   const initWin = new BrowserWindow({
     width: 600,
     height: 450,
-    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -82,7 +83,7 @@ function createWindow(nom, dirpath) {
     name: `${nom} - ${dirpath}`,
     width: 800,
     height: 600,
-    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -98,6 +99,8 @@ function createWindow(nom, dirpath) {
 
 // --- APP READY ---
 app.whenReady().then(() => {
+  configPath = path.join(app.getPath('userData'), "config.ini");
+
   // createGitSelectorWindow();
   createGitCreatorWindow();
 });
@@ -109,7 +112,7 @@ app.on('window-all-closed', () => {
 
 // --- CHANGEMENT DE THEME ---
 nativeTheme.on('updated', () => {
-  const newIcon = path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico');
+  const newIcon = path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico');
 
   win.forEach((elt) => {
     if (elt && !elt.isDestroyed()) elt.setIcon(newIcon);
@@ -133,8 +136,8 @@ ipcMain.on('close-window', (event) => {
 });
 
 ipcMain.handle('get-config', () => {
-  if (!fs.existsSync('config.ini')) return null;
-  const content = fs.readFileSync('config.ini', 'utf-8');
+  if (!fs.existsSync(configPath)) return null;
+  const content = fs.readFileSync(configPath, 'utf-8');
   return content ? ini.parse(content) : null;
 });
 
@@ -152,14 +155,14 @@ ipcMain.on('add-repository', async (event) => {
 
   if (!(await git.checkIsRepo())) OpenRepoInit();
 
-  if (!fs.existsSync('config.ini')) {
-    fs.writeFileSync('config.ini', '[Depo]\nnames=\npaths=\nids=');
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, '[Depo]\nnames=\npaths=\nids=');
   }
 
-  let content = fs.readFileSync('config.ini', 'utf-8');
+  let content = fs.readFileSync(configPath, 'utf-8');
   if (!content) {
-    fs.writeFileSync('config.ini', '[Depo]\nnames=\npaths=\nids=');
-    content = fs.readFileSync('config.ini', 'utf-8');
+    fs.writeFileSync(configPath, '[Depo]\nnames=\npaths=\nids=');
+    content = fs.readFileSync(configPath, 'utf-8');
   }
 
   const config = ini.parse(content);
@@ -175,7 +178,7 @@ ipcMain.on('add-repository', async (event) => {
     config.Depo.ids = '1';
   }
 
-  fs.writeFileSync('config.ini', ini.stringify(config));
+  fs.writeFileSync(configPath, ini.stringify(config));
 
   win.forEach((elt) => {
     if (elt && !elt.isDestroyed()) elt.reload();
@@ -215,14 +218,14 @@ ipcMain.on('open-terminal', (event) => {
 });
 
 ipcMain.on('delete-repository', (event, id) => {
-  if (!fs.existsSync('config.ini')) {
-    fs.writeFileSync('config.ini', '[Depo]\nnames=\npaths=\nids=');
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, '[Depo]\nnames=\npaths=\nids=');
   }
 
-  let content = fs.readFileSync('config.ini', 'utf-8');
+  let content = fs.readFileSync(configPath, 'utf-8');
   if (!content) {
-    fs.writeFileSync('config.ini', '[Depo]\nnames=\npaths=\nids=');
-    content = fs.readFileSync('config.ini', 'utf-8');
+    fs.writeFileSync(configPath, '[Depo]\nnames=\npaths=\nids=');
+    content = fs.readFileSync(configPath, 'utf-8');
   }
 
   const config = ini.parse(content);
@@ -243,9 +246,9 @@ ipcMain.on('delete-repository', (event, id) => {
   config.Depo.ids = ids.join(',');
 
   if (config.Depo.names === '' && config.Depo.paths === '') {
-    fs.unlinkSync('config.ini');
+    fs.unlinkSync(configPath);
   } else {
-    fs.writeFileSync('config.ini', ini.stringify(config));
+    fs.writeFileSync(configPath, ini.stringify(config));
   }
 
   win.forEach((elt) => {
