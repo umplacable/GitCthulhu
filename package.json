@@ -19,7 +19,9 @@
       "dist/**/*",
       "main.js",
       "node_modules/simple-git/**/*",
-      "node_modules/@kwsites/**/*"
+      "node_modules/@kwsites/**/*",
+      "node_modules/debug/**/*",
+      "!node_modules/@parcel/watcher-*"
     ],
     "extraResources": [
       {
@@ -29,14 +31,16 @@
       {
         "from": "node_modules/@kwsites",
         "to": "node_modules/@kwsites"
+      },
+      {
+        "from": "node_modules/debug",
+        "to": "node_modules/debug"
       }
     ],
+    "asar": true,
     "win": {
       "target": "nsis"
     }
-  },
-  "win": {
-    "target": "nsis"
   },
   "keywords": [],
   "author": "",
@@ -45,6 +49,8 @@
   "dependencies": {
     "@kwsites/file-exists": "^1.1.1",
     "@kwsites/promise-deferred": "^1.1.1",
+    "@parcel/watcher": "^2.4.1",
+    "debug": "^4.4.3",
     "fs": "^0.0.1-security",
     "ini": "^5.0.0",
     "marked": "^16.4.0",
@@ -64,7 +70,6 @@
     "electron": "^38.0.0",
     "electron-builder": "^26.0.12",
     "html-webpack-plugin": "^5.6.4",
-    "simple-git": "^3.20.0",
     "wait-on": "^9.0.1",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",

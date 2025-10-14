@@ -9,11 +9,16 @@ files:
       - main.js
       - node_modules/simple-git/**/*
       - node_modules/@kwsites/**/*
+      - node_modules/debug/**/*
+      - '!node_modules/@parcel/watcher-*'
 extraResources:
   - from: node_modules/simple-git
     to: node_modules/simple-git
   - from: node_modules/@kwsites
     to: node_modules/@kwsites
+  - from: node_modules/debug
+    to: node_modules/debug
+asar: true
 win:
   target: nsis
 electronVersion: 38.2.2
