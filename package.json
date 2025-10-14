@@ -18,6 +18,9 @@
     "files": [
       "dist/**/*",
       "main.js",
+      "preload.js",
+      "favicon-dark.ico",
+      "favicon-light.ico",
       "node_modules/simple-git/**/*",
       "node_modules/@kwsites/**/*",
       "node_modules/debug/**/*",
