@@ -27,7 +27,7 @@ function createGitCreatorWindow() {
   const creatorWin = new BrowserWindow({
     width: 600,
     height: 450,
-    icon: nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico',
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -45,7 +45,7 @@ function createGitSelectorWindow() {
   const selectorWin = new BrowserWindow({
     width: 600,
     height: 450,
-    icon: nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico',
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -63,7 +63,7 @@ function OpenRepoInit() {
   const initWin = new BrowserWindow({
     width: 600,
     height: 450,
-    icon: nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico',
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -82,7 +82,7 @@ function createWindow(nom, dirpath) {
     name: `${nom} - ${dirpath}`,
     width: 800,
     height: 600,
-    icon: nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico',
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -109,7 +109,7 @@ app.on('window-all-closed', () => {
 
 // --- CHANGEMENT DE THEME ---
 nativeTheme.on('updated', () => {
-  const newIcon = nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico';
+  const newIcon = path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'favicon-light.ico' : 'favicon-dark.ico');
 
   win.forEach((elt) => {
     if (elt && !elt.isDestroyed()) elt.setIcon(newIcon);
@@ -287,7 +287,7 @@ ipcMain.handle('git-status', async () => {
   const git = simpleGit(gitDirRepo);
   try {
     const status = await git.status();
-    return status;
+    return JSON.parse(JSON.stringify(status));
   } catch (err) {
     dialog.showErrorBox('Error', `Could not get status: ${err.message}`);
     return null;
