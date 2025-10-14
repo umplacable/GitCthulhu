@@ -12,7 +12,7 @@
   <strong>⚠️ Attention !</strong> Le dossier <i><b>dist</b></i> est généré automatiquement au lancement, il est donc inutile de le modifier.
 </div>
 
-## Instalation
+## Installation
 Pour installer les dépendances de l'app, il faudra d'abort installer NodeJS, sur le site Web : https://nodejs.org/fr/download, pour pouvoir utilier les commandes `npm`. 
 Après avoir instaler NodeJS, il va faloir installer les dépendances du projet : 
 ``` shell
@@ -51,7 +51,19 @@ new HtmlWebpackPlugin({
 ```
 
 ## Comunication avec le main
-la communication entre les fichiers [**React**](src) et le [**Main.js**](main.js) ce fait par le fichier [preload.js](preload.js).
+La communication entre les fichiers [**React**](src) et le [**Main.js**](main.js) ce fait par le fichier [preload.js](preload.js).
 
 - Dans [**preload.js**](preload.js), la classe **contextBridge** de electron permet de généraliser une fonction, et la classe **ipcRenderer** permet d'appeller une fonction du main.
 - Dans [**Main.js**](main.js), la classe **ipcMain** de electron, permet de recevoir une fonction envoyer par **ipcRenderer**.
+
+## Création de l'installeur
+
+Pour pouvoir créer l'installeur, il va falloir suivre ses instructions : 
+* Avant de commencer, il faudra installer [Visual Studio Community 2022] (https://visualstudio.microsoft.com/fr/free-developer-offers/) en sélectionnant **Desktop development with C++**.
+* Il suffira ensuite de lancer la commande `npm run package` pour commencer la création de l'installeur.
+
+En cas de problèmes lors de la création de l'installeur, il suffira de supprimer le dossier [**node-module**](node_modules) et le fichier [**package-lock.json**](package-lock.json), puis d'exécuter :
+```bash
+npm install
+npm run package
+```

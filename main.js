@@ -16,7 +16,7 @@ let configPath;
 function getFilePath(filename) {
   if (isDev) {
     // En dev : on charge depuis webpack dev server (vite ou autre)
-    return `./dist/${filename}`;
+    return path.join(__dirname, 'dist', filename);
   } else {
     // En prod : on charge depuis le dossier dist dans app.asar
     return `file://${path.join(__dirname, 'dist', filename)}`;
