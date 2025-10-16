@@ -239,7 +239,6 @@ class GitCommitAction extends React.Component {
 
                       element.setAttribute("aria-busy","true");
 
-                      await window.electronAPI.gitActions.add();
                       await window.electronAPI.gitActions.commit(message.value);
                       
                       element.setAttribute("aria-busy","false");

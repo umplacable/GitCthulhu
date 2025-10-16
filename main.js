@@ -294,6 +294,7 @@ ipcMain.handle('git-commit', async (event, message) => {
     }
   }else{
     try {
+      await await git.add('./');
       return await git.commit(message);
     } catch (err) {
       dialog.showErrorBox('Error', `Could not commit: ${err.message}`);
