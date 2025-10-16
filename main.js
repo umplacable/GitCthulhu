@@ -284,17 +284,22 @@ ipcMain.handle('git-add', async () => {
 
 ipcMain.handle('git-commit', async (event, message) => {
   const git = simpleGit(gitDirRepo);
+
+  if(message == ""){
+    ammend = false;
+    dialog.showErrorBox('Error', `Metez un message pour commit.`)
+  }
+
   if(ammend){
     ammend = false;
     try {
-      return git.commit(message, { '--amend': null });
+      return git.commit(message, ["--amend"]);
     } catch (err) {
       dialog.showErrorBox('Error', `Could not amend commit: ${err.message}`)
       return null;
     }
   }else{
     try {
-      await await git.add('./');
       return await git.commit(message);
     } catch (err) {
       dialog.showErrorBox('Error', `Could not commit: ${err.message}`);
@@ -303,7 +308,7 @@ ipcMain.handle('git-commit', async (event, message) => {
   }
 });
 
-ipcMain.handle('git-togle-amend', (event) => {
+ipcMain.on('git-togle-amend', (event) => {
   ammend = true;
 });
 

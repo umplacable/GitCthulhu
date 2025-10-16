@@ -170,7 +170,7 @@ class GitCommitList extends React.Component {
                           element.innerText = "Commit ammend";
 
                           const TextArea = document.getElementById("CommitMessage");
-                          TextArea.innerText = commit.message;
+                          TextArea.value = commit.message;
                           TextArea.focus();
                         }}>
                           Ammend
@@ -240,8 +240,10 @@ class GitCommitAction extends React.Component {
 
                       element.setAttribute("aria-busy","true");
 
-                      await window.electronAPI.gitActions.commit(message.value);
-                      
+                      await window.electronAPI.gitActions.add()
+                      let ret = await window.electronAPI.gitActions.commit(message.value);
+                      console.log(ret)
+
                       element.setAttribute("aria-busy","false");
 
                       titre.innerText = "Commit";
