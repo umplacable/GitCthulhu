@@ -219,13 +219,14 @@ class GitCommitAction extends React.Component {
                       const element = document.getElementById(this.props.nom+"Satus");
                       const message = document.getElementById("CommitMessage");
 
-                      console.log(message.value)
-
                       element.setAttribute("aria-busy","true");
+
                       await window.electronAPI.gitActions.add();
                       await window.electronAPI.gitActions.commit(message.value);
+                      
                       element.setAttribute("aria-busy","false");
 
+                      message.value = "";
                       }} class="GitCthulhu" id={this.props.nom}>
                   {this.props.nom}
                   <span id={this.props.nom+"Satus"} className="StatusSpan"/>

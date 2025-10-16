@@ -269,9 +269,15 @@ ipcMain.on('git-clone', (event, url) => {
   );
 });
 
-ipcMain.on('git-add', () => {
+ipcMain.handle('git-add', async () => {
   const git = simpleGit(gitDirRepo);
-  git.add('./').catch((err) => dialog.showErrorBox('Error', `Could not add: ${err.message}`));
+  try {
+    const result = await git.add('./');
+    return result;
+  } catch (err) {
+    dialog.showErrorBox('Error', `Could not add: ${err.message}`);
+    return null;
+  }
 });
 
 ipcMain.handle('git-commit', async (event, message) => {
