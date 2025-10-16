@@ -284,7 +284,7 @@ ipcMain.handle('git-add', async () => {
 
 ipcMain.handle('git-commit', async (event, message) => {
   const git = simpleGit(gitDirRepo);
-  if(ammend === true){
+  if(ammend){
     ammend = false;
     try {
       return git.commit(message, { '--amend': null });
