@@ -11,6 +11,7 @@ let win = [];
 let gitDirRepo = '~/'; // répertoire du dépôt git courant
 const isDev = !app.isPackaged;
 let configPath;
+let ammend = false;
 
 // --- FONCTION UTILITAIRE POUR LES CHEMINS ---
 function getFilePath(filename) {
@@ -100,6 +101,7 @@ function createWindow(nom, dirpath) {
 // --- APP READY ---
 app.whenReady().then(() => {
   configPath = path.join(app.getPath('userData'), "config.ini");
+  ammend = false;
 
   // createGitSelectorWindow();
   createGitCreatorWindow();
@@ -282,19 +284,26 @@ ipcMain.handle('git-add', async () => {
 
 ipcMain.handle('git-commit', async (event, message) => {
   const git = simpleGit(gitDirRepo);
-  try {
-    return await git.commit(message);
-  } catch (err) {
-    dialog.showErrorBox('Error', `Could not commit: ${err.message}`);
-    return null;
+  if(ammend === true){
+    ammend = false;
+    try {
+      return git.commit(message, { '--amend': null });
+    } catch (err) {
+      dialog.showErrorBox('Error', `Could not amend commit: ${err.message}`)
+      return null;
+    }
+  }else{
+    try {
+      return await git.commit(message);
+    } catch (err) {
+      dialog.showErrorBox('Error', `Could not commit: ${err.message}`);
+      return null;
+    }
   }
 });
 
-ipcMain.handle('git-commit-amend', (event, message) => {
-  const git = simpleGit(gitDirRepo);
-  git.commit(message, { '--amend': null }).catch((err) =>
-    dialog.showErrorBox('Error', `Could not amend commit: ${err.message}`)
-  );
+ipcMain.handle('git-togle-amend', (event) => {
+  ammend = true;
 });
 
 ipcMain.handle('git-status', async () => {

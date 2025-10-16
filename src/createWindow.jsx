@@ -152,15 +152,32 @@ class GitCommitList extends React.Component {
               <th>Date</th>
               <th>User</th>
               <th>Message</th>
+              <th></th>
             </tr>
           </thead>  
           
           <tbody>
-            {commits.map((commit)=>(
+            {commits.map((commit, index)=>(
                 <tr>
                   <td className="full">{commit.date}</td>
                   <td>{commit.author_name}</td>
                   <td>{commit.message}</td>
+                  <td>
+                    {index === 0 && (
+                        <button onClick={() => {
+                          window.electronAPI.gitActions.ammend();
+                          const element = document.getElementById("Commit")
+                          element.innerText = "Commit ammend";
+
+                          const TextArea = document.getElementById("CommitMessage")
+                          TextArea.innerText = commit.message;
+                        }}>
+                          Ammend
+                        </button>
+                      )
+                    }
+
+                  </td>
                 </tr>
             ))}
           </tbody>
@@ -218,6 +235,7 @@ class GitCommitAction extends React.Component {
                 onClick={async () => {
                       const element = document.getElementById(this.props.nom+"Satus");
                       const message = document.getElementById("CommitMessage");
+                      const titre = document.getElementById("Commit")
 
                       element.setAttribute("aria-busy","true");
 
@@ -226,10 +244,12 @@ class GitCommitAction extends React.Component {
                       
                       element.setAttribute("aria-busy","false");
 
+                      titre.innerText = "Commit ammend";
+
                       message.value = "";
-                      }} class="GitCthulhu" id={this.props.nom}>
-                  {this.props.nom}
-                  <span id={this.props.nom+"Satus"} className="StatusSpan"/>
+                      }} class="GitCthulhu">
+                  <span id={this.props.nom}>{this.props.nom}</span>
+                  <span id={this.props.nom+"Satus"} className="StatusSpan" aria-busy="false"/>
                 </div>
 
                 <textarea id="CommitMessage" 
