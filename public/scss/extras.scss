@@ -112,6 +112,27 @@ ul li.GitCthulhu:hover, ul li.GitCthulhuSelected {
     cursor: pointer;
 }
 
+ul.GitList.GitAction li, ul.GitList.GitAction>li.GitCommit>div.GitCthulhu {
+    display: flex;
+    justify-content: space-between;
+}
+
+ul.GitList.GitAction li.GitCommit{
+    display: flex;
+    flex-direction: column;
+    padding-left : 0px;
+}
+ul.GitList.GitAction>li.GitCommit>div.GitCthulhu{
+    padding-left : 30px
+}
+ul.GitList.GitAction>li.GitCommit>textarea{
+    font-size: medium;
+}
+
+li .StatusSpan{
+    margin-right: 5px ;
+}
+
 div.GitCthulhuFoot>button{
     height: $height-foot;
 }

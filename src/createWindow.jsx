@@ -23,24 +23,12 @@ export default function CreateWindow() {
               <h4>Les actions</h4>
             </div>
 
-            <ul class="GitList">
-              <li tabIndex="0" aria-busy="false" onClick={async () => {
-                const element = document.getElementById("Pull");
-                element.setAttribute("aria-busy","true");
-                let res = await window.electronAPI.gitActions.pull();
-                element.setAttribute("aria-busy","false");
+            <ul class="GitList GitAction">
+              
+              <GitSimpleAction nom="Pull" action={window.electronAPI.gitActions.pull} />
+              <GitSimpleAction nom="Push" action={window.electronAPI.gitActions.push} />
+              <GitCommitAction nom="Commit" action={window.electronAPI.gitActions.commit}/>
 
-                console.log(res);
-                }} class="GitCthulhu" id="Pull">Pull</li>
-              <li tabIndex="0" aria-busy="false" onClick={async() => {
-                const element = document.getElementById("Push");
-                element.setAttribute("aria-busy","true");
-                let res = await window.electronAPI.gitActions.push();
-                element.setAttribute("aria-busy","false");
-
-                console.log(res);
-                }} class="GitCthulhu" id="Push">Push</li>
-              <li tabIndex="0" class="GitCthulhu">Action 3</li>
             </ul>
 
           </div>
@@ -186,4 +174,71 @@ function afficheMessage(importance, titre, message){
   // affichera un message avec un logo diférent selon l'importance
   console.log(titre);
   console.log(message);
+}
+
+class GitSimpleAction extends React.Component {
+  constructor(props){
+    super(props);
+  }
+
+  render(){
+    
+    return(
+      <li tabIndex="0" 
+          aria-busy="false" 
+          onClick={async () => {
+                const element = document.getElementById(this.props.nom+"Satus");
+                element.setAttribute("aria-busy","true");
+                let res = await this.props.action();
+                element.setAttribute("aria-busy","false");
+
+                console.log(res);
+                }} class="GitCthulhu" id={this.props.nom}>
+                  {this.props.nom}
+                  <span id={this.props.nom+"Satus"} className="StatusSpan"/>
+      </li>
+              
+    )
+  }
+}
+
+class GitCommitAction extends React.Component {
+  constructor(props){
+    super(props);
+  }
+
+  render(){
+    
+    return(
+      <li tabIndex="0"  
+        class="GitCthulhu GitCommit">
+
+                <div
+                tabIndex="0"  
+                onClick={async () => {
+                      const element = document.getElementById(this.props.nom+"Satus");
+                      const message = document.getElementById("CommitMessage");
+
+                      console.log(message.value)
+
+                      element.setAttribute("aria-busy","true");
+                      await window.electronAPI.gitActions.add();
+                      await window.electronAPI.gitActions.commit(message.value);
+                      element.setAttribute("aria-busy","false");
+
+                      }} class="GitCthulhu" id={this.props.nom}>
+                  {this.props.nom}
+                  <span id={this.props.nom+"Satus"} className="StatusSpan"/>
+                </div>
+
+                <textarea id="CommitMessage" 
+                          name="CommitMessage" 
+                          rows="5" 
+                          cols="50" 
+                          placeholder="Commit message ..."
+                          autoComplete="on"
+                />
+      </li>   
+    )
+  }
 }

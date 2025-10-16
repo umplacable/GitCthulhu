@@ -271,15 +271,20 @@ ipcMain.on('git-clone', (event, url) => {
 
 ipcMain.on('git-add', () => {
   const git = simpleGit(gitDirRepo);
-  git.add('.').catch((err) => dialog.showErrorBox('Error', `Could not add: ${err.message}`));
+  git.add('./').catch((err) => dialog.showErrorBox('Error', `Could not add: ${err.message}`));
 });
 
-ipcMain.on('git-commit', (event, message) => {
+ipcMain.handle('git-commit', async (event, message) => {
   const git = simpleGit(gitDirRepo);
-  git.commit(message).catch((err) => dialog.showErrorBox('Error', `Could not commit: ${err.message}`));
+  try {
+    return await git.commit(message);
+  } catch (err) {
+    dialog.showErrorBox('Error', `Could not commit: ${err.message}`);
+    return null;
+  }
 });
 
-ipcMain.on('git-commit-amend', (event, message) => {
+ipcMain.handle('git-commit-amend', (event, message) => {
   const git = simpleGit(gitDirRepo);
   git.commit(message, { '--amend': null }).catch((err) =>
     dialog.showErrorBox('Error', `Could not amend commit: ${err.message}`)
