@@ -244,7 +244,7 @@ class GitCommitAction extends React.Component {
                       
                       element.setAttribute("aria-busy","false");
 
-                      titre.innerText = "Commit ammend";
+                      titre.innerText = "Commit";
 
                       message.value = "";
                       }} class="GitCthulhu">
