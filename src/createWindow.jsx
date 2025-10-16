@@ -166,11 +166,12 @@ class GitCommitList extends React.Component {
                     {index === 0 && (
                         <button onClick={() => {
                           window.electronAPI.gitActions.ammend();
-                          const element = document.getElementById("Commit")
+                          const element = document.getElementById("Commit");
                           element.innerText = "Commit ammend";
 
-                          const TextArea = document.getElementById("CommitMessage")
+                          const TextArea = document.getElementById("CommitMessage");
                           TextArea.innerText = commit.message;
+                          TextArea.focus();
                         }}>
                           Ammend
                         </button>
