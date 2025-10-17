@@ -138,7 +138,7 @@ class GitCommitList extends React.Component {
       });
 
       this.setState({ commits });
-    }, 1000); // toutes les secondes
+    }, 500); // 2 fois toutes les secondes
     
   }
 
@@ -325,7 +325,7 @@ class GitBranchList extends React.Component {
     // Démarre l’intervalle d’actualisation
     this.interval = setInterval(async() => {
       // à chaque changement de dépôt sélectionné, on met à jour le status
-      await window.electronAPI.gitActions.branchList().then((status) => {
+      await window.electronAPI.gitActions.branchList().then((branches) => {
         this.setState({branches});
       });
     }, 1000); // toutes les secondes
@@ -358,7 +358,7 @@ class GitBranchList extends React.Component {
               this.state.branches.all.map((branche) => (
                 <GitComplexAction
                   nom={branche}
-                  action={this.props.action}
+                  action={window.electronAPI.gitActions.checkout}
                   param={branche}
                 />
               ))
