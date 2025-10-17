@@ -354,6 +354,16 @@ ipcMain.handle('git-branch', async () => {
   }
 });
 
+ipcMain.handle('git-branch-local', async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return JSON.parse(JSON.stringify( await git.branchLocal()));
+  } catch (err) {
+    dialog.showErrorBox('Error', `Could not get branches: ${err.message}`);
+    return null;
+  }
+});
+
 ipcMain.on('git-checkout', (event, branch) => {
   const git = simpleGit(gitDirRepo);
   git.checkout(branch).catch((err) =>

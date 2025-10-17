@@ -129,6 +129,11 @@ ul.GitList.GitAction>li.GitCommit>textarea{
     font-size: medium;
 }
 
+li.GitBranchList{
+    display: flex;
+    flex-direction: column;
+}
+
 li .StatusSpan{
     margin-right: 5px ;
 }

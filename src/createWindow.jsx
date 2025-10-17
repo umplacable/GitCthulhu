@@ -28,6 +28,7 @@ export default function CreateWindow() {
               <GitSimpleAction nom="Pull" action={window.electronAPI.gitActions.pull} />
               <GitSimpleAction nom="Push" action={window.electronAPI.gitActions.push} />
               <GitCommitAction nom="Commit" action={window.electronAPI.gitActions.commit}/>
+              <GitBranchList nom="Branches" action={window.electronAPI.gitActions.branchList}/>
 
             </ul>
 
@@ -220,6 +221,32 @@ class GitSimpleAction extends React.Component {
   }
 }
 
+class GitComplexAction extends React.Component {
+  constructor(props){
+    super(props);
+  }
+
+  render(){
+    
+    return(
+      <li tabIndex="0" 
+          aria-busy="false" 
+          onClick={async () => {
+                const element = document.getElementById(this.props.nom+"Satus");
+                element.setAttribute("aria-busy","true");
+                let res = await this.props.action(this.props.param);
+                element.setAttribute("aria-busy","false");
+
+                console.log(res);
+                }} class="GitCthulhu" id={this.props.nom}>
+                  {this.props.nom}
+                  <span id={this.props.nom+"Satus"} className="StatusSpan"/>
+      </li>
+              
+    )
+  }
+}
+
 class GitCommitAction extends React.Component {
   constructor(props){
     super(props);
@@ -262,6 +289,54 @@ class GitCommitAction extends React.Component {
                           autoComplete="on"
                 />
       </li>   
+    )
+  }
+}
+
+class GitBranchList extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      branches : null,
+      got : false 
+    }
+  }
+
+  async componentDidMount(){
+    const branches = await window.electronAPI.gitActions.branchList();
+    this.setState({ branches , got : true});
+
+    console.log(branches);
+  }
+
+  render(){
+    
+    return(
+      <li tabIndex="0"  
+        class="GitCthulhu GitBranchList">
+
+        <div
+        tabIndex="0"  
+        className="GitCthulhu">
+          <span id={this.props.nom}>{this.props.nom}</span>
+          <span id={this.props.nom+"Satus"} className="StatusSpan" aria-busy="false"/>
+        </div>
+        <ul>
+
+          {this.state.got && this.state.branches?.all?.length > 0 ? (
+              this.state.branches.all.map((branche) => (
+                <GitComplexAction
+                  nom={branche}
+                  action={this.props.action}
+                  param={branche}
+                />
+              ))
+            ) : (
+              <li>Aucune branche trouvée</li>
+            )}
+        </ul>
+      </li>
+              
     )
   }
 }

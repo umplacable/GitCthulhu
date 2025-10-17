@@ -17,11 +17,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     clone: (url) => ipcRenderer.send('git-clone', url),                               // pas utilisé (Riad)     
     add: () => ipcRenderer.invoke('git-add'),                                         // utilisé
     commit: (message) => ipcRenderer.invoke('git-commit', message),                   // utilisé
-    ammend: (message) => ipcRenderer.send('git-togle-amend', message),              // pas utilisé
+    ammend: (message) => ipcRenderer.send('git-togle-amend', message),                // utilisé
     status: () => ipcRenderer.invoke('git-status'),                                   // utilisé
     log: () => ipcRenderer.invoke('git-log'),                                         // utilisé
     diff: (commit1, commit2) => ipcRenderer.invoke('git-diff', commit1, commit2),     // pas utilisé
     branch: () => ipcRenderer.invoke('git-branch'),                                   // pas utilisé
+    branchList: () => ipcRenderer.invoke('git-branch-local'),                         // pas utilisé
     checkout: (branch) => ipcRenderer.send('git-checkout', branch),                   // pas utilisé
     merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé
     pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
