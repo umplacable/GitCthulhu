@@ -28,7 +28,7 @@ export default function CreateWindow() {
               <GitSimpleAction nom="Pull" action={window.electronAPI.gitActions.pull} />
               <GitSimpleAction nom="Push" action={window.electronAPI.gitActions.push} />
               <GitCommitAction nom="Commit" action={window.electronAPI.gitActions.commit}/>
-              <GitBranchList nom="Branches" action={window.electronAPI.gitActions.branchList}/>
+              <GitBranchList nom="Checkout branches" action={window.electronAPI.gitActions.branch}/>
 
             </ul>
 
@@ -76,7 +76,7 @@ class Status extends React.Component {
       await window.electronAPI.gitActions.status().then((status) => {
         this.setState({status});
       });
-    }, 5000); // toutes les 5 secondes
+    }, 1000); // toutes les secondes
   }
 
   componentWillUnmount() {
@@ -172,6 +172,7 @@ class GitCommitList extends React.Component {
 
                           const TextArea = document.getElementById("CommitMessage");
                           TextArea.value = commit.message;
+                          TextArea.classList.remove("Hiden")
                           TextArea.focus();
                         }}>
                           Ammend
@@ -256,7 +257,7 @@ class GitCommitAction extends React.Component {
     
     return(
       <li tabIndex="0"  
-        class="GitCthulhu GitCommit">
+        class="GitCthulhu GitComplex">
 
                 <div
                 tabIndex="0"  
@@ -265,18 +266,30 @@ class GitCommitAction extends React.Component {
                       const message = document.getElementById("CommitMessage");
                       const titre = document.getElementById("Commit")
 
-                      element.setAttribute("aria-busy","true");
+                      if(message.classList.contains("Hiden")){
+                        
+                        message.classList.remove("Hiden")
 
-                      await window.electronAPI.gitActions.add()
-                      let ret = await window.electronAPI.gitActions.commit(message.value);
-                      console.log(ret)
+                      }else if(!message.classList.contains("Hiden") && message.value === "" ){
 
-                      element.setAttribute("aria-busy","false");
+                        message.classList.add("Hiden")
 
-                      titre.innerText = "Commit";
+                      }else{
+                        element.setAttribute("aria-busy","true");
 
-                      message.value = "";
-                      }} class="GitCthulhu">
+                        await window.electronAPI.gitActions.add()
+                        let ret = await window.electronAPI.gitActions.commit(message.value);
+                        console.log(ret)
+
+                        element.setAttribute("aria-busy","false");
+
+                        titre.innerText = "Commit";
+                        message.classList.add("Hiden")
+
+                        message.value = "";
+                      }
+                      
+                      }} class="GitCthulhu list">
                   <span id={this.props.nom}>{this.props.nom}</span>
                   <span id={this.props.nom+"Satus"} className="StatusSpan" aria-busy="false"/>
                 </div>
@@ -287,6 +300,7 @@ class GitCommitAction extends React.Component {
                           cols="50" 
                           placeholder="Commit message ..."
                           autoComplete="on"
+                          className="Hiden"
                 />
       </li>   
     )
@@ -303,25 +317,42 @@ class GitBranchList extends React.Component {
   }
 
   async componentDidMount(){
-    const branches = await window.electronAPI.gitActions.branchList();
+    let branches = await window.electronAPI.gitActions.branchList();
     this.setState({ branches , got : true});
 
     console.log(branches);
+
+    // Démarre l’intervalle d’actualisation
+    this.interval = setInterval(async() => {
+      // à chaque changement de dépôt sélectionné, on met à jour le status
+      await window.electronAPI.gitActions.branchList().then((status) => {
+        this.setState({branches});
+      });
+    }, 1000); // toutes les secondes
   }
 
   render(){
     
     return(
       <li tabIndex="0"  
-        class="GitCthulhu GitBranchList">
+        class="GitCthulhu GitBranchList GitComplex">
 
         <div
         tabIndex="0"  
-        className="GitCthulhu">
+        className="GitCthulhu list"
+        onClick={() => {
+          const list = document.getElementById("branchList");
+
+          if(list.classList.contains("Hiden")){
+            list.classList.remove("Hiden")
+          }else{
+            list.classList.add("Hiden")
+          }
+        }}>
           <span id={this.props.nom}>{this.props.nom}</span>
-          <span id={this.props.nom+"Satus"} className="StatusSpan" aria-busy="false"/>
+          <span className="StatusSpan"/>
         </div>
-        <ul>
+        <ul id="branchList" className="Hiden">
 
           {this.state.got && this.state.branches?.all?.length > 0 ? (
               this.state.branches.all.map((branche) => (

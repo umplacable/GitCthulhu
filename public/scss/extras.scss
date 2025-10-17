@@ -112,20 +112,24 @@ ul li.GitCthulhu:hover, ul li.GitCthulhuSelected {
     cursor: pointer;
 }
 
-ul.GitList.GitAction li, ul.GitList.GitAction>li.GitCommit>div.GitCthulhu {
+ul.GitList.GitAction li, ul.GitList.GitAction>li.GitComplex>div.GitCthulhu {
     display: flex;
     justify-content: space-between;
 }
 
-ul.GitList.GitAction li.GitCommit{
+ul.GitList.GitAction li.GitComplex{
     display: flex;
     flex-direction: column;
     padding-left : 0px;
 }
-ul.GitList.GitAction>li.GitCommit>div.GitCthulhu{
+ul.GitList.GitAction>li.GitComplex>div.GitCthulhu{
     padding-left : 30px
 }
-ul.GitList.GitAction>li.GitCommit>textarea{
+
+ul#branchList>li{
+    padding-left : 40px
+}
+ul.GitList.GitAction>li.GitComplex>textarea{
     font-size: medium;
 }
 
@@ -166,4 +170,16 @@ table.CommitList td{
     width: min-content;
 
     text-align: start;
+}
+
+.Hiden{
+    display: none;
+}
+
+.list{
+    background-image: var(--pico-icon-chevron);
+    background-position-x: 0.35rem;
+    background-position-y: 0.32rem;
+    background-size: 1rem auto;
+    background-repeat: no-repeat;
 }
