@@ -115,6 +115,7 @@ ul li.GitCthulhu:hover, ul li.GitCthulhuSelected {
 ul.GitList.GitAction li, ul.GitList.GitAction>li.GitComplex>div.GitCthulhu {
     display: flex;
     justify-content: space-between;
+    padding-bottom: 0;
 }
 
 ul.GitList.GitAction li.GitComplex{
@@ -126,10 +127,14 @@ ul.GitList.GitAction>li.GitComplex>div.GitCthulhu{
     padding-left : 30px
 }
 
+ul#branchList{
+    margin: 0;
+}
+
 ul#branchList>li{
     padding-left : 40px
 }
-ul.GitList.GitAction>li.GitComplex>textarea{
+ul.GitList.GitAction>li.GitComplex>textarea, ul.GitList.GitAction>li.GitComplex>input{
     font-size: medium;
 }
 
