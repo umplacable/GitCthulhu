@@ -127,11 +127,11 @@ ul.GitList.GitAction>li.GitComplex>div.GitCthulhu{
     padding-left : 30px
 }
 
-ul#branchList{
+ul#branchList, ul#branchListdel{
     margin: 0;
 }
 
-ul#branchList>li{
+ul#branchList>li, ul#branchListdel>li{
     padding-left : 40px
 }
 ul.GitList.GitAction>li.GitComplex>textarea, ul.GitList.GitAction>li.GitComplex>input{

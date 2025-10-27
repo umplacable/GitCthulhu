@@ -344,12 +344,22 @@ ipcMain.handle('git-diff', async (event, commit1, commit2) => {
   }
 });
 
-ipcMain.handle('git-branch', async () => {
+ipcMain.handle('git-add-branch', async (event, name) => {
   const git = simpleGit(gitDirRepo);
   try {
-    return await git.branch();
+    return await git.checkoutLocalBranch(name);
   } catch (err) {
-    dialog.showErrorBox('Error', `Could not get branches: ${err.message}`);
+    dialog.showErrorBox('Error', `Could not add branches: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle('git-del-branch', async (event, name) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.deleteLocalBranch(name);
+  } catch (err) {
+    dialog.showErrorBox('Error', `Could not delete branches: ${err.message}`);
     return null;
   }
 });

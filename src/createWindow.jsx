@@ -30,6 +30,7 @@ export default function CreateWindow() {
               <GitCommitAction nom="Commit" action={window.electronAPI.gitActions.commit}/>
               <GitBranchList nom="Checkout branches" action={window.electronAPI.gitActions.branch}/>
               <GitAddBranchAction nom="Add branch" action={window.electronAPI.gitActions.branch}/>
+              <GitDelBranch nom="Delete branch" action={window.electronAPI.gitActions.branch}/>
 
             </ul>
 
@@ -234,7 +235,7 @@ class GitComplexAction extends React.Component {
       <li tabIndex="0" 
           aria-busy="false" 
           onClick={async () => {
-                const element = document.getElementById(this.props.nom+"Satus");
+                const element = document.getElementById(this.props.status+"Satus");
                 element.setAttribute("aria-busy","true");
                 let res = await this.props.action(this.props.param);
                 element.setAttribute("aria-busy","false");
@@ -242,7 +243,7 @@ class GitComplexAction extends React.Component {
                 console.log(res);
                 }} class="GitCthulhu" id={this.props.nom}>
                   {this.props.nom}
-                  <span id={this.props.nom+"Satus"} className="StatusSpan"/>
+                  <span id={this.props.status+"Satus"} className="StatusSpan"/>
       </li>
               
     )
@@ -361,6 +362,7 @@ class GitBranchList extends React.Component {
                   nom={branche}
                   action={window.electronAPI.gitActions.checkout}
                   param={branche}
+                  status={branche}
                 />
               ))
             ) : (
@@ -414,7 +416,7 @@ class GitAddBranchAction extends React.Component {
                       }
                       
                       }} class="GitCthulhu list">
-                  <span id={this.props.nom}>{this.props.nom}</span>
+                  <span id="Branch">{this.props.nom}</span>
                   <span id={this.props.nom+"Satus"} className="StatusSpan" aria-busy="false"/>
                 </div>
 
@@ -426,6 +428,72 @@ class GitAddBranchAction extends React.Component {
                           className="Hiden"
                 />
       </li>   
+    )
+  }
+}
+
+class GitDelBranch extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      branches : null,
+      got : false 
+    }
+  }
+
+  async componentDidMount(){
+    let branches = await window.electronAPI.gitActions.branchList();
+    this.setState({ branches , got : true});
+
+    console.log(branches);
+
+    // Démarre l’intervalle d’actualisation
+    this.interval = setInterval(async() => {
+      // à chaque changement de dépôt sélectionné, on met à jour le status
+      await window.electronAPI.gitActions.branchList().then((branches) => {
+        this.setState({branches});
+      });
+    }, 1000); // toutes les secondes
+  }
+
+  render(){
+    
+    return(
+      <li tabIndex="0"  
+        class="GitCthulhu GitBranchList GitComplex">
+
+        <div
+        tabIndex="0"  
+        className="GitCthulhu list"
+        onClick={() => {
+          const list = document.getElementById("branchListdel");
+
+          if(list.classList.contains("Hiden")){
+            list.classList.remove("Hiden")
+          }else{
+            list.classList.add("Hiden")
+          }
+        }}>
+          <span id={this.props.nom}>{this.props.nom}</span>
+          <span className="delSatus"/>
+        </div>
+        <ul id="branchListdel" className="Hiden">
+
+          {this.state.got && this.state.branches?.all?.length > 0 ? (
+              this.state.branches.all.map((branche) => (
+                <GitComplexAction
+                  nom={branche}
+                  action={window.electronAPI.gitActions.delbranch}
+                  param={branche}
+                  status={"del"+branche}
+                />
+              ))
+            ) : (
+              <li>Aucune branche trouvée</li>
+            )}
+        </ul>
+      </li>
+              
     )
   }
 }
