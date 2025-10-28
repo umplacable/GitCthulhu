@@ -424,7 +424,6 @@ class GitAddBranchAction extends React.Component {
                           id="BranchName" 
                           name="BranchName"
                           placeholder="Branch name ..."
-                          autoComplete="on"
                           className="Hiden"
                 />
       </li>   

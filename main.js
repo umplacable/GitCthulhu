@@ -356,6 +356,18 @@ ipcMain.handle('git-add-branch', async (event, name) => {
 
 ipcMain.handle('git-del-branch', async (event, name) => {
   const git = simpleGit(gitDirRepo);
+
+  const win = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showMessageBox(win, {
+    type: 'question',
+    buttons: ['Oui', 'Non'],
+    defaultId: 1,
+    cancelId: 1,
+    title: 'Supprimer la branche ?',
+    message: `Voulez-vous vraiment supprimer la branche "${name}" ?`
+  });
+
+  if (result.response !== 0) return;
   try {
     return await git.deleteLocalBranch(name);
   } catch (err) {
