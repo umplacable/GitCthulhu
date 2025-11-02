@@ -96,6 +96,33 @@ function createWindow(nom, dirpath) {
   mainWin.loadURL(getFilePath('index.html'));
   mainWin.setTitle(`${nom} - ${dirpath}`);
   win.push(mainWin);
+  return mainWin
+}
+
+function createIsGit(parentWin) {
+  const mainWin = new BrowserWindow({
+    name: `No git repo detected`,
+    width: 400,
+    height: 300,
+    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+    autoHideMenuBar: true,
+    parent: parentWin,      // fenêtre parente
+    modal: true,            // fait de cette fenêtre une modale
+    show: false,            // on attend le chargement avant d'afficher
+  });
+
+  mainWin.loadURL(getFilePath('InitRepo.html'));
+
+  modalWin.once('ready-to-show', () => {
+    modalWin.show();
+  });
+
+  win.push(mainWin);
 }
 
 // --- APP READY ---
@@ -127,9 +154,19 @@ nativeTheme.on('updated', () => {
 
 // --- IPC HANDLERS / EVENTS ---
 
-ipcMain.on('open-select-window', (event, nom, dirpath) => {
-  createWindow(nom, dirpath);
+ipcMain.on('open-select-window', async (event, nom, dirpath) => {
   gitDirRepo = dirpath;
+  
+  // si le chemin ne mene pas a un dépot git
+  const git = simpleGit(gitDirRepo);
+  const isRepo = await git.checkIsRepo();
+
+  let parentwin = createWindow(nom, dirpath);
+  
+  parentwin.once('ready-to-show', () => {
+    if (!isRepo) createIsGit(parentwin);
+  });
+
 });
 
 ipcMain.on('close-window', (event) => {
