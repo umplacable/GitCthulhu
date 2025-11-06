@@ -99,11 +99,11 @@ function createWindow(nom, dirpath) {
   return mainWin
 }
 
-function createIsGit(parentWin) {
-  const mainWin = new BrowserWindow({
+function createIsGit() {
+  const modalWin = new BrowserWindow({
     name: `No git repo detected`,
-    width: 400,
-    height: 300,
+    width: 500,
+    height: 350,
     icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
@@ -111,18 +111,16 @@ function createIsGit(parentWin) {
       preload: path.join(__dirname, 'preload.js'),
     },
     autoHideMenuBar: true,
-    parent: parentWin,      // fenêtre parente
-    modal: true,            // fait de cette fenêtre une modale
-    show: false,            // on attend le chargement avant d'afficher
   });
 
-  mainWin.loadURL(getFilePath('InitRepo.html'));
+  modalWin.loadURL(getFilePath('InitRepo.html'));
 
   modalWin.once('ready-to-show', () => {
     modalWin.show();
   });
 
-  win.push(mainWin);
+  win.push(modalWin);
+  return modalWin
 }
 
 // --- APP READY ---
@@ -155,18 +153,46 @@ nativeTheme.on('updated', () => {
 // --- IPC HANDLERS / EVENTS ---
 
 ipcMain.on('open-select-window', async (event, nom, dirpath) => {
-  gitDirRepo = dirpath;
-  
-  // si le chemin ne mene pas a un dépot git
-  const git = simpleGit(gitDirRepo);
-  const isRepo = await git.checkIsRepo();
+  try {
+    gitDirRepo = dirpath;
+    const senderWin = BrowserWindow.fromWebContents(event.sender);
+    const git = simpleGit(gitDirRepo);
+    const isRepo = await git.checkIsRepo().catch(() => false);
 
-  let parentwin = createWindow(nom, dirpath);
-  
-  parentwin.once('ready-to-show', () => {
-    if (!isRepo) createIsGit(parentwin);
-  });
+    if (!isRepo) {
+      const modalWin = createIsGit();
 
+      modalWin.once('ready-to-show', () => {
+        modalWin.show();
+      });
+
+      // Quand la modale se ferme, fermer la fenêtre d’origine
+      modalWin.once('closed', async () => {
+        try {
+          const ret = await git.checkIsRepo().catch(() => false);
+
+          if (ret) {
+            if (senderWin && !senderWin.isDestroyed()) {
+              senderWin.close();
+            }
+            createWindow(nom, dirpath);
+          }
+
+        } catch (err) {
+          console.error('Erreur après fermeture de la modale :', err);
+        }
+      });
+
+      return; // ✅ on sort ici : ne pas ouvrir la fenêtre principale
+    }
+
+    // ✅ Si c’est bien un dépôt git, ouvrir la fenêtre principale
+    createWindow(nom, dirpath);
+
+  } catch (err) {
+    console.error('Erreur dans open-select-window:', err);
+    dialog.showErrorBox('Erreur', `Impossible d’ouvrir la fenêtre : ${err.message}`);
+  }
 });
 
 ipcMain.on('close-window', (event) => {
@@ -191,8 +217,6 @@ ipcMain.on('add-repository', async (event) => {
 
   const dirpath = result.filePaths[0];
   const git = simpleGit(dirpath);
-
-  if (!(await git.checkIsRepo())) OpenRepoInit();
 
   if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, '[Depo]\nnames=\npaths=\nids=');
@@ -296,14 +320,33 @@ ipcMain.on('delete-repository', (event, id) => {
 });
 
 // --- COMMANDES GIT ---
-ipcMain.on('git-init', () => {
+ipcMain.on('git-init', (event) => {
   const git = simpleGit(gitDirRepo);
   git.init().catch((err) => dialog.showErrorBox('Error', `Could not initialize git: ${err.message}`));
+  dialog.showMessageBox({
+      type: 'info',
+      title: 'Succès',
+      message: `Dépôt Git initialisé dans :\n${gitDirRepo}`,
+    }).then(() => {
+      const senderWin = BrowserWindow.fromWebContents(event.sender);
+      if (senderWin) senderWin.close();
+    })
 });
 
 ipcMain.on('git-clone', (event, url) => {
   const git = simpleGit();
-  git.clone(url, gitDirRepo).catch((err) =>
+  git.clone(url, gitDirRepo)
+  .then(() => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Succès',
+      message: `Dépôt Git cloné dans :\n${gitDirRepo}`,
+    }).then(() => {
+      const senderWin = BrowserWindow.fromWebContents(event.sender);
+      if (senderWin) senderWin.close();
+    })
+  })
+  .catch((err) =>
     dialog.showErrorBox('Error', `Could not clone: ${err.message}`)
   );
 });

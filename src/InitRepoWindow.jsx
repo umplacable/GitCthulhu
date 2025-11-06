@@ -14,7 +14,6 @@ export default function InitRepoWindow() {
         {/* Bouton INITIALISER */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "4vh" }}>
           <button
-            className="contrast"
             style={{ minWidth: 240, borderRadius: 14 }}
             onClick={() => {
               // initialise un dépôt dans le dossier courant
@@ -59,7 +58,7 @@ export default function InitRepoWindow() {
           >
             URL du dépôt :
           </label>
-          <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <input
               id="repoUrl"
               name="repoUrl"
@@ -69,9 +68,15 @@ export default function InitRepoWindow() {
               required
             />
             <button
-              className="contrast"
               style={{ minWidth: 160, borderRadius: 14 }}
               type="submit"
+              id="cloneBtn"
+              onClick={() => {
+                // ajoute l'attribut aria-busy="true" a ce bouton pour indiquer le chargement si l'url est valide
+                if (document.getElementById("repoUrl").value.trim() !== "") {
+                  document.getElementById("cloneBtn").setAttribute("aria-busy", "true");
+                }
+              }}
             >
               cloner
             </button>
@@ -82,7 +87,9 @@ export default function InitRepoWindow() {
         <div style={{ position: "fixed", right: 16, bottom: 12 }}>
           <button
             className="secondary"
-            onClick={() => window.electronAPI.closeWindow()}
+            onClick={() => {
+              window.electronAPI.closeWindow()
+            }}
           >
             Fermer
           </button>

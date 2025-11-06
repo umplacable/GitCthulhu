@@ -13,8 +13,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   gitActions:{
     /* Liste de commandes da la partie MUST */
-    init: () => ipcRenderer.send('git-init'),                                         // pas utilisé (Riad)
-    clone: (url) => ipcRenderer.send('git-clone', url),                               // pas utilisé (Riad)     
+    init: () => ipcRenderer.send('git-init'),                                         // utilisé (Riad)
+    clone: (url) => ipcRenderer.send('git-clone', url),                               // utilisé (Riad)     
     add: () => ipcRenderer.invoke('git-add'),                                         // utilisé
     commit: (message) => ipcRenderer.invoke('git-commit', message),                   // utilisé
     ammend: (message) => ipcRenderer.send('git-togle-amend', message),                // utilisé

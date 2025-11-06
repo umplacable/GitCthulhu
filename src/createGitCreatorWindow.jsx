@@ -135,5 +135,4 @@ function openTerminal(path) {
 
 function openRepo(name, path) {
   window.electronAPI.openSelectWindow(name, path);
-  window.electronAPI.closeWindow();
 }

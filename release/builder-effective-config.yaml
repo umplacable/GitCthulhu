@@ -31,4 +31,4 @@ win:
   target: nsis
 linux:
   icon: public/icons/favicon.png
-electronVersion: 38.2.2
+electronVersion: 38.5.0
