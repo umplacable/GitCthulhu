@@ -51,7 +51,7 @@
     },
     "win": {
       "icon": "public/icons/favicon.ico",
-      "target": "nsis"
+      "target": ["nsis"]
     },
     "linux": {
       "icon": "public/icons/favicon.png",
