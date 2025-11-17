@@ -47,6 +47,13 @@ jobs:
             libxkbcommon-x11-0 \
             libopenjp2-7
 
+      - name: Install Snapcraft
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y snapd
+          sudo snap install snapcraft --classic
+
       - name: Build Electron App
         run: |
           npx electron-builder --${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'macos-latest' && 'mac' || 'linux') }}
