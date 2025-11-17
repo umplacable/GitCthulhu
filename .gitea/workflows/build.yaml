@@ -32,11 +32,20 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libopenjp2-7 \
-            libwebp-dev \
+            libasound2-dev \
+            libnss3 \
+            libatk1.0-0 \
+            libatk-bridge2.0-0 \
+            libcups2 \
+            libxss1 \
+            libxcomposite1 \
+            libxdamage1 \
             libxrandr2 \
+            libgbm1 \
+            libpango-1.0-0 \
+            libpangocairo-1.0-0 \
             libxkbcommon-x11-0 \
-            libasound2
+            libopenjp2-7
 
       - name: Build Electron App
         run: |
