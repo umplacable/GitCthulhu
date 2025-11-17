@@ -1,7 +1,8 @@
 {
   "name": "gitcthulhu",
   "version": "1.0.0",
-  "description": "",
+  "description": "Client Git graphique simple avec interface React pour gérer vos dépôts",
+    "homepage": "https://grond.iut-fbleau.fr/hochlaf/GitCthulhu",
   "main": "main.js",
   "scripts": {
     "start": "webpack --mode production && electron .",
@@ -14,7 +15,6 @@
   "build": {
     "appId": "com.gitcthulhu.app",
     "productName": "GitCthulhu",
-    "homepage": "https://grond.iut-fbleau.fr/hochlaf/GitCthulhu",
     "directories": {
       "output": "release"
     },

@@ -28,7 +28,14 @@ mac:
   icon: public/icons/favicon.png
 win:
   icon: public/icons/favicon.ico
-  target: nsis
+  target:
+    - nsis
 linux:
   icon: public/icons/favicon.png
+  target:
+    - AppImage
+    - deb
+    - rpm
+  category: Utility
+  maintainer: Hochlaf
 electronVersion: 38.5.0
