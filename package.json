@@ -14,7 +14,6 @@
   "build": {
     "appId": "com.gitcthulhu.app",
     "productName": "GitCthulhu",
-    "description": "Client Git graphique simple avec interface React pour gérer vos dépôts",
     "directories": {
       "output": "release"
     },
