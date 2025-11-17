@@ -58,7 +58,9 @@
         "AppImage",
         "deb",
         "rpm"
-      ]
+      ],
+      "category": "Utility",
+      "maintainer": "Hochlaf"
     }
   },
   "keywords": [],
