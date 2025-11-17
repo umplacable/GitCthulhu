@@ -45,7 +45,8 @@ jobs:
             libpango-1.0-0 \
             libpangocairo-1.0-0 \
             libxkbcommon-x11-0 \
-            libopenjp2-7
+            libopenjp2-7 \
+            rpm
 
       - name: Build Electron App
         run: |
