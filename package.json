@@ -14,6 +14,7 @@
   "build": {
     "appId": "com.gitcthulhu.app",
     "productName": "GitCthulhu",
+    "homepage": "https://grond.iut-fbleau.fr/hochlaf/GitCthulhu",
     "directories": {
       "output": "release"
     },
