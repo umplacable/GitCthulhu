@@ -45,9 +45,7 @@ jobs:
             libpango-1.0-0 \
             libpangocairo-1.0-0 \
             libxkbcommon-x11-0 \
-            libopenjp2-7 \
-            snapd
-          sudo snap install snapcraft --classic
+            libopenjp2-7
 
       - name: Build Electron App
         run: |
