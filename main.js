@@ -103,7 +103,7 @@ function createIsGit() {
   const modalWin = new BrowserWindow({
     name: `No git repo detected`,
     width: 500,
-    height: 350,
+    height: 400,
     icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
     webPreferences: {
       nodeIntegration: true,
@@ -149,6 +149,16 @@ nativeTheme.on('updated', () => {
     app.dock.setIcon(newIcon);
   }
 });
+
+
+
+
+
+
+
+
+
+
 
 // --- IPC HANDLERS / EVENTS ---
 
@@ -319,6 +329,20 @@ ipcMain.on('delete-repository', (event, id) => {
   });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // --- COMMANDES GIT ---
 ipcMain.on('git-init', (event) => {
   const git = simpleGit(gitDirRepo);
@@ -335,6 +359,22 @@ ipcMain.on('git-init', (event) => {
 
 ipcMain.on('git-clone', (event, url) => {
   const git = simpleGit();
+
+  //on demande si on peut détruire le répertoire si il y a des choses dedans
+  const result = dialog.showMessageBoxSync({
+    type: 'question',
+    buttons: ['Oui', 'Non'],
+    defaultId: 1,
+    cancelId: 1,
+    title: 'Cloner le dépôt',
+    message: `Le répertoire ${gitDirRepo} sera supprimé s'il existe déjà. Voulez-vous continuer ?`
+  });
+  if (result !== 0) return; // si l'utilisateur clique sur "Non", on annule l'opération
+  
+  // on suprime le répertoire s'il existe déjà
+  if (fs.existsSync(gitDirRepo)) {
+    fs.rmdirSync(gitDirRepo, { recursive: true });
+  } 
   git.clone(url, gitDirRepo)
   .then(() => {
     dialog.showMessageBox({

@@ -6,15 +6,14 @@ import React from "react";
 export default function InitRepoWindow() {
   return (<>
 
-      <div className="container" style={{ paddingTop: "8vh" }}>
-        <h3 style={{ textAlign: "center", marginBottom: "6vh" }}>
+      <div className="container InitContainer">
+        <h3>
           Ce dossier n'est pas un dépôt git.
         </h3>
 
         {/* Bouton INITIALISER */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "4vh" }}>
+        <div className="InitBtn">
           <button
-            style={{ minWidth: 240, borderRadius: 14 }}
             onClick={() => {
               // initialise un dépôt dans le dossier courant
               window.electronAPI.gitActions.init();
@@ -25,19 +24,9 @@ export default function InitRepoWindow() {
         </div>
 
         {/* Séparateur "ou" */}
-        <div style={{ position: "relative", margin: "3vh 0 4vh" }}>
+        <div className="separateur">
           <hr />
-          <small
-            style={{
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%) translateY(-50%)",
-              top: "50%",
-              background: "var(--pico-background-color)",
-              padding: "0 .6rem",
-              opacity: 0.9,
-            }}
-          >
+          <small className="Ou">
             ou
           </small>
         </div>
@@ -50,25 +39,23 @@ export default function InitRepoWindow() {
             if (!url) return;
             window.electronAPI.gitActions.clone(url);
           }}
-          style={{ maxWidth: 620, margin: "0 auto" }}
+          className="CloneForm"
         >
           <label
             htmlFor="repoUrl"
-            style={{ marginBottom: 8, display: "inline-block" }}
+            className="FormLabel"
           >
             URL du dépôt :
           </label>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
             <input
               id="repoUrl"
               name="repoUrl"
               type="text"
               placeholder="https://exemple.com/mon-depot.git"
-              style={{ flex: 1 }}
               required
             />
             <button
-              style={{ minWidth: 160, borderRadius: 14 }}
               type="submit"
               id="cloneBtn"
               onClick={() => {
@@ -82,10 +69,12 @@ export default function InitRepoWindow() {
             </button>
           </div>
         </form>
+      </div>
 
-        {/* Bouton Fermer en bas à droite */}
-        <div style={{ position: "fixed", right: 16, bottom: 12 }}>
-          <button
+      <div class="GitCthulhuFoot">
+      <span class="status"></span>
+      <div class="mainOperations">
+         <button
             className="secondary"
             onClick={() => {
               window.electronAPI.closeWindow()
@@ -93,8 +82,8 @@ export default function InitRepoWindow() {
           >
             Fermer
           </button>
-        </div>
       </div>
+    </div>
 
     </>);
 }

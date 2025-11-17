@@ -1,0 +1,61 @@
+/* Variables */
+$height-foot: 5%;
+
+/* Container */
+.InitContainer{
+    padding-top: 8vh;
+    bottom : calc($height-foot + 30px);
+}
+.InitContainer h3{
+    text-align: center;
+    margin-bottom: 6vh;
+}
+
+/* Bouton INITIALISER */
+.InitBtn{
+    display: flex; 
+    justify-content: center; 
+    margin-bottom: 4vh;
+}
+.InitBtn button{
+    min-width: 240px; 
+    border-radius: 14px;
+}
+
+/* Séparateur "ou" */
+.separateur{ 
+    position: relative;
+    margin: 3vh 0 4vh 
+}
+
+.Ou{
+    position : absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    top: 50%;
+    background: var(--pico-background-color);
+    padding: 0 .6rem;
+    opacity: 0.9;
+}
+
+/* Boutons CLONER */
+.CloneForm {
+    max-width: 620px; 
+    margin: 0 auto;
+}
+.FormLabel {
+    margin-bottom: 8px; 
+    display: inline-block;
+}
+.CloneForm div {
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px;
+}
+.CloneForm div>input{
+    flex : 1;
+}
+.CloneForm div>button{
+    min-width: 160px; 
+    border-radius: 14px;
+}

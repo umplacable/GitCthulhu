@@ -7,7 +7,8 @@
     "start": "webpack --mode production && electron .",
     "sass": "sass --load-path=node_modules/@picocss/pico/scss/ --watch public/scss:dist/css",
     "build": "webpack --mode production",
-    "package": "npm run build && electron-builder"
+    "package": "npm run build && electron-builder --win --linux",
+    "package-mac": "npm run build && electron-builder --mac"
   },
   "build": {
     "appId": "com.gitcthulhu.app",
