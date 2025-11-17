@@ -1,0 +1,31 @@
+linux:
+  target:
+    - AppImage
+    - deb
+    - rpm
+  category: Development
+
+mac:
+  target:
+    - dmg    # pour créer un fichier .dmg installable
+    - zip    # pour distribuer directement l’application compressée
+  category: public.app-category.developer-tools
+  icon: "build/icons/mac/icon.icns"
+
+win:
+  target:
+    - nsis        # installeur classique Windows
+    - portable    # version portable sans installateur
+  icon: "build/icons/win/icon.ico"
+
+
+
+nsis:
+  oneClick: false                    # affiche l’assistant d’installation
+  perMachine: false                  # installation pour l’utilisateur actuel
+  allowElevation: true               # demande les droits administrateur si nécessaire
+  allowToChangeInstallationDirectory: true
+
+dmg:
+  background: "build/dmg-background.png"   # image de fond du dmg
+  icon: "build/icons/mac/icon.icns"
