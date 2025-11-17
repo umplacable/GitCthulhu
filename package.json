@@ -14,6 +14,7 @@
   "build": {
     "appId": "com.gitcthulhu.app",
     "productName": "GitCthulhu",
+    "description": "Client Git graphique simple avec interface React pour gérer vos dépôts",
     "directories": {
       "output": "release"
     },
@@ -53,7 +54,12 @@
       "target": "nsis"
     },
     "linux": {
-      "icon": "public/icons/favicon.png"
+      "icon": "public/icons/favicon.png",
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ]
     }
   },
   "keywords": [],
