@@ -48,10 +48,5 @@ jobs:
           name: ${{ matrix.os }}-build
           path: dist/
 
-      - name: Publish Release
-        image: node:20
-        environment:
-          GITEA_TOKEN:
-            from_secret: GITEATOKEN
-        commands:
-          - node scripts/publish-gitea.js
+      - name: Build and Publish
+        run: npx electron-builder --publish always
