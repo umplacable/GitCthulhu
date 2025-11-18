@@ -45,7 +45,12 @@ jobs:
             libpangocairo-1.0-0 \
             libxkbcommon-x11-0 \
             libopenjp2-7 \
-            rpm
+            rpm\
+            wine64 \
+            wine32 \
+            winbind \
+            mono-devel \
+            nsis
 
       - name: Build Electron App
         run: |
