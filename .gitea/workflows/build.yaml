@@ -29,6 +29,7 @@ jobs:
       - name: Install Linux build dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
+          sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y \
             libasound2-dev \
