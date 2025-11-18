@@ -93,7 +93,7 @@ function createWindow(nom, dirpath) {
     autoHideMenuBar: true,
   });
 
-  mainWin.loadURL(getFilePath('index.html'));
+  mainWin.loadURL(getFilePath('Index.html'));
   mainWin.setTitle(`${nom} - ${dirpath}`);
   win.push(mainWin);
   return mainWin
