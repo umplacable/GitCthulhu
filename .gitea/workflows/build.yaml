@@ -49,6 +49,8 @@ jobs:
 
       - name: Build Electron App
         run: |
+          sass --load-path=node_modules/@picocss/pico/scss/ public/scss:dist/css
+          webpack --mode production
           npx electron-builder --${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'macos-latest' && 'mac' || 'linux') }}
 
       - name: Upload build artifacts
@@ -57,5 +59,4 @@ jobs:
           name: ${{ matrix.os }}-build
           path: release/
 
-      - name: Build and Publish
-        run: npx electron-builder --publish always
+#      - name: Build and Publish
