@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -51,7 +51,7 @@ jobs:
         run: |
           npx sass --load-path=node_modules/@picocss/pico/scss/ public/scss:dist/css
           npx webpack --mode production
-          npx electron-builder --${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'macos-latest' && 'mac' || 'linux') }}
+          npx electron-builder --${{matrix.os == 'macos-latest' && 'mac' || 'linux --win' }}
 
       - name: Delete unnecessary files
         run: |
