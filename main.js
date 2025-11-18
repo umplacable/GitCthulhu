@@ -93,7 +93,7 @@ function createWindow(nom, dirpath) {
     autoHideMenuBar: true,
   });
 
-  mainWin.loadURL(getFilePath('Index.html'));
+  mainWin.loadURL(getFilePath('index.html'));
   mainWin.setTitle(`${nom} - ${dirpath}`);
   win.push(mainWin);
   return mainWin
@@ -198,6 +198,7 @@ ipcMain.on('open-select-window', async (event, nom, dirpath) => {
 
     // ✅ Si c’est bien un dépôt git, ouvrir la fenêtre principale
     createWindow(nom, dirpath);
+    if (senderWin) senderWin.close();
 
   } catch (err) {
     console.error('Erreur dans open-select-window:', err);

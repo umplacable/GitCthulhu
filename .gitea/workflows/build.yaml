@@ -53,10 +53,15 @@ jobs:
           npx webpack --mode production
           npx electron-builder --${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'macos-latest' && 'mac' || 'linux') }}
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.os }}-build
-          path: release/
+      - name: Delete unnecessary files
+        run: |
+          rm -rf release/*-unpacked \
+            release/*.yaml \
+            release/*.yml
 
-#      - name: Build and Publish
+      - name: Publish & Release build
+        uses: akkuman/gitea-release-action@v1
+        with:
+          files: |
+            release/*
+          draft: false

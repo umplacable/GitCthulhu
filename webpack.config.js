@@ -32,8 +32,8 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./public/Index.html",
-      filename: "Index.html",
+      template: "./public/index.html",
+      filename: "index.html",
       chunks: ["creatorApp"],
     }),
     new HtmlWebpackPlugin({
