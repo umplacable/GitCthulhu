@@ -47,7 +47,7 @@ jobs:
             libopenjp2-7 \
             rpm\
             wine64 \
-            wine32 \
+            libwine \
             winbind \
             mono-devel \
             nsis
