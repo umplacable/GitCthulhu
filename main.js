@@ -123,6 +123,23 @@ function createIsGit() {
   return modalWin
 }
 
+// --- FONCTION ---
+
+// Trouver le premier terminal disponible
+function findTerminal() {
+  return new Promise((resolve) => {
+    const tryNext = (index) => {
+      if (index >= terminals.length) return resolve(null);
+
+      exec(terminals[index], (error) => {
+        if (!error) return resolve(terminals[index]);
+        tryNext(index + 1);
+      });
+    };
+    tryNext(0);
+  });
+};
+
 // --- APP READY ---
 app.whenReady().then(() => {
   configPath = path.join(app.getPath('userData'), "config.ini");
@@ -277,10 +294,30 @@ ipcMain.on('open-terminal', (event) => {
 
   if (process.platform === 'win32') {
     command = `start cmd.exe /K "cd /d ${gitDirRepo}"`;
+
   } else if (process.platform === 'darwin') {
     command = `open -a Terminal "${gitDirRepo}"`;
+
   } else {
-    command = `x-terminal-emulator --working-directory="${gitDirRepo}"`;
+
+    // - - - Linux : détecter un terminal disponible - - -
+    const terminals = [
+      `x-terminal-emulator --working-directory="${gitDirRepo}"`,
+      `gnome-terminal --working-directory="${gitDirRepo}"`,
+      `konsole --workdir "${gitDirRepo}"`,
+      `xfce4-terminal --working-directory="${gitDirRepo}"`,
+      `tilix -w "${gitDirRepo}"`,
+      `mate-terminal --working-directory="${gitDirRepo}"`,
+      `xterm -e "cd '${gitDirRepo}' && bash"`
+    ];
+
+    findTerminal().then((cmd) => {
+      if (!cmd) {
+        dialog.showErrorBox('Erreur', 'Aucun terminal compatible trouvé sur ce système.');
+        return;
+      }
+    });
+    return;
   }
 
   exec(command, (error) => {

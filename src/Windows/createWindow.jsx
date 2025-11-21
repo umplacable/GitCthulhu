@@ -1,0 +1,70 @@
+import React from "react";
+import Status from "../Components/Status.jsx";
+import GitCommitList from "../Components/GitCommitList.jsx";
+import GitSimpleAction from "../Components/GitSimpleAction.jsx";
+import GitCommitAction from "../Components/GitCommitAction.jsx";
+import GitBranchList from "../Components/GitBranchList.jsx";
+import GitAddBranchAction from "../Components/GitAddBranchAction.jsx";
+import GitDelBranch from "../Components/GitDelBranch.jsx";
+
+// import "../public/scss/extras.scss";
+// import "../public/scss/style.scss";
+// import "../public/scss/SelectorStyle.scss";
+
+export default function CreateWindow() {
+  return (<>
+
+          <div id="barre_de_taches">
+            <nav class="GitCthulhu">
+              <ul>
+                <li><a href="#" class="secondary">...</a></li>
+              </ul>
+              <ul>
+                <li><a href="#" onClick={() => {openTerminal()}}>Terminal</a></li>
+              </ul>
+            </nav>
+          </div>
+
+          <div class="GitCthulhuLeft">
+
+            <div>
+              <h4>Les actions</h4>
+            </div>
+
+            <ul class="GitList GitAction">
+              
+              <GitSimpleAction nom="Pull" action={window.electronAPI.gitActions.pull} />
+              <GitSimpleAction nom="Push" action={window.electronAPI.gitActions.push} />
+              <GitCommitAction nom="Commit" action={window.electronAPI.gitActions.commit}/>
+              <GitBranchList nom="Checkout branches" action={window.electronAPI.gitActions.branch}/>
+              <GitAddBranchAction nom="Add branch" action={window.electronAPI.gitActions.branch}/>
+              <GitDelBranch nom="Delete branch" action={window.electronAPI.gitActions.branch}/>
+
+            </ul>
+
+          </div>
+
+          <div class="GitCthulhuSideshow">
+            <GitCommitList/>
+          </div>
+
+          <div class="GitCthulhuFoot">
+            <Status/>
+            <div class="mainOperations">
+              <button class="secondary" onClick={() => window.electronAPI.closeWindow()}>
+                Fermer
+              </button>
+            </div>
+          </div>
+      </>);
+}
+
+function openTerminal(path) {
+  window.electronAPI.openTerminal(path);
+}
+
+function afficheMessage(importance, titre, message){
+  // affichera un message avec un logo diférent selon l'importance
+  console.log(titre);
+  console.log(message);
+}

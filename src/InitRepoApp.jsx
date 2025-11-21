@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import InitRepoWindow from "./InitRepoWindow";
+import InitRepoWindow from "./Windows/InitRepoWindow";
 
 // import "../public/scss/extras.scss";
 // import "../public/scss/style.scss";
