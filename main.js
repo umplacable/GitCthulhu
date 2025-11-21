@@ -126,7 +126,7 @@ function createIsGit() {
 // --- FONCTION ---
 
 // Trouver le premier terminal disponible
-function findTerminal() {
+function findTerminal(terminals) {
   return new Promise((resolve) => {
     const tryNext = (index) => {
       if (index >= terminals.length) return resolve(null);
@@ -158,12 +158,14 @@ app.on('window-all-closed', () => {
 nativeTheme.on('updated', () => {
   const newIcon = path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico');
 
-  win.forEach((elt) => {
-    if (elt && !elt.isDestroyed()) elt.setIcon(newIcon);
-  });
+  if (win && win.length > 0) {
+    win.forEach((elt) => {
+      if (elt && !elt.isDestroyed()) elt.setIcon(newIcon);
+    });
 
-  if (process.platform === 'darwin') {
-    app.dock.setIcon(newIcon);
+    if (process.platform === 'darwin') {
+      app.dock.setIcon(newIcon);
+    }
   }
 });
 
@@ -311,7 +313,7 @@ ipcMain.on('open-terminal', (event) => {
       `xterm -e "cd '${gitDirRepo}' && bash"`
     ];
 
-    findTerminal().then((cmd) => {
+    findTerminal(terminals).then((cmd) => {
       if (!cmd) {
         dialog.showErrorBox('Erreur', 'Aucun terminal compatible trouvé sur ce système.');
         return;
