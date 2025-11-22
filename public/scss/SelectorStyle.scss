@@ -1,3 +1,15 @@
+/* Global */
+$leftPanelWidth: max(225px, 15%);
+
+ul.GitList h5{
+    margin-bottom: calc(var(--pico-typography-spacing-vertical)/2);
+    margin-top: 0;
+    padding-top: calc(var(--pico-typography-spacing-vertical)/2);
+
+    border-top: var(--pico-border-width) solid var(--pico-table-border-color);
+    background-color: var(--pico-background-color);
+}
+
 .mainSelectWin{
     display: flex;
     flex-direction: column;
@@ -45,11 +57,10 @@ ul.GitList>*{
     padding-left: 10px;
 }
 div.GitCthulhuLeft {
-    width : max(200px, 15%);
+    width : $leftPanelWidth;
 }
 
 div.GitCthulhuSideshow {
-    width: calc(100% - max(200px, 15%));
-    left : max(200px, 15%);
+    width: calc(100% - $leftPanelWidth);
+    left : $leftPanelWidth;
 }
-

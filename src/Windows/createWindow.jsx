@@ -33,12 +33,15 @@ export default function CreateWindow() {
 
             <ul class="GitList GitAction">
               
+              <h5>Common actions</h5>
               <GitSimpleAction nom="Pull" action={window.electronAPI.gitActions.pull} />
               <GitSimpleAction nom="Push" action={window.electronAPI.gitActions.push} />
               <GitCommitAction nom="Commit" action={window.electronAPI.gitActions.commit}/>
-              <GitBranchList nom="Checkout branches" action={window.electronAPI.gitActions.branch}/>
-              <GitAddBranchAction nom="Add branch" action={window.electronAPI.gitActions.branch}/>
-              <GitDelBranch nom="Delete branch" action={window.electronAPI.gitActions.branch}/>
+
+              <h5>Branches</h5>
+              <GitBranchList nom="Checkout" action={window.electronAPI.gitActions.branch}/>
+              <GitAddBranchAction nom="Add" action={window.electronAPI.gitActions.branch}/>
+              <GitDelBranch nom="Delete" action={window.electronAPI.gitActions.branch}/>
 
             </ul>
 
