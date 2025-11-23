@@ -2,7 +2,7 @@ name: Build Electron App
 
 on:
   push:
-    branches: [ main ]
+    branches: [ Build, Publish & Release ]
   pull_request:
 
 jobs:
