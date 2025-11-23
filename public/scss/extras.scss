@@ -270,3 +270,20 @@ table.CommitList td{
 .DiffCloseButton {
     font-size: 0.8rem;
 }
+
+/* Bouton Diff actif dans le menu des actions */
+ul.GitList.GitAction li.GitCthulhu.GitDiffActive {
+  background-color: lighten($nav-col-dark, 18%);
+}
+
+
+/* Ajuster l'entête de la modale quand on ajoute un select */
+.DiffModalHeader {
+  gap: 0.5rem;
+}
+
+/* Style simple pour le menu déroulant des fichiers */
+.DiffFileSelector {
+  font-size: 0.8rem;
+  max-width: 50%;
+}

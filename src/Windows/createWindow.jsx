@@ -12,7 +12,14 @@ import GitDelBranch from "../Components/GitDelBranch.jsx";
 // import "../public/scss/SelectorStyle.scss";
 
 export default function CreateWindow() {
+  const [diffMode, setDiffMode] = React.useState(false);
+
+  const toggleDiffMode = () => {
+    setDiffMode((prev) => !prev);
+  };
+
   return (<>
+
 
           <div id="barre_de_taches">
             <nav class="GitCthulhu">
@@ -43,12 +50,20 @@ export default function CreateWindow() {
               <GitAddBranchAction nom="Add" action={window.electronAPI.gitActions.branch}/>
               <GitDelBranch nom="Delete" action={window.electronAPI.gitActions.branch}/>
 
+            
+              <li
+                className={`GitCthulhu ${diffMode ? "GitDiffActive" : ""}`}
+                onClick={toggleDiffMode}
+              >
+                Diff
+              </li>
+
             </ul>
 
           </div>
 
           <div class="GitCthulhuSideshow">
-            <GitCommitList/>
+            <GitCommitList diffMode={diffMode}/>
           </div>
 
           <div class="GitCthulhuFoot">

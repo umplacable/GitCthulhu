@@ -5,10 +5,12 @@ class GitCommitList extends React.Component {
     super(props);
     this.state = {
       commits: [],
-      baseCommit: null,      // commit de base (1er clic)
-      compareCommit: null,   // commit de comparaison (2e clic)
-      diffText: "",          // texte du diff brut
-      showDiff: false,       // contrôle de l’affichage de la fenêtre de diff
+      baseCommit: null,         // 1er commit sélectionné
+      compareCommit: null,      // 2e commit sélectionné
+      diffText: "",             // diff brut complet
+      showDiff: false,          // affiche ou non la fenêtre
+      diffFiles: [],            // liste des fichiers modifiés {file, text}
+      selectedFile: "__ALL__",  // fichier actuellement affiché ("__ALL__" = tous)
     };
 
     this.handleRowClick = this.handleRowClick.bind(this);
@@ -41,54 +43,127 @@ class GitCommitList extends React.Component {
     
   }
 
-  async handleRowClick(commit) {
-    this.setState((prevState) => {
-      let base = prevState.baseCommit;
-      let compare = prevState.compareCommit;
+    parseDiffByFile(diffText) {
+    const lines = diffText.split("\n");
+    const files = [];
+    let currentFile = null;
+    let currentLines = [];
 
-      // Aucun commit sélectionné → on définit la base
-      if (!base && !compare) {
-        base = commit;
-        compare = null;
+    const flush = () => {
+      if (currentFile && currentLines.length > 0) {
+        files.push({ file: currentFile, text: currentLines.join("\n") });
       }
-      // Une base, pas encore de comparaison, et on reclique sur la même → reset
-      else if (base && !compare && base.hash === commit.hash) {
-        base = null;
-        compare = null;
-      }
-      // Une base, pas encore de comparaison, et on clique sur un autre commit → comparaison
-      else if (base && !compare && base.hash !== commit.hash) {
-        compare = commit;
-      }
-      // Les deux sont déjà remplis → on recommence la sélection avec ce commit comme nouvelle base
-      else {
-        base = commit;
-        compare = null;
-      }
+    };
 
-      return {
-        baseCommit: base,
-        compareCommit: compare,
-        // Si on recommence une sélection, on masque l’ancienne diff
-        showDiff: false,
-      };
-    }, async () => {
-      const { baseCommit, compareCommit } = this.state;
-
-      // Dès qu’on a les deux commits, on demande le diff au backend
-      if (baseCommit && compareCommit) {
-        const diff = await window.electronAPI.gitActions.diff(
-          baseCommit.hash,
-          compareCommit.hash
-        );
-        this.setState({ diffText: diff, showDiff: true });
+    for (let line of lines) {
+      if (line.startsWith("diff --git ")) {
+        flush();
+        currentLines = [line];
+        const match = line.match(/^diff --git a\/(.+?) b\/(.+)$/);
+        currentFile = match ? match[2] : line;
+      } else {
+        if (!currentFile) {
+          // on ignore ce qui précède le premier "diff --git"
+          continue;
+        }
+        currentLines.push(line);
       }
-    });
+    }
+
+    flush();
+    return files;
   }
 
-  render(){
+  componentDidUpdate(prevProps) {
+    // Si on désactive le mode diff, on nettoie la sélection et on ferme la fenêtre
+    if (prevProps.diffMode && !this.props.diffMode) {
+      this.setState({
+        baseCommit: null,
+        compareCommit: null,
+        diffText: "",
+        showDiff: false,
+        diffFiles: [],
+        selectedFile: "__ALL__",
+      });
+    }
+  }
 
-    const commits = this.state.commits;
+
+  async handleRowClick(commit) {
+    // 🔒 Blocage HARD : tant que le mode Diff n'est pas actif,
+    // on NE FAIT RIEN : pas de setState, pas de sélection.
+    if (!this.props.diffMode) {
+      return;
+    }
+
+    this.setState(
+      (prevState) => {
+        let base = prevState.baseCommit;
+        let compare = prevState.compareCommit;
+
+        if (!base && !compare) {
+          // 1er clic → base
+          base = commit;
+          compare = null;
+        } else if (base && !compare && base.hash === commit.hash) {
+          // Re-clic sur la même base → reset
+          base = null;
+          compare = null;
+        } else if (base && !compare && base.hash !== commit.hash) {
+          // 2e clic sur un autre commit → compare
+          compare = commit;
+        } else {
+          // Déjà 2 commits sélectionnés → on repart avec une nouvelle base
+          base = commit;
+          compare = null;
+        }
+
+        return {
+          baseCommit: base,
+          compareCommit: compare,
+          showDiff: false,
+        };
+      },
+      async () => {
+        const { baseCommit, compareCommit } = this.state;
+
+        if (baseCommit && compareCommit) {
+          const diffText = await window.electronAPI.gitActions.diff(
+            baseCommit.hash,
+            compareCommit.hash
+          );
+          const diffFiles = this.parseDiffByFile(diffText);
+
+          this.setState({
+            diffText,
+            diffFiles,
+            selectedFile:
+              diffFiles.length > 0 ? diffFiles[0].file : "__ALL__",
+            showDiff: true,
+          });
+        }
+      }
+    );
+  }
+
+
+
+  render(){
+    const { commits } = this.state;
+
+    // Choix du texte à afficher selon le fichier sélectionné
+    let diffTextToShow = this.state.diffText;
+    if (
+      this.state.selectedFile &&
+      this.state.selectedFile !== "__ALL__"
+    ) {
+      const fileObj = this.state.diffFiles.find(
+        (f) => f.file === this.state.selectedFile
+      );
+      if (fileObj) {
+        diffTextToShow = fileObj.text;
+      }
+    }
 
     return(
       <div className="GraphBranches">
@@ -155,7 +230,7 @@ class GitCommitList extends React.Component {
         {this.state.showDiff && (
           <div className="DiffModal">
             <div className="DiffModalContent">
-              <div className="DiffModalHeader">
+                            <div className="DiffModalHeader">
                 <span>
                   Diff&nbsp;
                   {this.state.baseCommit
@@ -166,6 +241,25 @@ class GitCommitList extends React.Component {
                     ? this.state.compareCommit.hash.substring(0, 7)
                     : "?"}
                 </span>
+
+                {/* Menu déroulant des fichiers */}
+                {this.state.diffFiles.length > 0 && (
+                  <select
+                    className="DiffFileSelector"
+                    value={this.state.selectedFile || "__ALL__"}
+                    onChange={(e) =>
+                      this.setState({ selectedFile: e.target.value })
+                    }
+                  >
+                    <option value="__ALL__">Tous les fichiers</option>
+                    {this.state.diffFiles.map((file) => (
+                      <option key={file.file} value={file.file}>
+                        {file.file}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
                 <button
                   className="DiffCloseButton"
                   onClick={() => this.setState({ showDiff: false })}
@@ -174,9 +268,10 @@ class GitCommitList extends React.Component {
                 </button>
               </div>
 
+
               <div className="DiffModalBody">
-                {this.state.diffText &&
-                  this.state.diffText.split("\n").map((line, index) => {
+                {diffTextToShow &&
+                  diffTextToShow.split("\n").map((line, index) => {
                     let lineClass = "";
                     if (line.startsWith("+") && !line.startsWith("+++")) {
                       lineClass = "diff-line-add";
