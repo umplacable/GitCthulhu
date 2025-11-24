@@ -50,7 +50,7 @@ export default function CreateWindow() {
               <GitAddBranchAction nom="Add" action={window.electronAPI.gitActions.branch}/>
               <GitDelBranch nom="Delete" action={window.electronAPI.gitActions.branch}/>
 
-            
+              <h5>Commits</h5>
               <li
                 className={`GitCthulhu ${diffMode ? "GitDiffActive" : ""}`}
                 onClick={toggleDiffMode}

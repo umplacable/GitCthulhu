@@ -273,22 +273,34 @@ class GitCommitList extends React.Component {
                 {diffTextToShow &&
                   diffTextToShow.split("\n").map((line, index) => {
                     let lineClass = "";
-                    if (line.startsWith("+") && !line.startsWith("+++")) {
-                      lineClass = "diff-line-add";
-                    } else if (
-                      line.startsWith("-") &&
-                      !line.startsWith("---")
-                    ) {
-                      lineClass = "diff-line-del";
-                    } else if (line.startsWith("@@")) {
-                      lineClass = "diff-line-hunk";
+
+                    if (line.startsWith("diff --git ")) {
+
+                      return (
+                        <h4>{this.state.diffFiles.map((file) => (
+                          line.includes(` b/${file.file}`) ? file.file : ""
+                        ))}</h4>
+                      )
+
+                    }else if (!line.startsWith("index") && !line.startsWith("+++ b/") && !line.startsWith("--- a/")){
+                      if (line.startsWith("+") && !line.startsWith("+++")) {
+                        lineClass = "diff-line-add";
+                      } else if (
+                        line.startsWith("-") &&
+                        !line.startsWith("---")
+                      ) {
+                        lineClass = "diff-line-del";
+                      } else if (line.startsWith("@@")) {
+                        lineClass = "diff-line-hunk";
+                      }
+
+                      return (
+                        <pre key={index} className={lineClass}>
+                          {line}
+                        </pre>
+                      );
                     }
 
-                    return (
-                      <pre key={index} className={lineClass}>
-                        {line}
-                      </pre>
-                    );
                   })}
               </div>
             </div>
