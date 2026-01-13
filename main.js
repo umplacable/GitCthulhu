@@ -507,7 +507,9 @@ ipcMain.handle('git-diff', async (event, commit1, commit2) => {
 ipcMain.handle('git-add-branch', async (event, name) => {
   const git = simpleGit(gitDirRepo);
   try {
-    return await git.checkoutLocalBranch(name);
+    const response = await git.checkoutLocalBranch(name);
+    await git.push(["-u", "origin", name])
+    return response
   } catch (err) {
     dialog.showErrorBox('Error', `Could not add branches: ${err.message}`);
     return null;
