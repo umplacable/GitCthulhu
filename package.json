@@ -2,7 +2,7 @@
   "name": "gitcthulhu",
   "version": "1.0.0",
   "description": "Client Git graphique simple avec interface React pour gérer vos dépôts",
-    "homepage": "https://grond.iut-fbleau.fr/hochlaf/GitCthulhu",
+  "homepage": "https://grond.iut-fbleau.fr/hochlaf/GitCthulhu",
   "main": "main.js",
   "scripts": {
     "start": "webpack --mode production && electron .",
@@ -51,7 +51,9 @@
     },
     "win": {
       "icon": "public/icons/favicon.ico",
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "linux": {
       "icon": "public/icons/favicon.png",
@@ -79,7 +81,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "sass": "^1.92.0",
-    "simple-git": "^3.20.0"
+    "simple-git": "^3.20.0",
+    "node-diff3": "^3.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
@@ -89,9 +92,13 @@
     "babel-loader": "^10.0.0",
     "babel-plugin-react-compiler": "^19.1.0-rc.3",
     "concurrently": "^9.2.1",
+    "css-loader": "^7.1.2",
     "electron": "^38.0.0",
     "electron-builder": "^26.0.12",
     "html-webpack-plugin": "^5.6.4",
+    "react-diff-view": "^3.3.2",
+    "sass-loader": "^16.0.6",
+    "style-loader": "^4.0.0",
     "wait-on": "^9.0.1",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",

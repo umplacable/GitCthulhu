@@ -38,4 +38,4 @@ linux:
     - rpm
   category: Utility
   maintainer: Hochlaf
-electronVersion: 38.2.2
+electronVersion: 38.5.0

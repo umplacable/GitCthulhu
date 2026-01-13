@@ -5,6 +5,8 @@ const fs = require('fs');
 const ini = require('ini');
 const marked = require('marked');
 const simpleGit = require('simple-git');
+const Diff3 = require('node-diff3'); // utilisé pour l'auto-merge "smart"
+
 
 // --- VARIABLES GLOBALES ---
 let win = [];
@@ -127,6 +129,7 @@ function createIsGit() {
 
 // Trouver le premier terminal disponible
 function findTerminal(terminals) {
+  const { exec } = require('child_process');
   return new Promise((resolve) => {
     const tryNext = (index) => {
       if (index >= terminals.length) return resolve(null);
@@ -168,6 +171,7 @@ nativeTheme.on('updated', () => {
     }
   }
 });
+
 
 
 
@@ -291,7 +295,7 @@ ipcMain.on('open-terminal', (event) => {
   const senderWin = BrowserWindow.fromWebContents(event.sender);
   if (!senderWin) return;
 
-  const exec = require('child_process').exec;
+  const { exec } = require('child_process');
   let command;
 
   if (process.platform === 'win32') {
@@ -553,12 +557,187 @@ ipcMain.on('git-checkout', (event, branch) => {
   );
 });
 
-ipcMain.on('git-merge', (event, branch) => {
+// --- MERGE & RÉSOLUTION DE CONFLITS ---
+
+// Handler principal de merge : lance "git merge <branch>"
+ipcMain.handle('git-merge', async (event, branch) => {
   const git = simpleGit(gitDirRepo);
-  git.merge([branch]).catch((err) =>
-    dialog.showErrorBox('Error', `Could not merge: ${err.message}`)
-  );
+  try {
+    const summary = await git.merge([branch]);
+    const status = await git.status();
+
+    return {
+      ok: true,
+      summary,
+      status,
+    };
+  } catch (err) {
+    // simple-git renvoie une erreur en cas de conflits, mais on peut quand même récupérer le status
+    let status = null;
+    try {
+      status = await git.status();
+    } catch (e) {
+      // ignore
+    }
+
+    const message = err && err.message ? err.message : String(err);
+
+    return {
+      ok: false,
+      error: message,
+      status,
+    };
+  }
 });
+
+// Récupérer les 3 versions d'un fichier en conflit : base / ours / theirs
+ipcMain.handle('git-merge-file-contents', async (event, filePath) => {
+  const git = simpleGit(gitDirRepo);
+
+  try {
+    const [base, ours, theirs] = await Promise.all([
+      git.raw(['show', `:1:${filePath}`]).catch(() => ''),
+      git.raw(['show', `:2:${filePath}`]).catch(() => ''),
+      git.raw(['show', `:3:${filePath}`]).catch(() => ''),
+    ]);
+
+    return {
+      ok: true,
+      base,
+      ours,
+      theirs,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+    };
+  }
+});
+
+// Appliquer manuellement un contenu résolu pour un fichier en conflit
+ipcMain.handle('git-merge-apply-resolution', async (event, filePath, content) => {
+  const git = simpleGit(gitDirRepo);
+
+  try {
+    const absPath = path.join(gitDirRepo, filePath);
+    fs.writeFileSync(absPath, content, 'utf8');
+    await git.add(filePath);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+    };
+  }
+});
+
+// Auto-résolution "smart" avec node-diff3 (3-way merge)
+ipcMain.handle('git-merge-autosolve-file', async (event, filePath) => {
+  const git = simpleGit(gitDirRepo);
+
+  try {
+    const [base, ours, theirs] = await Promise.all([
+      git.raw(['show', `:1:${filePath}`]),
+      git.raw(['show', `:2:${filePath}`]),
+      git.raw(['show', `:3:${filePath}`]),
+    ]);
+
+    const baseLines = base.split('\n');
+    const oursLines = ours.split('\n');
+    const theirsLines = theirs.split('\n');
+
+    const resultBlocks = Diff3.diff3Merge(
+      oursLines,
+      baseLines,
+      theirsLines,
+      {
+        excludeFalseConflicts: true,
+        stringSeparator: '\n',
+      }
+    );
+
+    const hasConflict = resultBlocks.some((b) => b.conflict);
+    if (hasConflict) {
+      return {
+        ok: false,
+        reason: 'unresolved-conflicts',
+      };
+    }
+
+    const mergedLines = [];
+    for (const block of resultBlocks) {
+      if (block.ok) {
+        mergedLines.push(...block.ok);
+      }
+    }
+
+    const mergedContent = mergedLines.join('\n');
+    const absPath = path.join(gitDirRepo, filePath);
+    fs.writeFileSync(absPath, mergedContent, 'utf8');
+    await git.add(filePath);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+    };
+  }
+});
+
+// Résoudre un fichier en conflit par stratégie : "ours" ou "theirs"
+ipcMain.handle('git-merge-resolve-file', async (event, filePath, strategy) => {
+  const git = simpleGit(gitDirRepo);
+
+  try {
+    if (strategy === 'ours') {
+      await git.raw(['checkout', '--ours', filePath]);
+    } else if (strategy === 'theirs') {
+      await git.raw(['checkout', '--theirs', filePath]);
+    } else {
+      throw new Error(`Unknown strategy: ${strategy}`);
+    }
+
+    await git.add(filePath);
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+    };
+  }
+});
+
+// Annuler un merge en cours
+ipcMain.handle('git-merge-abort', async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.raw(['merge', '--abort']);
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+    };
+  }
+});
+
+// Terminer un merge en faisant le commit
+ipcMain.handle('git-merge-continue', async (event, message) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.commit(message || 'Merge commit');
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+    };
+  }
+});
+
 
 ipcMain.handle('git-pull', async () => {
   const git = simpleGit(gitDirRepo);
