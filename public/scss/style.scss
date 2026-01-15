@@ -2,6 +2,10 @@
   $theme-color: "jade"
 );
 
+html{
+    font-size: medium;
+}
+
 .mainSelectWin{
     display: flex;
     flex-direction: column;

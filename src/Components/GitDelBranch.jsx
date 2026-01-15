@@ -48,8 +48,8 @@ class GitDelBranch extends React.Component {
         </div>
         <ul id="branchListdel" className="Hiden">
 
-          {this.state.got && this.state.branches?.all?.length > 0 ? (
-              this.state.branches.all.map((branche) => (
+          {this.state.got && this.state.branches?.local?.all?.length > 0 ? (
+              this.state.branches.local.all.map((branche) => (
                 <GitComplexAction
                   nom={branche}
                   action={window.electronAPI.gitActions.delbranch}

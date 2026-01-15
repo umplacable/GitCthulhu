@@ -47,12 +47,27 @@ class GitBranchList extends React.Component {
           <span className="StatusSpan"/>
         </div>
         <ul id="branchList" className="Hiden">
-
-          {this.state.got && this.state.branches?.all?.length > 0 ? (
-              this.state.branches.all.map((branche) => (
+          <h6>Branches locales</h6>
+          {this.state.got && this.state.branches?.local?.all?.length > 0 ? (
+            
+              this.state.branches.local?.all.map((branche) => (
                 <GitComplexAction
                   nom={branche}
                   action={window.electronAPI.gitActions.checkout}
+                  param={branche}
+                  status={branche}
+                />
+              ))
+            ) : (
+              <li>Aucune branche trouvée</li>
+              
+            )}
+          <h6>Branches distantes</h6>
+          {this.state.got && this.state.branches?.dist?.all?.length > 0 ? (
+              this.state.branches.dist?.all.map((branche) => (
+                <GitComplexAction
+                  nom={branche}
+                  action={window.electronAPI.gitActions.checkout_dist}
                   param={branche}
                   status={branche}
                 />

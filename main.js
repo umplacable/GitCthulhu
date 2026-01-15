@@ -215,6 +215,7 @@ ipcMain.on('open-select-window', async (event, nom, dirpath) => {
       return; // ✅ on sort ici : ne pas ouvrir la fenêtre principale
     }
 
+    await git.fetch(["--all", "--prune"]);
     // ✅ Si c’est bien un dépôt git, ouvrir la fenêtre principale
     createWindow(nom, dirpath);
     if (senderWin) senderWin.close();
@@ -541,7 +542,13 @@ ipcMain.handle('git-del-branch', async (event, name) => {
 ipcMain.handle('git-branch-local', async () => {
   const git = simpleGit(gitDirRepo);
   try {
-    return JSON.parse(JSON.stringify( await git.branchLocal()));
+
+    ret = {
+      local : JSON.parse(JSON.stringify( await git.branchLocal())),
+      dist : JSON.parse(JSON.stringify( await git.branch(["-r"])))
+    }
+
+    return ret ;
   } catch (err) {
     dialog.showErrorBox('Error', `Could not get branches: ${err.message}`);
     return null;
@@ -549,6 +556,13 @@ ipcMain.handle('git-branch-local', async () => {
 });
 
 ipcMain.on('git-checkout', (event, branch) => {
+  const git = simpleGit(gitDirRepo);
+  git.checkout(["--track", branch]).catch((err) =>
+    dialog.showErrorBox('Error', `Could not checkout: ${err.message}`)
+  );
+});
+
+ipcMain.on('git-checkout-dist', (event, branch) => {
   const git = simpleGit(gitDirRepo);
   git.checkout(branch).catch((err) =>
     dialog.showErrorBox('Error', `Could not checkout: ${err.message}`)

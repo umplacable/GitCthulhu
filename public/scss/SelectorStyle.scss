@@ -1,7 +1,7 @@
 /* Global */
 $leftPanelWidth: max(225px, 15%);
 
-ul.GitList h5{
+ul.GitList h5, ul.GitList h6{
     margin-bottom: calc(var(--pico-typography-spacing-vertical)/2);
     margin-top: 0;
     padding-top: calc(var(--pico-typography-spacing-vertical)/2);
