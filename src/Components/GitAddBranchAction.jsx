@@ -5,6 +5,35 @@ class GitAddBranchAction extends React.Component {
     super(props);
   }
 
+  state ={
+    message : "",
+    visible : false
+  }
+
+  addBranch = async () => {
+
+    const element = document.getElementById(this.props.nom+"Satus");
+
+    element.setAttribute("aria-busy","true");
+
+    let ret = await window.electronAPI.gitActions.addbranch(this.state.message);
+    console.log(ret)
+
+    element.setAttribute("aria-busy","false");
+
+    this.setState({ message: "", visible: false });
+  }
+
+  handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      if (this.state.message.trim() !== "") {
+        this.addBranch();
+      }
+    }
+  };
+
   render(){
     
     return(
@@ -14,43 +43,28 @@ class GitAddBranchAction extends React.Component {
                 <div
                 tabIndex="0"  
                 onClick={async () => {
-                      const element = document.getElementById(this.props.nom+"Satus");
-                      const message = document.getElementById("BranchName");
-                      const titre = document.getElementById("Branch")
 
-                      if(message.classList.contains("Hiden")){
-                        
-                        message.classList.remove("Hiden")
-
-                      }else if(!message.classList.contains("Hiden") && message.value === "" ){
-
-                        message.classList.add("Hiden")
-
-                      }else{
-                        element.setAttribute("aria-busy","true");
-
-                        let ret = await window.electronAPI.gitActions.addbranch(message.value);
-                        console.log(ret)
-
-                        element.setAttribute("aria-busy","false");
-
-                        titre.innerText = "AddBranch";
-                        message.classList.add("Hiden")
-
-                        message.value = "";
+                      if(this.state.visible && !this.state.message === "" ){
+                        this.addBranch()
                       }
                       
-                      }} class="GitCthulhu list">
+                      this.setState({ visible: !this.state.visible })
+                    }} class="GitCthulhu list">
                   <span id="Branch">{this.props.nom}</span>
                   <span id={this.props.nom+"Satus"} className="StatusSpan" aria-busy="false"/>
                 </div>
 
-                <input    type="text" 
+                {this.state.visible && (
+                  <input  type="text" 
                           id="BranchName" 
                           name="BranchName"
                           placeholder="Branch name ..."
-                          className="Hiden"
-                />
+                          value={this.state.message}
+                          onChange={(e) => this.setState({ message: e.target.value })}
+                          onKeyDown={this.handleKeyDown}
+                          autoFocus
+                  />
+                )}
       </li>   
     )
   }

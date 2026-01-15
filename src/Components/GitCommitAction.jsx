@@ -44,13 +44,12 @@ class GitCommitAction extends React.Component {
                 <div
                 tabIndex="0"  
                 onClick={async () => {
-                      const message = document.getElementById("CommitMessage");
-
-                      if(this.state.visible && !message.value === "" ){
-                        this.commit()
-                      }
+                  
+                  if(this.state.visible && !this.state.message === "" ){
+                    this.commit()
+                  }
                       
-                      this.setState({ visible: !this.state.visible })
+                  this.setState({ visible: !this.state.visible })
                       
                       }} class="GitCthulhu list">
                   <span id={this.props.nom}>{this.props.nom}</span>
