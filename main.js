@@ -557,14 +557,14 @@ ipcMain.handle('git-branch-local', async () => {
 
 ipcMain.on('git-checkout', (event, branch) => {
   const git = simpleGit(gitDirRepo);
-  git.checkout(["--track", branch]).catch((err) =>
+  git.checkout(branch).catch((err) =>
     dialog.showErrorBox('Error', `Could not checkout: ${err.message}`)
   );
 });
 
 ipcMain.on('git-checkout-dist', (event, branch) => {
   const git = simpleGit(gitDirRepo);
-  git.checkout(branch).catch((err) =>
+  git.checkout(["-b", branch.split("/")[1], branch]).catch((err) =>
     dialog.showErrorBox('Error', `Could not checkout: ${err.message}`)
   );
 });
