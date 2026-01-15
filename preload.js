@@ -20,12 +20,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ammend: (message) => ipcRenderer.send('git-togle-amend', message),                // utilisé
     status: () => ipcRenderer.invoke('git-status'),                                   // utilisé
     log: () => ipcRenderer.invoke('git-log'),                                         // utilisé
-    diff: (commit1, commit2) => ipcRenderer.invoke('git-diff', commit1, commit2),     // pas utilisé
+    diff: (commit1, commit2) => ipcRenderer.invoke('git-diff', commit1, commit2),     // utilisé (Riad)
     addbranch: (name) => ipcRenderer.invoke('git-add-branch', name),                  // utilisé
     delbranch: (name) => ipcRenderer.invoke('git-del-branch', name),                  // utilisé
     branchList: () => ipcRenderer.invoke('git-branch-local'),                         // utilisé
     checkout: (branch) => ipcRenderer.send('git-checkout', branch),                   // utilisé
-    merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé
+    checkout_dist: (branch) => ipcRenderer.send('git-checkout-dist', branch),         // utilisé
+    merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé (Riad)
     pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
     push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
   }

@@ -131,7 +131,7 @@ ul#branchList, ul#branchListdel{
     margin: 0;
 }
 
-ul#branchList>li, ul#branchListdel>li{
+ul#branchList>*, ul#branchListdel>*{
     padding-left : 40px
 }
 ul.GitList.GitAction>li.GitComplex>textarea, ul.GitList.GitAction>li.GitComplex>input{
