@@ -306,7 +306,7 @@ ipcMain.on("add-repository", async (event) => {
   });
 });
 
-ipcMain.handle("get-readme", async (event, dirpath) => {
+ipcMain.handle("get-readme", async (_event, dirpath) => {
   try {
     const data = fs.readFileSync(path.join(dirpath, "README.md"), "utf-8");
     return marked.parse(data);
@@ -358,7 +358,7 @@ ipcMain.on("open-terminal", (event) => {
   });
 });
 
-ipcMain.on("delete-repository", (event, id) => {
+ipcMain.on("delete-repository", (_event, id) => {
   if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, "[Depo]\nnames=\npaths=\nids=");
   }
@@ -398,6 +398,23 @@ ipcMain.on("delete-repository", (event, id) => {
 });
 
 // ------------------------------------ COMMANDES GIT ------------------------------------
+// MUST
+/*
+  git init → créer un dépôt
+  git clone → cloner un dépôt distant
+  git add → ajouter des fichiers à l’index
+  git commit → valider des changements
+  git commit --amend → modifier le dernier commit (message ou contenu)
+  git status → voir l’état du dépôt
+  git log → afficher l’historique des commits
+  git diff → comparer les différences
+  git branch → gérer les branches
+  git checkout → changer de branche ou restaurer un fichier
+  git merge → fusionner une branche
+  git pull → récupérer et fusionner du distant
+  git push → envoyer des commits au dépôt distant
+  git remote → gérer les dépôts distants
+*/
 ipcMain.on("git-init", (event) => {
   const git = simpleGit(gitDirRepo);
   git
@@ -465,7 +482,7 @@ ipcMain.handle("git-add", async () => {
   }
 });
 
-ipcMain.handle("git-commit", async (event, message) => {
+ipcMain.handle("git-commit", async (_event, message) => {
   const git = simpleGit(gitDirRepo);
 
   if (message == "") {
@@ -491,7 +508,7 @@ ipcMain.handle("git-commit", async (event, message) => {
   }
 });
 
-ipcMain.on("git-togle-amend", (event) => {
+ipcMain.on("git-togle-amend", (_event) => {
   ammend = true;
 });
 
@@ -517,7 +534,7 @@ ipcMain.handle("git-log", async () => {
   }
 });
 
-ipcMain.handle("git-diff", async (event, commit1, commit2) => {
+ipcMain.handle("git-diff", async (_event, commit1, commit2) => {
   const git = simpleGit(gitDirRepo);
   try {
     return await git.diff([`${commit1}..${commit2}`]);
@@ -527,7 +544,7 @@ ipcMain.handle("git-diff", async (event, commit1, commit2) => {
   }
 });
 
-ipcMain.handle("git-add-branch", async (event, name) => {
+ipcMain.handle("git-add-branch", async (_event, name) => {
   const git = simpleGit(gitDirRepo);
   try {
     const response = await git.checkoutLocalBranch(name);
@@ -576,7 +593,7 @@ ipcMain.handle("git-branch-local", async () => {
   }
 });
 
-ipcMain.on("git-checkout", (event, branch) => {
+ipcMain.on("git-checkout", (_event, branch) => {
   const git = simpleGit(gitDirRepo);
   git
     .checkout(branch)
@@ -585,7 +602,7 @@ ipcMain.on("git-checkout", (event, branch) => {
     );
 });
 
-ipcMain.on("git-checkout-dist", (event, branch) => {
+ipcMain.on("git-checkout-dist", (_event, branch) => {
   const git = simpleGit(gitDirRepo);
   git
     .checkout(["-b", branch.split("/")[1], branch])
@@ -594,7 +611,7 @@ ipcMain.on("git-checkout-dist", (event, branch) => {
     );
 });
 
-ipcMain.on("git-merge", (event, branch) => {
+ipcMain.on("git-merge", (_event, branch) => {
   const git = simpleGit(gitDirRepo);
   git
     .merge([branch])
@@ -619,6 +636,279 @@ ipcMain.handle("git-push", async () => {
     return await git.push();
   } catch (err) {
     dialog.showErrorBox("Error", `Could not push: ${err.message}`);
+    return null;
+  }
+});
+
+// Should
+/*
+  git config → configurer Git
+  git reset → annuler/revenir sur un commit
+  git revert → créer un commit qui annule un autre
+  git stash → mettre de côté des changements
+  git fetch → récupérer les objets sans fusionner
+  git show → afficher les détails d’un commit
+  git tag → créer un tag
+  git rebase → rejouer des commits sur une autre branche
+  git blame → voir qui a modifié chaque ligne
+*/
+
+ipcMain.handle("git-config", async (_event, key, value) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    if (value) {
+      await git.addConfig(key, value);
+      return { success: true };
+    } else {
+      const configList = await git.listConfig();
+      return configList.all[key] || null;
+    }
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git config error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-list-config", async (_event) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    const configList = await git.listConfig();
+    return configList.all;
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git config error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-reset", async (_event, mode, commit) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.reset([mode, commit]);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git reset error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-revert", async (_event, commit) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.revert([commit]);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git revert error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-stash", async (_event, action) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    if (action === "save") {
+      await git.stash();
+    } else if (action === "pop") {
+      await git.stash(["pop"]);
+    }
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git stash error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-fetch", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.fetch(["--all", "--prune"]);
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git fetch error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-show", async (_event, commit) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.show([commit]);
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git show error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-tag", async (_event, tag) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.addTag(tag);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git tag error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-rebase", async (_event, branch) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.rebase([branch]);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git rebase error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-blame", async (_event, file) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.blame(file);
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git blame error: ${err.message}`);
+    return null;
+  }
+});
+
+// Could
+/*
+git cherry-pick → appliquer un commit précis
+git bisect → trouver un commit fautif
+git archive → créer une archive du projet
+git shortlog → résumé des commits par auteur
+git describe → décrire un commit par rapport aux tags
+git clean → supprimer les fichiers non suivis
+git reflog → voir le journal des HEAD
+git gc → nettoyer et optimiser le dépôt
+git submodule → gérer des dépôts imbriqués
+git worktree → travailler sur plusieurs branches à la fois
+*/
+
+ipcMain.handle("git-cherry-pick", async (_event, commit) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.cherryPick([commit]);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git cherry-pick error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-bisect", async (_event, action, commit) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    if (action === "start") {
+      await git.bisectStart();
+      await git.bisectBad(commit);
+    } else if (action === "good") {
+      await git.bisectGood(commit);
+    } else if (action === "reset") {
+      await git.bisectReset();
+    }
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git bisect error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-archive", async (_event, options) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.archive(options);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git archive error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-shortlog", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.shortlog();
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git shortlog error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-describe", async (_event, commit) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.describe([commit]);
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git describe error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-clean", async (_event, options) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.clean(options);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git clean error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-reflog", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.reflog();
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git reflog error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-gc", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.gc();
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git gc error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-submodule", async (_event, action, options) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    if (action === "add") {
+      await git.submoduleAdd(options);
+    } else if (action === "update") {
+      await git.submoduleUpdate(options);
+    } else if (action === "init") {
+      await git.submoduleInit();
+    } else if (action === "sync") {
+      await git.submoduleSync();
+    }
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git submodule error: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-worktree", async (_event, action, options) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    if (action === "add") {
+      await git.worktreeAdd(options);
+    } else if (action === "remove") {
+      await git.worktreeRemove(options);
+    } else if (action === "list") {
+      return await git.worktreeList();
+    } else if (action === "prune") {
+      await git.worktreePrune();
+    }
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git worktree error: ${err.message}`);
     return null;
   }
 });
