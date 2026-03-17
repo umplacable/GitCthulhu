@@ -2,7 +2,7 @@
   "name": "gitcthulhu",
   "version": "1.0.0",
   "description": "Client Git graphique simple avec interface React pour gérer vos dépôts",
-    "homepage": "https://grond.iut-fbleau.fr/hochlaf/GitCthulhu",
+  "homepage": "https://grond.iut-fbleau.fr/hochlaf/GitCthulhu",
   "main": "main.js",
   "scripts": {
     "start": "webpack --mode production && electron .",
@@ -51,7 +51,9 @@
     },
     "win": {
       "icon": "public/icons/favicon.ico",
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "linux": {
       "icon": "public/icons/favicon.png",
@@ -72,10 +74,12 @@
     "@kwsites/file-exists": "^1.1.1",
     "@kwsites/promise-deferred": "^1.1.1",
     "@parcel/watcher": "^2.4.1",
+    "biome": "^0.2.2",
     "debug": "^4.4.3",
     "fs": "^0.0.1-security",
     "ini": "^5.0.0",
     "marked": "^16.4.0",
+    "pnpm": "^10.32.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "sass": "^1.92.0",
@@ -85,6 +89,7 @@
     "@babel/core": "^7.28.4",
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
+    "@biomejs/biome": "^2.4.7",
     "@picocss/pico": "^2.1.1",
     "babel-loader": "^10.0.0",
     "babel-plugin-react-compiler": "^19.1.0-rc.3",

@@ -5,45 +5,43 @@ class GitCommitList extends React.Component {
     super(props);
     this.state = {
       commits: [],
-      baseCommit: null,         // 1er commit sélectionné
-      compareCommit: null,      // 2e commit sélectionné
-      diffText: "",             // diff brut complet
-      showDiff: false,          // affiche ou non la fenêtre
-      diffFiles: [],            // liste des fichiers modifiés {file, text}
-      selectedFile: "__ALL__",  // fichier actuellement affiché ("__ALL__" = tous)
+      baseCommit: null, // 1er commit sélectionné
+      compareCommit: null, // 2e commit sélectionné
+      diffText: "", // diff brut complet
+      showDiff: false, // affiche ou non la fenêtre
+      diffFiles: [], // liste des fichiers modifiés {file, text}
+      selectedFile: "__ALL__", // fichier actuellement affiché ("__ALL__" = tous)
     };
 
     this.handleRowClick = this.handleRowClick.bind(this);
   }
 
-
   async componentDidMount() {
     const ret = await window.electronAPI.gitActions.log();
     const commits = ret.all.map((x) => x);
 
-    commits.forEach(commit => {
+    commits.forEach((commit) => {
       let dateCommit = new Date(Date.parse(commit.date));
-      commit.date = dateCommit.toLocaleString("fr-FR", { timeZone: "UTC" })
+      commit.date = dateCommit.toLocaleString("fr-FR", { timeZone: "UTC" });
     });
 
     this.setState({ commits });
 
     // Démarre l’intervalle d’actualisation
-    this.interval = setInterval(async() => {
+    this.interval = setInterval(async () => {
       const ret = await window.electronAPI.gitActions.log();
       const commits = ret.all.map((x) => x);
 
-      commits.forEach(commit => {
+      commits.forEach((commit) => {
         let dateCommit = new Date(Date.parse(commit.date));
-        commit.date = dateCommit.toLocaleString("fr-FR", { timeZone: "UTC" })
+        commit.date = dateCommit.toLocaleString("fr-FR", { timeZone: "UTC" });
       });
 
       this.setState({ commits });
     }, 500); // 2 fois toutes les secondes
-    
   }
 
-    parseDiffByFile(diffText) {
+  parseDiffByFile(diffText) {
     const lines = diffText.split("\n");
     const files = [];
     let currentFile = null;
@@ -88,7 +86,6 @@ class GitCommitList extends React.Component {
     }
   }
 
-
   async handleRowClick(commit) {
     // 🔒 Blocage HARD : tant que le mode Diff n'est pas actif,
     // on NE FAIT RIEN : pas de setState, pas de sélection.
@@ -130,42 +127,36 @@ class GitCommitList extends React.Component {
         if (baseCommit && compareCommit) {
           const diffText = await window.electronAPI.gitActions.diff(
             baseCommit.hash,
-            compareCommit.hash
+            compareCommit.hash,
           );
           const diffFiles = this.parseDiffByFile(diffText);
 
           this.setState({
             diffText,
             diffFiles,
-            selectedFile:
-              diffFiles.length > 0 ? diffFiles[0].file : "__ALL__",
+            selectedFile: diffFiles.length > 0 ? diffFiles[0].file : "__ALL__",
             showDiff: true,
           });
         }
-      }
+      },
     );
   }
 
-
-
-  render(){
+  render() {
     const { commits } = this.state;
 
     // Choix du texte à afficher selon le fichier sélectionné
     let diffTextToShow = this.state.diffText;
-    if (
-      this.state.selectedFile &&
-      this.state.selectedFile !== "__ALL__"
-    ) {
+    if (this.state.selectedFile && this.state.selectedFile !== "__ALL__") {
       const fileObj = this.state.diffFiles.find(
-        (f) => f.file === this.state.selectedFile
+        (f) => f.file === this.state.selectedFile,
       );
       if (fileObj) {
         diffTextToShow = fileObj.text;
       }
     }
 
-    return(
+    return (
       <div className="GraphBranches">
         <table className="CommitList">
           <thead>
@@ -175,8 +166,8 @@ class GitCommitList extends React.Component {
               <th>Message</th>
               <th></th>
             </tr>
-          </thead>  
-          
+          </thead>
+
           <tbody>
             {commits.map((commit, index) => {
               const isBase =
@@ -230,7 +221,7 @@ class GitCommitList extends React.Component {
         {this.state.showDiff && (
           <div className="DiffModal">
             <div className="DiffModalContent">
-                            <div className="DiffModalHeader">
+              <div className="DiffModalHeader">
                 <span>
                   Diff&nbsp;
                   {this.state.baseCommit
@@ -268,21 +259,24 @@ class GitCommitList extends React.Component {
                 </button>
               </div>
 
-
               <div className="DiffModalBody">
                 {diffTextToShow &&
                   diffTextToShow.split("\n").map((line, index) => {
                     let lineClass = "";
 
                     if (line.startsWith("diff --git ")) {
-
                       return (
-                        <h4>{this.state.diffFiles.map((file) => (
-                          line.includes(` b/${file.file}`) ? file.file : ""
-                        ))}</h4>
-                      )
-
-                    }else if (!line.startsWith("index") && !line.startsWith("+++ b/") && !line.startsWith("--- a/")){
+                        <h4>
+                          {this.state.diffFiles.map((file) =>
+                            line.includes(` b/${file.file}`) ? file.file : "",
+                          )}
+                        </h4>
+                      );
+                    } else if (
+                      !line.startsWith("index") &&
+                      !line.startsWith("+++ b/") &&
+                      !line.startsWith("--- a/")
+                    ) {
                       if (line.startsWith("+") && !line.startsWith("+++")) {
                         lineClass = "diff-line-add";
                       } else if (
@@ -300,15 +294,13 @@ class GitCommitList extends React.Component {
                         </pre>
                       );
                     }
-
                   })}
               </div>
             </div>
           </div>
         )}
       </div>
-    )
-
+    );
   }
 }
 

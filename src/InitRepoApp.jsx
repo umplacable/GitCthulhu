@@ -7,4 +7,4 @@ import InitRepoWindow from "./Windows/InitRepoWindow";
 // import "../public/scss/SelectorStyle.scss";
 
 const root = ReactDOM.createRoot(document.getElementById("InitRepo"));
-root.render(<InitRepoWindow/>);
+root.render(<InitRepoWindow />);

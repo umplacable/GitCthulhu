@@ -4,12 +4,10 @@ import React from "react";
 // import "../public/scss/SelectorStyle.scss";
 
 export default function InitRepoWindow() {
-  return (<>
-
+  return (
+    <>
       <div className="container InitContainer">
-        <h3>
-          Ce dossier n'est pas un dépôt git.
-        </h3>
+        <h3>Ce dossier n'est pas un dépôt git.</h3>
 
         {/* Bouton INITIALISER */}
         <div className="InitBtn">
@@ -26,9 +24,7 @@ export default function InitRepoWindow() {
         {/* Séparateur "ou" */}
         <div className="separateur">
           <hr />
-          <small className="Ou">
-            ou
-          </small>
+          <small className="Ou">ou</small>
         </div>
 
         {/* Formulaire de CLONE depuis une URL */}
@@ -41,10 +37,7 @@ export default function InitRepoWindow() {
           }}
           className="CloneForm"
         >
-          <label
-            htmlFor="repoUrl"
-            className="FormLabel"
-          >
+          <label htmlFor="repoUrl" className="FormLabel">
             URL du dépôt :
           </label>
           <div>
@@ -61,7 +54,9 @@ export default function InitRepoWindow() {
               onClick={() => {
                 // ajoute l'attribut aria-busy="true" a ce bouton pour indiquer le chargement si l'url est valide
                 if (document.getElementById("repoUrl").value.trim() !== "") {
-                  document.getElementById("cloneBtn").setAttribute("aria-busy", "true");
+                  document
+                    .getElementById("cloneBtn")
+                    .setAttribute("aria-busy", "true");
                 }
               }}
             >
@@ -72,18 +67,18 @@ export default function InitRepoWindow() {
       </div>
 
       <div class="GitCthulhuFoot">
-      <span class="status"></span>
-      <div class="mainOperations">
-         <button
+        <span class="status"></span>
+        <div class="mainOperations">
+          <button
             className="secondary"
             onClick={() => {
-              window.electronAPI.closeWindow()
+              window.electronAPI.closeWindow();
             }}
           >
             Fermer
           </button>
+        </div>
       </div>
-    </div>
-
-    </>);
+    </>
+  );
 }
