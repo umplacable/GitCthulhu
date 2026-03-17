@@ -640,6 +640,38 @@ ipcMain.handle("git-push", async () => {
   }
 });
 
+ipcMain.handle("git-list-remote", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    return await git.getRemotes(true);
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not get remotes: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-add-remote", async (_event, name, url) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.addRemote(name, url);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not add remote: ${err.message}`);
+    return null;
+  }
+});
+
+ipcMain.handle("git-remove-remote", async (_event, name) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.removeRemote(name);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not remove remote: ${err.message}`);
+    return null;
+  }
+});
+
 // Should
 /*
   git config → configurer Git

@@ -28,9 +28,13 @@ try {
       merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé (Riad)
       pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
       push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
-      
+      list_remotes: () => ipcRenderer.invoke('git-list-remotes'),                       // utilisé
+      add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // utilisé
+      del_remote: (name) => ipcRenderer.send('git-del-remote', name),                   // utilisé
+
       /* Liste de commandes da la partie SHOULD */
       config: (key, value) => ipcRenderer.send('git-config', key, value),               // pas utilisé
+      list_config: () => ipcRenderer.invoke('git-list-config'),                         // pas utilisé
       reset: (mode) => ipcRenderer.send('git-reset', mode),                             // pas utilisé
       revert: (commit) => ipcRenderer.send('git-revert', commit),                       // pas utilisé
       stash: (action) => ipcRenderer.send('git-stash', action),                         // pas utilisé
