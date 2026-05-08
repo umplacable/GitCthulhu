@@ -1,9 +1,11 @@
-import { contextBridge, ipcRenderer } from Electron;
+const { contextBridge, ipcRenderer } = require('electron');
 
 try {
   contextBridge.exposeInMainWorld('electronAPI', {
     getConfig: () => ipcRenderer.invoke("get-config"),
     openSelectWindow: (nom, path) => ipcRenderer.send('open-select-window',nom, path),
+    openSelectCreateRepoWindow: () => ipcRenderer.send('open-select_create-repo-window'),
+    openInitRepoWindow: () => ipcRenderer.send('open-init-repo-window'),
     closeWindow: () => ipcRenderer.send('close-window'),
     addRepository: () => ipcRenderer.send('add-repository'),
     getReadme: async (path) => ipcRenderer.invoke('get-readme', path),

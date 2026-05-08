@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import GitAddBranchAction from "../Components/GitAddBranchAction.jsx";
 import GitBranchList from "../Components/GitBranchList.jsx";
 import GitCommitAction from "../Components/GitCommitAction.jsx";
@@ -12,11 +12,26 @@ import Status from "../Components/Status.jsx";
 // import "../public/scss/SelectorStyle.scss";
 
 export default function CreateWindow() {
-  const [diffMode, setDiffMode] = React.useState(false);
+  const [diffMode, setDiffMode] = useState(false);
+  const [fileBurgerMenu, setFileBurgerMenu] = useState(false);
 
   const toggleDiffMode = () => {
     setDiffMode((prev) => !prev);
   };
+
+  const toggleFileBurgerMenu = () => {
+    setFileBurgerMenu((prev) => !prev);
+  };
+
+  const checkFetch = async () => {
+    try {
+      const result = await window.electronAPI.gitActions.fetch();
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    checkFetch();
+  }, []);
 
   return (
     <>
@@ -27,6 +42,39 @@ export default function CreateWindow() {
               <a href="#" class="secondary">
                 ...
               </a>
+            </li>
+            <li
+              onMouseEnter={toggleFileBurgerMenu}
+              onMouseLeave={toggleFileBurgerMenu}
+            >
+              <a class="secondary" href="#">
+                File
+              </a>
+              {fileBurgerMenu && (
+                <ul className="BurgerMenu">
+                  <li
+                    onClick={() => {
+                      window.electronAPI.openInitRepoWindow();
+                    }}
+                  >
+                    Nouveau
+                  </li>
+                  <li
+                    onClick={() => {
+                      window.electronAPI.openSelectCreateRepoWindow();
+                    }}
+                  >
+                    Ouvrir
+                  </li>
+                  <li
+                    onClick={() => {
+                      window.electronAPI.closeWindow();
+                    }}
+                  >
+                    Fermer
+                  </li>
+                </ul>
+              )}
             </li>
           </ul>
           <ul>

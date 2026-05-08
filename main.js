@@ -237,10 +237,10 @@ ipcMain.on("open-select-window", async (event, nom, dirpath) => {
         }
       });
 
-      return; // ✅ on sort ici : ne pas ouvrir la fenêtre principale
+      return;
     }
 
-    await git.fetch(["--all", "--prune"]);
+    //await git.fetch(["--all", "--prune"]);
     // ✅ Si c’est bien un dépôt git, ouvrir la fenêtre principale
     createWindow(nom, dirpath);
     if (senderWin) senderWin.close();
@@ -251,6 +251,14 @@ ipcMain.on("open-select-window", async (event, nom, dirpath) => {
       `Impossible d’ouvrir la fenêtre : ${err.message}`,
     );
   }
+});
+
+ipcMain.on("open-select_create-repo-window", () => {
+  createGitCreatorWindow();
+});
+
+ipcMain.on("open-init-repo-window", () => {
+  OpenRepoInit();
 });
 
 ipcMain.on("close-window", (event) => {
