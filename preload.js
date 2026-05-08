@@ -6,6 +6,7 @@ try {
     openSelectWindow: (nom, path) => ipcRenderer.send('open-select-window',nom, path),
     openSelectCreateRepoWindow: () => ipcRenderer.send('open-select_create-repo-window'),
     openInitRepoWindow: () => ipcRenderer.send('open-init-repo-window'),
+    openListRemote : () => ipcRenderer.send('open-list-remote-window'),
     closeWindow: () => ipcRenderer.send('close-window'),
     addRepository: () => ipcRenderer.send('add-repository'),
     getReadme: async (path) => ipcRenderer.invoke('get-readme', path),
@@ -30,7 +31,7 @@ try {
       merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé (Riad)
       pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
       push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
-      list_remotes: () => ipcRenderer.invoke('git-list-remotes'),                       // utilisé
+      list_remotes: () => ipcRenderer.invoke('git-list-remote'),                       // utilisé
       add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // utilisé
       del_remote: (name) => ipcRenderer.send('git-del-remote', name),                   // utilisé
 

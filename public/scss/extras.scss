@@ -147,21 +147,22 @@ ul.BurgerMenu{
     text-align: left;
     flex-wrap: nowrap;
 
-    border:2px solid lighten($bg-col-dark, 5%);
+    border:2px solid lighten($bg-col-dark, 3%);
     border-radius: 5px;
 
     li{
         background-color : lighten($bg-col-dark, 1%);
         width: 100%;
         padding: 0 10px;
-
-        border: 1px solid lighten($bg-col-dark, 5%);
+    }
+    div{
+        border: 3px solid lighten($bg-col-dark, 3%);
         border-left: 0px;
         border-right: 0px;
     }
 
     li:hover{
-        background-color : lighten($bg-col-dark, 3%);
+        background-color : lighten($bg-col-dark, 2%);
         cursor: pointer;
     }
 

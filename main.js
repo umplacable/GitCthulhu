@@ -154,6 +154,36 @@ function createIsGit() {
   return modalWin;
 }
 
+function createListRemote() {
+  const modalWin = new BrowserWindow({
+    name: `No git repo detected`,
+    width: 700,
+    height: 400,
+    icon: path.join(
+      __dirname,
+      nativeTheme.shouldUseDarkColors
+        ? "public/icons/favicon-light.ico"
+        : "public/icons/favicon-dark.ico",
+    ),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+    autoHideMenuBar: true,
+  });
+
+  modalWin.loadURL(getFilePath("ListRemote.html"));
+  modalWin.setTitle(`${gitDirRepo} - Remotes`);
+
+  modalWin.once("ready-to-show", () => {
+    modalWin.show();
+  });
+
+  win.push(modalWin);
+  return modalWin;
+}
+
 // ------------------------------------ FONCTION ------------------------------------
 
 // Trouver le premier terminal disponible
@@ -259,6 +289,10 @@ ipcMain.on("open-select_create-repo-window", () => {
 
 ipcMain.on("open-init-repo-window", () => {
   OpenRepoInit();
+});
+
+ipcMain.on("open-list-remote-window", () => {
+  createListRemote();
 });
 
 ipcMain.on("close-window", (event) => {

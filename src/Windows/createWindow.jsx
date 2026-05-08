@@ -73,6 +73,16 @@ export default function CreateWindow() {
                   >
                     Fermer
                   </li>
+
+                  <div>
+                    <li
+                      onClick={() => {
+                        window.electronAPI.openListRemote();
+                      }}
+                    >
+                      Remotes
+                    </li>
+                  </div>
                 </ul>
               )}
             </li>
