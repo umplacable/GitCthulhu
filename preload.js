@@ -31,9 +31,9 @@ try {
       merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé (Riad)
       pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
       push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
-      list_remotes: () => ipcRenderer.invoke('git-list-remote'),                       // utilisé
-      add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // utilisé
-      del_remote: (name) => ipcRenderer.send('git-del-remote', name),                   // utilisé
+      list_remotes: () => ipcRenderer.invoke('git-list-remote'),                        // utilisé
+      add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // pas utilisé
+      del_remote: (name) => ipcRenderer.send('git-remove-remote', name),                   // pas utilisé
 
       /* Liste de commandes da la partie SHOULD */
       config: (key, value) => ipcRenderer.send('git-config', key, value),               // pas utilisé

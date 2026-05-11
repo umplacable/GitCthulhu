@@ -4,6 +4,7 @@ export const GitSingleRemote = (props) => {
   const nameInputRef = useRef(null);
   const urlInputRef = useRef(null);
 
+  console.log(props);
   return (
     <li
       style={{
@@ -22,6 +23,7 @@ export const GitSingleRemote = (props) => {
           width: "auto",
         }}
         ref={nameInputRef}
+        disabled={props.disabled}
       />
       <b>:</b>
       <input
@@ -29,17 +31,34 @@ export const GitSingleRemote = (props) => {
         placeholder="Url du remote"
         defaultValue={props.remote.refs.fetch}
         ref={urlInputRef}
+        disabled={props.disabled}
       />
-      <a
-        className="secondary"
-        onClick={() => {
-          nameInputRef.current.value = "";
-          urlInputRef.current.value = "";
-          props.removeRemotes(props.index);
-        }}
-      >
-        🗑️
-      </a>
+      {props.disabled ? (
+        <button
+          className="outline secondary"
+          onClick={async () => {
+            await props.window.electronAPI.gitActions.del_remote(
+              props.remote.name,
+            );
+            props.ReloadRemotes();
+          }}
+        >
+          🗑️
+        </button>
+      ) : (
+        <button
+          className="outline secondary"
+          onClick={async () => {
+            await props.window.electronAPI.gitActions.add_remote(
+              nameInputRef.current.value,
+              urlInputRef.current.value,
+            );
+            props.ReloadRemotes();
+          }}
+        >
+          ✅
+        </button>
+      )}
     </li>
   );
 };

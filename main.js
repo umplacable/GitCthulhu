@@ -692,25 +692,32 @@ ipcMain.handle("git-list-remote", async () => {
   }
 });
 
-ipcMain.handle("git-add-remote", async (_event, name, url) => {
+ipcMain.on("git-add-remote", async (_event, name, url) => {
   const git = simpleGit(gitDirRepo);
   try {
     await git.addRemote(name, url);
-    return { success: true };
   } catch (err) {
     dialog.showErrorBox("Error", `Could not add remote: ${err.message}`);
-    return null;
   }
 });
 
-ipcMain.handle("git-remove-remote", async (_event, name) => {
+ipcMain.on("git-remove-remote", async (event, name) => {
   const git = simpleGit(gitDirRepo);
   try {
+    // demander confirmation avant de supprimer le remote
+    const win = BrowserWindow.fromWebContents(event.sender);
+    const result = await dialog.showMessageBox(win, {
+      type: "question",
+      buttons: ["Oui", "Non"],
+      defaultId: 1,
+      cancelId: 1,
+      title: "Supprimer le remote ?",
+      message: `Voulez-vous vraiment supprimer le remote "${name}" ?`,
+    });
+    if (result.response !== 0) return;
     await git.removeRemote(name);
-    return { success: true };
   } catch (err) {
     dialog.showErrorBox("Error", `Could not remove remote: ${err.message}`);
-    return null;
   }
 });
 
