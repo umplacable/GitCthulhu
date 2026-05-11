@@ -37,9 +37,8 @@ export const GitSingleRemote = (props) => {
         <button
           className="outline secondary"
           onClick={async () => {
-            await props.window.electronAPI.gitActions.del_remote(
-              props.remote.name,
-            );
+            await window.electronAPI.gitActions.del_remote(props.remote.name);
+            console.log("Remote supprimé:", props.remote.name);
             props.ReloadRemotes();
           }}
         >
@@ -49,7 +48,7 @@ export const GitSingleRemote = (props) => {
         <button
           className="outline secondary"
           onClick={async () => {
-            await props.window.electronAPI.gitActions.add_remote(
+            await window.electronAPI.gitActions.add_remote(
               nameInputRef.current.value,
               urlInputRef.current.value,
             );

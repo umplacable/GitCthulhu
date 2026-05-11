@@ -27,7 +27,7 @@ export default function ListRemoteWindow() {
   }, [reload]);
 
   const ReloadRemotes = async () => {
-    setReload(true);
+    window.location.reload(true);
   };
 
   const addnbRemotes = () => {
@@ -54,8 +54,7 @@ export default function ListRemoteWindow() {
               index={index}
               remote={remote}
               ReloadRemotes={ReloadRemotes}
-              disabled={remote.refs.fetch !== ""} // désactiver les champs si le remote existe déjà
-              window={window}
+              disabled={remote.refs.fetch !== ""} // désactive les champs d'input si le remote existe déjà
             />
           ))}
         </ul>

@@ -701,7 +701,7 @@ ipcMain.on("git-add-remote", async (_event, name, url) => {
   }
 });
 
-ipcMain.on("git-remove-remote", async (event, name) => {
+ipcMain.handle("git-remove-remote", async (event, name) => {
   const git = simpleGit(gitDirRepo);
   try {
     // demander confirmation avant de supprimer le remote
@@ -715,9 +715,11 @@ ipcMain.on("git-remove-remote", async (event, name) => {
       message: `Voulez-vous vraiment supprimer le remote "${name}" ?`,
     });
     if (result.response !== 0) return;
-    await git.removeRemote(name);
+    return await git.removeRemote(name);
   } catch (err) {
     dialog.showErrorBox("Error", `Could not remove remote: ${err.message}`);
+  } finally {
+    return null;
   }
 });
 

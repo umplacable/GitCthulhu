@@ -32,8 +32,8 @@ try {
       pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
       push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
       list_remotes: () => ipcRenderer.invoke('git-list-remote'),                        // utilisé
-      add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // pas utilisé
-      del_remote: (name) => ipcRenderer.send('git-remove-remote', name),                   // pas utilisé
+      add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // utilisé
+      del_remote: (name) => ipcRenderer.invoke('git-remove-remote', name),                // utilisé
 
       /* Liste de commandes da la partie SHOULD */
       config: (key, value) => ipcRenderer.send('git-config', key, value),               // pas utilisé
