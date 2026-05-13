@@ -7,6 +7,8 @@ try {
     openSelectCreateRepoWindow: () => ipcRenderer.send('open-select_create-repo-window'),
     openInitRepoWindow: () => ipcRenderer.send('open-init-repo-window'),
     openListRemote : () => ipcRenderer.send('open-list-remote-window'),
+    openConfig : (scope) => ipcRenderer.send('git-open-config-window', scope),
+    getScope: () => ipcRenderer.invoke("get-scope"),
     closeWindow: () => ipcRenderer.send('close-window'),
     addRepository: () => ipcRenderer.send('add-repository'),
     getReadme: async (path) => ipcRenderer.invoke('get-readme', path),
@@ -33,7 +35,7 @@ try {
       push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
       list_remotes: () => ipcRenderer.invoke('git-list-remote'),                        // utilisé
       add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // utilisé
-      del_remote: (name) => ipcRenderer.invoke('git-remove-remote', name),                // utilisé
+      del_remote: (name) => ipcRenderer.invoke('git-remove-remote', name),              // utilisé
 
       /* Liste de commandes da la partie SHOULD */
       config: (key, value) => ipcRenderer.send('git-config', key, value),               // pas utilisé

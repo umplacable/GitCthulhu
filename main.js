@@ -18,6 +18,7 @@ let gitDirRepo = "~/"; // répertoire du dépôt git courant
 const isDev = !app.isPackaged;
 let configPath;
 let ammend = false;
+let currentConfigScope = "local"; // "local" ou "global"
 
 // ------------------------------------ FONCTION UTILITAIRE POUR LES CHEMINS ------------------------------------
 function getFilePath(filename) {
@@ -156,7 +157,7 @@ function createIsGit() {
 
 function createListRemote() {
   const modalWin = new BrowserWindow({
-    name: `No git repo detected`,
+    name: `${gitDirRepo} - Remotes`,
     width: 700,
     height: 400,
     icon: path.join(
@@ -175,6 +176,35 @@ function createListRemote() {
 
   modalWin.loadURL(getFilePath("ListRemote.html"));
   modalWin.setTitle(`${gitDirRepo} - Remotes`);
+
+  modalWin.once("ready-to-show", () => {
+    modalWin.show();
+  });
+
+  win.push(modalWin);
+  return modalWin;
+}
+
+function createConfig(scope) {
+  const modalWin = new BrowserWindow({
+    width: 700,
+    height: 400,
+    icon: path.join(
+      __dirname,
+      nativeTheme.shouldUseDarkColors
+        ? "public/icons/favicon-light.ico"
+        : "public/icons/favicon-dark.ico",
+    ),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+    autoHideMenuBar: true,
+  });
+
+  modalWin.loadURL(getFilePath("GitConfig.html"));
+  modalWin.setTitle(`Git Config - ${scope}`);
 
   modalWin.once("ready-to-show", () => {
     modalWin.show();
@@ -735,6 +765,15 @@ ipcMain.handle("git-remove-remote", async (event, name) => {
   git rebase → rejouer des commits sur une autre branche
   git blame → voir qui a modifié chaque ligne
 */
+
+ipcMain.on("git-open-config-window", async (_event, scope) => {
+  currentConfigScope = scope;
+  createConfig(scope);
+});
+
+ipcMain.handle("get-scope", async () => {
+  return currentConfigScope;
+});
 
 ipcMain.handle("git-config", async (_event, key, value) => {
   const git = simpleGit(gitDirRepo);
