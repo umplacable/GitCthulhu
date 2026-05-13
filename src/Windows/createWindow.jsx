@@ -101,7 +101,7 @@ export default function CreateWindow() {
                 <ul className="BurgerMenu">
                   <li
                     onClick={() => {
-                      window.electronAPI.openInitRepoWindow();
+                      window.electronAPI.openConfig("local");
                     }}
                   >
                     Configuration locale

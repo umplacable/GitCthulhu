@@ -775,11 +775,11 @@ ipcMain.handle("get-scope", async () => {
   return currentConfigScope;
 });
 
-ipcMain.handle("git-config", async (_event, key, value) => {
+ipcMain.handle("git-config", async (_event, key, value, funcScope) => {
   const git = simpleGit(gitDirRepo);
   try {
     if (value) {
-      await git.addConfig(key, value);
+      await git.addConfig(key, value, (scope = funcScope));
       return { success: true };
     } else {
       const configList = await git.listConfig();
@@ -791,14 +791,34 @@ ipcMain.handle("git-config", async (_event, key, value) => {
   }
 });
 
-ipcMain.handle("git-list-config", async (_event) => {
+ipcMain.handle("git-list-config", async (_event, scope) => {
   const git = simpleGit(gitDirRepo);
   try {
-    const configList = await git.listConfig();
+    const configList = await git.listConfig(scope);
     return configList.all;
   } catch (err) {
     dialog.showErrorBox("Error", `Git config error: ${err.message}`);
     return null;
+  }
+});
+
+ipcMain.on("git-config-edit-file", async (_event) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    const configFile = gitDirRepo + "/.git/config";
+    if (!fs.existsSync(configFile)) {
+      dialog.showErrorBox("Error", "Git config file not found.");
+      return;
+    }
+    const shell =
+      process.platform === "win32"
+        ? "notepad.exe"
+        : process.platform === "darwin"
+          ? "open -a TextEdit"
+          : "xdg-open";
+    require("child_process").exec(`${shell} "${configFile}"`);
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not open config file: ${err.message}`);
   }
 });
 

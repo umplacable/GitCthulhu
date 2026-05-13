@@ -15,9 +15,6 @@ export default function CreateGitCreatorWindow() {
                 ...
               </a>
             </li>
-            <li>
-              <a href="#">Configuration</a>
-            </li>
           </ul>
           <ul>
             <li>

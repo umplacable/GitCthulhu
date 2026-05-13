@@ -5,69 +5,157 @@ import { GitSingleRemote } from "../Components/GitSingleRemote.jsx";
 // import "../public/scss/SelectorStyle.scss";
 
 export default function GitConfigWindow() {
-  const [remotes, setRemotes] = useState([]);
-  const [newRemotes, setNewRemotes] = useState([]);
-  const [nbMoreRemotes, setNbMoreRemotes] = useState(0);
-  const [reload, setReload] = useState(true);
+  const [scope, setScope] = useState("");
+  const [config, setconfig] = useState({});
 
   useEffect(() => {
-    if (!reload) return;
-    const fetchRemotes = async () => {
-      try {
-        const remotesList = await window.electronAPI.gitActions.list_remotes();
-        setRemotes(remotesList);
-        setNewRemotes(remotesList);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des remotes :", error);
-      } finally {
-        setReload(false);
-      }
-    };
-    fetchRemotes();
-  }, [reload]);
-
-  const ReloadRemotes = async () => {
-    window.location.reload(true);
-  };
-
-  const addnbRemotes = () => {
-    setNbMoreRemotes((prev) => {
-      prev + 1;
-      return prev + 1;
+    window.electronAPI.getScope().then((scope) => {
+      setScope(scope);
     });
-    let tempsRemotes = newRemotes;
-    tempsRemotes.push({ name: "", refs: { fetch: "" } });
-    setNewRemotes(tempsRemotes);
+  }, []);
+
+  useEffect(() => {
+    if (scope) {
+      window.electronAPI.gitActions.list_config(scope).then((configList) => {
+        setconfig(configList);
+        console.log(configList); // Affiche la configuration dans la console
+      });
+    }
+  }, [scope]);
+
+  const UpdateGitConfig = (formData) => {
+    window.electronAPI.gitActions.config(
+      "user.name",
+      formData.get("username"),
+      scope,
+    );
+
+    window.electronAPI.gitActions.config(
+      "user.email",
+      formData.get("email"),
+      scope,
+    );
+
+    window.electronAPI.gitActions.config(
+      "init.defaultBranch",
+      formData.get("defaultBranch"),
+      scope,
+    );
+
+    window.electronAPI.gitActions.config(
+      "pull.rebase",
+      formData.get("pullRebase"),
+      scope,
+    );
+
+    window.electronAPI.gitActions.config(
+      "rebase.autoStash",
+      formData.get("rebaseAutoStash"),
+      scope,
+    );
+
+    window.electronAPI.gitActions.config(
+      "push.autoSetupRemote",
+      formData.get("pushAutoSetupRemote"),
+      scope,
+    );
+
+    window.electronAPI.gitActions.config(
+      "color.ui",
+      formData.get("colorUI"),
+      scope,
+    );
   };
 
   return (
     <>
-      <div
-        style={{
-          margin: "10px",
-        }}
-      >
+      <div className="GitCthulhuMain">
         <h1 style={{ "text-align": "center" }}>Config</h1>
-        <ul style={{ "padding-left": "0px" }}>
-          {newRemotes.map((remote, index) => (
-            <GitSingleRemote
-              index={index}
-              remote={remote}
-              ReloadRemotes={ReloadRemotes}
-              disabled={remote.refs.fetch !== ""} // désactive les champs d'input si le remote existe déjà
+        <form action={UpdateGitConfig}>
+          {/*User informations*/}
+          <div class="input-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              defaultValue={config["user.name"]}
             />
-          ))}
-        </ul>
-        <button
-          onClick={() => {
-            addnbRemotes();
-          }}
-        >
-          ➕
-        </button>
+
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              defaultValue={config["user.email"]}
+            />
+          </div>
+
+          {/*Base command config*/}
+          <div class="input-group">
+            <label for="defaultBranch">Default Branch</label>
+            <input
+              type="text"
+              id="defaultBranch"
+              name="defaultBranch"
+              defaultValue={config["init.defaultBranch"]}
+            />
+
+            <label for="pullRebase">Pull Rebase</label>
+            <select
+              id="pullRebase"
+              name="pullRebase"
+              defaultValue={config["pull.rebase"]}
+            >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+
+            <label for="rebaseAutoStash">Rebase Auto Stash</label>
+            <select
+              id="rebaseAutoStash"
+              name="rebaseAutoStash"
+              defaultValue={config["rebase.autoStash"]}
+            >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+
+            <label for="pushAutoSetupRemote">Push Auto Setup Remote</label>
+            <select
+              id="pushAutoSetupRemote"
+              name="pushAutoSetupRemote"
+              defaultValue={config["push.autoSetupRemote"]}
+            >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+
+          {/*Configuration du terminal*/}
+          <div class="input-group">
+            <label for="colorUI">Color UI</label>
+            <select
+              id="colorUI"
+              name="colorUI"
+              defaultValue={config["color.ui"]}
+            >
+              <option value="auto">Auto</option>
+              <option value="always">Always</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+        </form>
       </div>
       <div class="GitCthulhuFoot">
-        <p></p>
+        <button
+          className="outlined contrast"
+          onClick={() => {
+            window.electronAPI.openConfigFile();
+          }}
+        >
+          Edit file
+        </button>
         <div class="mainOperations">
           <button
             class="secondary"

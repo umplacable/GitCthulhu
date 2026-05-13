@@ -14,6 +14,7 @@ try {
     getReadme: async (path) => ipcRenderer.invoke('get-readme', path),
     openTerminal: () => ipcRenderer.send('open-terminal'),
     deleteRepository: (name) => ipcRenderer.send('delete-repository', name),
+    openConfigFile: () => ipcRenderer.send('git-config-edit-file'),
 
     gitActions:{
       /* Liste de commandes da la partie MUST */
@@ -38,7 +39,7 @@ try {
       del_remote: (name) => ipcRenderer.invoke('git-remove-remote', name),              // utilisé
 
       /* Liste de commandes da la partie SHOULD */
-      config: (key, value) => ipcRenderer.send('git-config', key, value),               // pas utilisé
+      config: (key, value, scope) => ipcRenderer.send('git-config', key, value, scope),               // pas utilisé
       list_config: () => ipcRenderer.invoke('git-list-config'),                         // pas utilisé
       reset: (mode) => ipcRenderer.send('git-reset', mode),                             // pas utilisé
       revert: (commit) => ipcRenderer.send('git-revert', commit),                       // pas utilisé
