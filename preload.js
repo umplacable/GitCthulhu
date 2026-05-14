@@ -59,7 +59,7 @@ try {
       describe: (commit) => ipcRenderer.invoke('git-describe', commit),                 // pas utilisé
       clean: (mode) => ipcRenderer.send('git-clean', mode),                             // utilisé
       reflog: () => ipcRenderer.invoke('git-reflog'),                                   // pas utilisé
-      gc: () => ipcRenderer.send('git-gc'),                                             // pas utilisé
+      gc: () => ipcRenderer.send('git-gc'),                                             // utilisé
       submodule: (action, path) => ipcRenderer.send('git-submodule', action, path),     // pas utilisé
       worktree: (action, path) => ipcRenderer.send('git-worktree', action, path),       // pas utilisé
     }
