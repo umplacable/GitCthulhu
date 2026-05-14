@@ -57,7 +57,7 @@ try {
       archive: (format, output) => ipcRenderer.send('git-archive', format, output),     // pas utilisé
       shortlog: () => ipcRenderer.invoke('git-shortlog'),                               // pas utilisé
       describe: (commit) => ipcRenderer.invoke('git-describe', commit),                 // pas utilisé
-      clean: (mode) => ipcRenderer.send('git-clean', mode),                             // pas utilisé
+      clean: (mode) => ipcRenderer.send('git-clean', mode),                             // utilisé
       reflog: () => ipcRenderer.invoke('git-reflog'),                                   // pas utilisé
       gc: () => ipcRenderer.send('git-gc'),                                             // pas utilisé
       submodule: (action, path) => ipcRenderer.send('git-submodule', action, path),     // pas utilisé

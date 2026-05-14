@@ -1010,14 +1010,13 @@ ipcMain.handle("git-reflog", async () => {
   }
 });
 
-ipcMain.handle("git-gc", async () => {
+ipcMain.on("git-gc", async () => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.gc();
-    return { success: true };
+    const res = await git.raw(["gc"]);
+    console.log("Git gc result:", res);
   } catch (err) {
     dialog.showErrorBox("Error", `Git gc error: ${err.message}`);
-    return null;
   }
 });
 
