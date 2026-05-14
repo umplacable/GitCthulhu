@@ -40,6 +40,7 @@ try {
 
       /* Liste de commandes da la partie SHOULD */
       config: (key, value, scope) => ipcRenderer.send('git-config', key, value, scope),               // pas utilisé
+      del_config : (key, scope) =>ipcRenderer.send('git-del-config', key, scope),
       list_config: () => ipcRenderer.invoke('git-list-config'),                         // pas utilisé
       reset: (mode) => ipcRenderer.send('git-reset', mode),                             // pas utilisé
       revert: (commit) => ipcRenderer.send('git-revert', commit),                       // pas utilisé

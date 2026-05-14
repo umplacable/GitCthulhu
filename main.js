@@ -775,16 +775,22 @@ ipcMain.handle("get-scope", async () => {
   return currentConfigScope;
 });
 
-ipcMain.handle("git-config", async (_event, key, value, funcScope) => {
+ipcMain.on("git-config", async (_event, key, value, funcScope) => {
   const git = simpleGit(gitDirRepo);
   try {
     if (value) {
       await git.addConfig(key, value, (scope = funcScope));
-      return { success: true };
-    } else {
-      const configList = await git.listConfig();
-      return configList.all[key] || null;
     }
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git config error: ${err.message}`);
+  }
+});
+
+ipcMain.on("git-del-config", async (_event, key, funcScope) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.raw(["config", "--unset", key, `--${funcScope}`]);
+    return { success: true };
   } catch (err) {
     dialog.showErrorBox("Error", `Git config error: ${err.message}`);
     return null;

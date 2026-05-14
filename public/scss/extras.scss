@@ -71,8 +71,13 @@ div.GitCthulhuLeft {
 }
 
 .GitCthulhuMain{
-    margin: 10px;
-    margin-bottom: calc(10% + 20px);
+    width: 100%;
+    position: fixed;
+    top : 0;
+    bottom : calc($height-foot + 30px);;
+    padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 div.GitCthulhuSideshow {
