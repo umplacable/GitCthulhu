@@ -15,6 +15,7 @@ export default function CreateWindow() {
   const [diffMode, setDiffMode] = useState(false);
   const [fileBurgerMenu, setFileBurgerMenu] = useState(false);
   const [editBurgerMenu, setEditBurgerMenu] = useState(false);
+  const [edit_cleanBurgerMenu, setEdit_cleanBurgerMenu] = useState(false);
 
   const toggleDiffMode = () => {
     setDiffMode((prev) => !prev);
@@ -25,6 +26,9 @@ export default function CreateWindow() {
   };
   const toggleEditBurgerMenu = () => {
     setEditBurgerMenu((prev) => !prev);
+  };
+  const toggleEdit_cleanBurgerMenu = () => {
+    setEdit_cleanBurgerMenu((prev) => !prev);
   };
 
   const checkFetch = async () => {
@@ -48,8 +52,12 @@ export default function CreateWindow() {
               </a>
             </li>
             <li
-              onMouseEnter={toggleFileBurgerMenu}
-              onMouseLeave={toggleFileBurgerMenu}
+              onMouseEnter={() => {
+                setFileBurgerMenu(true);
+              }}
+              onMouseLeave={() => {
+                setFileBurgerMenu(false);
+              }}
             >
               <a class="secondary" href="#">
                 File
@@ -91,10 +99,15 @@ export default function CreateWindow() {
               )}
             </li>
             <li
-              onMouseEnter={toggleEditBurgerMenu}
-              onMouseLeave={toggleEditBurgerMenu}
+              onMouseEnter={() => {
+                setEditBurgerMenu(true);
+              }}
+              onMouseLeave={() => {
+                setEditBurgerMenu(false);
+                setEdit_cleanBurgerMenu(false);
+              }}
             >
-              <a class="secondary" href="#">
+              <a class="secondary" href="#" onClick={toggleEditBurgerMenu}>
                 Edit
               </a>
               {editBurgerMenu && (
@@ -106,6 +119,74 @@ export default function CreateWindow() {
                   >
                     Configuration locale
                   </li>
+
+                  <div
+                    style={{
+                      width: "100%",
+                    }}
+                    onMouseLeave={() => {
+                      setEdit_cleanBurgerMenu(false);
+                    }}
+                  >
+                    <li
+                      style={{ width: "100%", display: "flex" }}
+                      onClick={() => {
+                        toggleEdit_cleanBurgerMenu();
+                      }}
+                      onMouseLeave={() => {
+                        setEdit_cleanBurgerMenu(false);
+                      }}
+                    >
+                      <p style={{ width: "100%", "margin-bottom": "0px" }}>
+                        Clean
+                      </p>
+                      {editBurgerMenu && edit_cleanBurgerMenu && (
+                        <ul
+                          style={{
+                            "margin-left": "90%",
+                            "min-width": "15em",
+                          }}
+                          className="BurgerMenu"
+                        >
+                          <li
+                            onClick={() => {
+                              window.electronAPI.gitActions.clean("");
+                            }}
+                          >
+                            Untracked files
+                          </li>
+                          <li
+                            onClick={() => {
+                              window.electronAPI.gitActions.clean("d");
+                            }}
+                          >
+                            Untracked files and directories
+                          </li>
+                          <li
+                            onClick={() => {
+                              window.electronAPI.gitActions.clean("X");
+                            }}
+                          >
+                            Ignored files only
+                          </li>
+                          <li
+                            onClick={() => {
+                              window.electronAPI.gitActions.clean("x");
+                            }}
+                          >
+                            All files
+                          </li>
+                          <li
+                            onClick={() => {
+                              window.electronAPI.gitActions.clean("xd");
+                            }}
+                          >
+                            All files and directories
+                          </li>
+                        </ul>
+                      )}
+                    </li>
+                  </div>
                 </ul>
               )}
             </li>

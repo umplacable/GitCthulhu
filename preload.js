@@ -39,13 +39,13 @@ try {
       del_remote: (name) => ipcRenderer.invoke('git-remove-remote', name),              // utilisé
 
       /* Liste de commandes da la partie SHOULD */
-      config: (key, value, scope) => ipcRenderer.send('git-config', key, value, scope),               // pas utilisé
-      del_config : (key, scope) =>ipcRenderer.send('git-del-config', key, scope),
-      list_config: () => ipcRenderer.invoke('git-list-config'),                         // pas utilisé
+      config: (key, value, scope) => ipcRenderer.send('git-config', key, value, scope), // utilisé
+      del_config : (key, scope) =>ipcRenderer.send('git-del-config', key, scope),       // utilisé
+      list_config: () => ipcRenderer.invoke('git-list-config'),                         // utilisé
       reset: (mode) => ipcRenderer.send('git-reset', mode),                             // pas utilisé
       revert: (commit) => ipcRenderer.send('git-revert', commit),                       // pas utilisé
       stash: (action) => ipcRenderer.send('git-stash', action),                         // pas utilisé
-      fetch: () => ipcRenderer.invoke('git-fetch'),                                     // pas utilisé
+      fetch: () => ipcRenderer.invoke('git-fetch'),                                     // utilisé
       show: (commit) => ipcRenderer.invoke('git-show', commit),                         // pas utilisé
       tag: (name) => ipcRenderer.send('git-tag', name),                                 // pas utilisé
       rebase: (branch) => ipcRenderer.send('git-rebase', branch),                       // pas utilisé
