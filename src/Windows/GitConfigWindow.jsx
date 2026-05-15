@@ -7,10 +7,10 @@ import { GitSingleRemote } from "../Components/GitSingleRemote.jsx";
 export default function GitConfigWindow() {
   const [scope, setScope] = useState("");
   const [config, setconfig] = useState({});
-  const [pullRebaseValue, setPullRebaseValue] = useState("");
-  const [rebaseAutoStashValue, setRebaseAutoStashValue] = useState("");
-  const [pushAutoSetupRemoteValue, setPushAutoSetupRemoteValue] = useState("");
-  const [colorUIValue, setColorUIValue] = useState("");
+  const [pullRebaseValue, setPullRebaseValue] = useState([]);
+  const [rebaseAutoStashValue, setRebaseAutoStashValue] = useState([]);
+  const [pushAutoSetupRemoteValue, setPushAutoSetupRemoteValue] = useState([]);
+  const [colorUIValue, setColorUIValue] = useState([]);
 
   useEffect(() => {
     window.electronAPI.getScope().then((scope) => {
@@ -25,18 +25,20 @@ export default function GitConfigWindow() {
         console.log(configList); // Affiche la configuration dans la console
 
         if (configList["pull.rebase"]) {
-          setPullRebaseValue(configList["pull.rebase"].toLowerCase());
+          setPullRebaseValue([configList["pull.rebase"].toLowerCase()]);
         }
-        if (configList["rebase.autoStash"]) {
-          setRebaseAutoStashValue(configList["rebase.autoStash"].toLowerCase());
+        if (configList["rebase.autostash"]) {
+          setRebaseAutoStashValue([
+            configList["rebase.autostash"].toLowerCase(),
+          ]);
         }
-        if (configList["push.autoSetupRemote"]) {
-          setPushAutoSetupRemoteValue(
-            configList["push.autoSetupRemote"].toLowerCase(),
-          );
+        if (configList["push.autosetupremote"]) {
+          setPushAutoSetupRemoteValue([
+            configList["push.autosetupremote"].toLowerCase(),
+          ]);
         }
         if (configList["color.ui"]) {
-          setColorUIValue(configList["color.ui"].toLowerCase());
+          setColorUIValue([configList["color.ui"].toLowerCase()]);
         }
       });
     }
@@ -75,35 +77,59 @@ export default function GitConfigWindow() {
       );
     }
 
-    if (config["pull.rebase"] !== pullRebaseValue) {
-      window.electronAPI.gitActions.config(
-        "pull.rebase",
-        pullRebaseValue,
-        scope,
-      );
+    if (config["pull.rebase"] !== pullRebaseValue[0]) {
+      console.log("pull.rebase", pullRebaseValue[0]);
+      if (pullRebaseValue[0].trim() === "") {
+        window.electronAPI.gitActions.del_config("pull.rebase", scope);
+      } else {
+        window.electronAPI.gitActions.config(
+          "pull.rebase",
+          pullRebaseValue[0],
+          scope,
+        );
+      }
     }
 
-    if (config["rebase.autoStash"] !== rebaseAutoStashValue) {
-      window.electronAPI.gitActions.config(
-        "rebase.autoStash",
-        rebaseAutoStashValue,
-        scope,
-      );
+    if (config["rebase.autostash"] !== rebaseAutoStashValue[0]) {
+      console.log("rebase.autostash", rebaseAutoStashValue[0]);
+      if (rebaseAutoStashValue[0].trim() === "") {
+        window.electronAPI.gitActions.del_config("rebase.autostash", scope);
+      } else {
+        window.electronAPI.gitActions.config(
+          "rebase.autostash",
+          rebaseAutoStashValue[0],
+          scope,
+        );
+      }
     }
 
-    if (config["push.autoSetupRemote"] !== pushAutoSetupRemoteValue) {
-      window.electronAPI.gitActions.config(
-        "push.autoSetupRemote",
-        pushAutoSetupRemoteValue,
-        scope,
-      );
+    if (config["push.autosetupremote"] !== pushAutoSetupRemoteValue[0]) {
+      console.log("push.autosetupremote", pushAutoSetupRemoteValue[0]);
+      if (pushAutoSetupRemoteValue[0].trim() === "") {
+        window.electronAPI.gitActions.del_config("push.autosetupremote", scope);
+      } else {
+        window.electronAPI.gitActions.config(
+          "push.autosetupremote",
+          pushAutoSetupRemoteValue[0],
+          scope,
+        );
+      }
     }
 
-    if (config["color.ui"] !== colorUIValue) {
-      window.electronAPI.gitActions.config("color.ui", colorUIValue, scope);
+    if (config["color.ui"] !== colorUIValue[0]) {
+      console.log("color.ui", colorUIValue);
+      if (colorUIValue[0].trim() === "") {
+        window.electronAPI.gitActions.del_config("color.ui", scope);
+      } else {
+        window.electronAPI.gitActions.config(
+          "color.ui",
+          colorUIValue[0],
+          scope,
+        );
+      }
     }
 
-    window.location.reload(true);
+    //window.location.reload(true);
   };
 
   return (
