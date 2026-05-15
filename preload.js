@@ -54,7 +54,7 @@ try {
       /* Liste de commandes da la partie COULD */
       chery_pick: (commit) => ipcRenderer.send('git-cherry-pick', commit),              // pas utilisé
       bisect: (action) => ipcRenderer.send('git-bisect', action),                       // pas utilisé
-      archive: () => ipcRenderer.send('git-archive'),     // pas utilisé
+      archive: () => ipcRenderer.send('git-archive'),                                   // utilisé
       shortlog: () => ipcRenderer.invoke('git-shortlog'),                               // pas utilisé
       describe: (commit) => ipcRenderer.invoke('git-describe', commit),                 // pas utilisé
       clean: (mode) => ipcRenderer.send('git-clean', mode),                             // utilisé
