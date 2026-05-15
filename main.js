@@ -10,7 +10,7 @@ const path = require("path");
 const fs = require("fs");
 const ini = require("ini");
 const marked = require("marked");
-const simpleGit = require("simple-git");
+const { simpleGit, CleanOptions } = require("simple-git");
 
 // ------------------------------------ VARIABLES GLOBALES ------------------------------------
 let win = [];
@@ -991,14 +991,12 @@ ipcMain.handle("git-describe", async (_event, commit) => {
   }
 });
 
-ipcMain.handle("git-clean", async (_event, options) => {
+ipcMain.on("git-clean", async (_event, options) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.clean(options);
-    return { success: true };
+    await git.raw(["clean", `-f${options}`]);
   } catch (err) {
     dialog.showErrorBox("Error", `Git clean error: ${err.message}`);
-    return null;
   }
 });
 
@@ -1012,14 +1010,13 @@ ipcMain.handle("git-reflog", async () => {
   }
 });
 
-ipcMain.handle("git-gc", async () => {
+ipcMain.on("git-gc", async () => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.gc();
-    return { success: true };
+    const res = await git.raw(["gc"]);
+    console.log("Git gc result:", res);
   } catch (err) {
     dialog.showErrorBox("Error", `Git gc error: ${err.message}`);
-    return null;
   }
 });
 
