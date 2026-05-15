@@ -14,6 +14,7 @@ import Status from "../Components/Status.jsx";
 export default function CreateWindow() {
   const [diffMode, setDiffMode] = useState(false);
   const [fileBurgerMenu, setFileBurgerMenu] = useState(false);
+  const [editBurgerMenu, setEditBurgerMenu] = useState(false);
 
   const toggleDiffMode = () => {
     setDiffMode((prev) => !prev);
@@ -21,6 +22,9 @@ export default function CreateWindow() {
 
   const toggleFileBurgerMenu = () => {
     setFileBurgerMenu((prev) => !prev);
+  };
+  const toggleEditBurgerMenu = () => {
+    setEditBurgerMenu((prev) => !prev);
   };
 
   const checkFetch = async () => {
@@ -72,6 +76,35 @@ export default function CreateWindow() {
                     }}
                   >
                     Fermer
+                  </li>
+
+                  <div>
+                    <li
+                      onClick={() => {
+                        window.electronAPI.openListRemote();
+                      }}
+                    >
+                      Remotes
+                    </li>
+                  </div>
+                </ul>
+              )}
+            </li>
+            <li
+              onMouseEnter={toggleEditBurgerMenu}
+              onMouseLeave={toggleEditBurgerMenu}
+            >
+              <a class="secondary" href="#">
+                Edit
+              </a>
+              {editBurgerMenu && (
+                <ul className="BurgerMenu">
+                  <li
+                    onClick={() => {
+                      window.electronAPI.openConfig("local");
+                    }}
+                  >
+                    Configuration locale
                   </li>
                 </ul>
               )}

@@ -7,6 +7,8 @@ module.exports = {
     creatorApp: "./src/creatorApp.jsx",
     GitCreatorApp: "./src/GitCreatorApp.jsx",
     InitRepoApp: "./src/InitRepoApp.jsx",
+    ListRemoteApp: "./src/ListRemoteApp.jsx",
+    GitConfigApp: "./src/GitConfigApp.jsx",
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -45,6 +47,16 @@ module.exports = {
       template: "./public/InitRepo.html",
       filename: "InitRepo.html",
       chunks: ["InitRepoApp"],
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/ListRemote.html",
+      filename: "ListRemote.html",
+      chunks: ["ListRemoteApp"],
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/GitConfig.html",
+      filename: "GitConfig.html",
+      chunks: ["GitConfigApp"],
     }),
   ],
   devServer: {

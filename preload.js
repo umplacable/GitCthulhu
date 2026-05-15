@@ -6,11 +6,15 @@ try {
     openSelectWindow: (nom, path) => ipcRenderer.send('open-select-window',nom, path),
     openSelectCreateRepoWindow: () => ipcRenderer.send('open-select_create-repo-window'),
     openInitRepoWindow: () => ipcRenderer.send('open-init-repo-window'),
+    openListRemote : () => ipcRenderer.send('open-list-remote-window'),
+    openConfig : (scope) => ipcRenderer.send('git-open-config-window', scope),
+    getScope: () => ipcRenderer.invoke("get-scope"),
     closeWindow: () => ipcRenderer.send('close-window'),
     addRepository: () => ipcRenderer.send('add-repository'),
     getReadme: async (path) => ipcRenderer.invoke('get-readme', path),
     openTerminal: () => ipcRenderer.send('open-terminal'),
     deleteRepository: (name) => ipcRenderer.send('delete-repository', name),
+    openConfigFile: () => ipcRenderer.send('git-config-edit-file'),
 
     gitActions:{
       /* Liste de commandes da la partie MUST */
@@ -30,12 +34,13 @@ try {
       merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé (Riad)
       pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
       push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
-      list_remotes: () => ipcRenderer.invoke('git-list-remotes'),                       // utilisé
+      list_remotes: () => ipcRenderer.invoke('git-list-remote'),                        // utilisé
       add_remote: (name, url) => ipcRenderer.send('git-add-remote', name, url),         // utilisé
-      del_remote: (name) => ipcRenderer.send('git-del-remote', name),                   // utilisé
+      del_remote: (name) => ipcRenderer.invoke('git-remove-remote', name),              // utilisé
 
       /* Liste de commandes da la partie SHOULD */
-      config: (key, value) => ipcRenderer.send('git-config', key, value),               // pas utilisé
+      config: (key, value, scope) => ipcRenderer.send('git-config', key, value, scope),               // pas utilisé
+      del_config : (key, scope) =>ipcRenderer.send('git-del-config', key, scope),
       list_config: () => ipcRenderer.invoke('git-list-config'),                         // pas utilisé
       reset: (mode) => ipcRenderer.send('git-reset', mode),                             // pas utilisé
       revert: (commit) => ipcRenderer.send('git-revert', commit),                       // pas utilisé

@@ -18,6 +18,7 @@ let gitDirRepo = "~/"; // répertoire du dépôt git courant
 const isDev = !app.isPackaged;
 let configPath;
 let ammend = false;
+let currentConfigScope = "local"; // "local" ou "global"
 
 // ------------------------------------ FONCTION UTILITAIRE POUR LES CHEMINS ------------------------------------
 function getFilePath(filename) {
@@ -154,6 +155,65 @@ function createIsGit() {
   return modalWin;
 }
 
+function createListRemote() {
+  const modalWin = new BrowserWindow({
+    name: `${gitDirRepo} - Remotes`,
+    width: 700,
+    height: 400,
+    icon: path.join(
+      __dirname,
+      nativeTheme.shouldUseDarkColors
+        ? "public/icons/favicon-light.ico"
+        : "public/icons/favicon-dark.ico",
+    ),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+    autoHideMenuBar: true,
+  });
+
+  modalWin.loadURL(getFilePath("ListRemote.html"));
+  modalWin.setTitle(`${gitDirRepo} - Remotes`);
+
+  modalWin.once("ready-to-show", () => {
+    modalWin.show();
+  });
+
+  win.push(modalWin);
+  return modalWin;
+}
+
+function createConfig(scope) {
+  const modalWin = new BrowserWindow({
+    width: 700,
+    height: 400,
+    icon: path.join(
+      __dirname,
+      nativeTheme.shouldUseDarkColors
+        ? "public/icons/favicon-light.ico"
+        : "public/icons/favicon-dark.ico",
+    ),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+    autoHideMenuBar: true,
+  });
+
+  modalWin.loadURL(getFilePath("GitConfig.html"));
+  modalWin.setTitle(`Git Config - ${scope}`);
+
+  modalWin.once("ready-to-show", () => {
+    modalWin.show();
+  });
+
+  win.push(modalWin);
+  return modalWin;
+}
+
 // ------------------------------------ FONCTION ------------------------------------
 
 // Trouver le premier terminal disponible
@@ -259,6 +319,10 @@ ipcMain.on("open-select_create-repo-window", () => {
 
 ipcMain.on("open-init-repo-window", () => {
   OpenRepoInit();
+});
+
+ipcMain.on("open-list-remote-window", () => {
+  createListRemote();
 });
 
 ipcMain.on("close-window", (event) => {
@@ -658,24 +722,33 @@ ipcMain.handle("git-list-remote", async () => {
   }
 });
 
-ipcMain.handle("git-add-remote", async (_event, name, url) => {
+ipcMain.on("git-add-remote", async (_event, name, url) => {
   const git = simpleGit(gitDirRepo);
   try {
     await git.addRemote(name, url);
-    return { success: true };
   } catch (err) {
     dialog.showErrorBox("Error", `Could not add remote: ${err.message}`);
-    return null;
   }
 });
 
-ipcMain.handle("git-remove-remote", async (_event, name) => {
+ipcMain.handle("git-remove-remote", async (event, name) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.removeRemote(name);
-    return { success: true };
+    // demander confirmation avant de supprimer le remote
+    const win = BrowserWindow.fromWebContents(event.sender);
+    const result = await dialog.showMessageBox(win, {
+      type: "question",
+      buttons: ["Oui", "Non"],
+      defaultId: 1,
+      cancelId: 1,
+      title: "Supprimer le remote ?",
+      message: `Voulez-vous vraiment supprimer le remote "${name}" ?`,
+    });
+    if (result.response !== 0) return;
+    return await git.removeRemote(name);
   } catch (err) {
     dialog.showErrorBox("Error", `Could not remove remote: ${err.message}`);
+  } finally {
     return null;
   }
 });
@@ -693,30 +766,65 @@ ipcMain.handle("git-remove-remote", async (_event, name) => {
   git blame → voir qui a modifié chaque ligne
 */
 
-ipcMain.handle("git-config", async (_event, key, value) => {
+ipcMain.on("git-open-config-window", async (_event, scope) => {
+  currentConfigScope = scope;
+  createConfig(scope);
+});
+
+ipcMain.handle("get-scope", async () => {
+  return currentConfigScope;
+});
+
+ipcMain.on("git-config", async (_event, key, value, funcScope) => {
   const git = simpleGit(gitDirRepo);
   try {
     if (value) {
-      await git.addConfig(key, value);
-      return { success: true };
-    } else {
-      const configList = await git.listConfig();
-      return configList.all[key] || null;
+      await git.addConfig(key, value, (scope = funcScope));
     }
+  } catch (err) {
+    dialog.showErrorBox("Error", `Git config error: ${err.message}`);
+  }
+});
+
+ipcMain.on("git-del-config", async (_event, key, funcScope) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.raw(["config", "--unset", key, `--${funcScope}`]);
+    return { success: true };
   } catch (err) {
     dialog.showErrorBox("Error", `Git config error: ${err.message}`);
     return null;
   }
 });
 
-ipcMain.handle("git-list-config", async (_event) => {
+ipcMain.handle("git-list-config", async (_event, scope) => {
   const git = simpleGit(gitDirRepo);
   try {
-    const configList = await git.listConfig();
+    const configList = await git.listConfig(scope);
     return configList.all;
   } catch (err) {
     dialog.showErrorBox("Error", `Git config error: ${err.message}`);
     return null;
+  }
+});
+
+ipcMain.on("git-config-edit-file", async (_event) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    const configFile = gitDirRepo + "/.git/config";
+    if (!fs.existsSync(configFile)) {
+      dialog.showErrorBox("Error", "Git config file not found.");
+      return;
+    }
+    const shell =
+      process.platform === "win32"
+        ? "notepad.exe"
+        : process.platform === "darwin"
+          ? "open -a TextEdit"
+          : "xdg-open";
+    require("child_process").exec(`${shell} "${configFile}"`);
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not open config file: ${err.message}`);
   }
 });
 
