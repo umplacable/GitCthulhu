@@ -193,6 +193,14 @@ export default function CreateWindow() {
                     >
                       Garbage collect
                     </li>
+
+                    <li
+                      onClick={() => {
+                        window.electronAPI.gitActions.archive();
+                      }}
+                    >
+                      Archive
+                    </li>
                   </div>
                 </ul>
               )}

@@ -960,14 +960,30 @@ ipcMain.handle("git-bisect", async (_event, action, commit) => {
   }
 });
 
-ipcMain.handle("git-archive", async (_event, options) => {
+ipcMain.on("git-archive", async (_event) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.archive(options);
-    return { success: true };
+    // get le status pour connaitre la branche
+    const status = await git
+      .status()
+      .then((res) => JSON.parse(JSON.stringify(res)));
+
+    // choisi le format de l'archive en fonction de l'OS
+    const format = process.platform === "win32" ? "zip" : "tar.gz";
+
+    // crée l'archive
+    await git.raw([
+      "archive",
+      `--format=${format}`,
+      "-o",
+      path.join(
+        gitDirRepo,
+        `${gitDirRepo.split(/[\\/]/).pop()}-${status.current}-archive.zip`,
+      ),
+      status.current,
+    ]);
   } catch (err) {
     dialog.showErrorBox("Error", `Git archive error: ${err.message}`);
-    return null;
   }
 });
 
