@@ -187,7 +187,7 @@ function createListRemote() {
 
 function createConfig(scope) {
   const modalWin = new BrowserWindow({
-    width: 700,
+    width: 500,
     height: 400,
     icon: path.join(
       __dirname,
@@ -789,7 +789,7 @@ ipcMain.on("git-config", async (_event, key, value, funcScope) => {
 ipcMain.on("git-del-config", async (_event, key, funcScope) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.raw(["config", "--unset", key, `--${funcScope}`]);
+    await git.raw(["config", `--${funcScope}`, "--unset", key]);
     return { success: true };
   } catch (err) {
     dialog.showErrorBox("Error", `Git config error: ${err.message}`);
