@@ -1,60 +1,70 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-class Status extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      status: null,
-      got: true,
-    };
-  }
+function Status() {
+  const [gitStatus, setGitStatus] = useState({});
+  const [got, setGot] = useState(false);
+  const [interval, setInterval] = useState(null);
+  const [status, setStatus] = useState("Waiting for status ...");
 
-  async componentDidMount() {
+  useEffect(async () => {
     // à chaque changement de dépôt sélectionné, on met à jour le status
     await window.electronAPI.gitActions.status().then((status) => {
-      this.setState({ status });
-      this.setState({ got: true });
+      setGitStatus(status);
+      setGot(true);
     });
 
     // Démarre l’intervalle d’actualisation
-    this.interval = setInterval(async () => {
-      // à chaque changement de dépôt sélectionné, on met à jour le status
-      await window.electronAPI.gitActions.status().then((status) => {
-        this.setState({ status });
-      });
-    }, 1000); // toutes les secondes
-  }
+    setInterval(
+      setInterval(async () => {
+        // à chaque changement de dépôt sélectionné, on met à jour le status
+        await window.electronAPI.gitActions.status().then((status) => {
+          setGitStatus(status);
+        });
+      }, 1000),
+    ); // toutes les secondes
 
-  componentWillUnmount() {
-    // Nettoie l’intervalle pour éviter les fuites mémoire
-    clearInterval(this.interval);
-  }
+    return () => {
+      // Nettoie l’intervalle pour éviter les fuites mémoire
+      clearInterval(interval);
+    };
+  }, []);
 
-  render() {
-    let status = "";
-
-    if (this.state.got) {
-      if (this.state.status != null) {
-        if (this.state.status.ahead == this.state.status.behind) {
-          status = `🟢 Up to date - Branch : ${this.state.status.current}`;
-        } else if (this.state.status.ahead > this.state.status.behind) {
-          status = `🔵 Ahead by ${this.state.status.ahead} commit(s) - Branch : ${this.state.status.current}`;
-        } else if (this.state.status.behind > this.state.status.ahead) {
-          status = `🟠 Behind by ${this.state.status.behind} commit(s) - Branch : ${this.state.status.current}`;
+  useEffect(() => {
+    if (got) {
+      if (gitStatus != null) {
+        if (gitStatus.ahead == gitStatus.behind) {
+          setStatus(`🟢 Up to date - Branch : ${gitStatus.current}`);
+        } else if (gitStatus.ahead > gitStatus.behind) {
+          setStatus(
+            `🔵 Ahead by ${gitStatus.ahead} commit(s) - Branch : ${gitStatus.current}`,
+          );
+        } else if (gitStatus.behind > gitStatus.ahead) {
+          setStatus(
+            `🟠 Behind by ${gitStatus.behind} commit(s) - Branch : ${gitStatus.current}`,
+          );
         }
       } else {
-        status = "🔴 Could not get the status";
+        setStatus("🔴 Could not get the status");
       }
     } else {
-      status = "Waiting for status ...";
+      setStatus("Waiting for status ...");
     }
+  }, [got, gitStatus]);
 
-    return (
-      <span aria-busy={!this.state.got} class="status">
-        {status}
-      </span>
-    );
-  }
+  return (
+    <span
+      aria-busy={!got}
+      class="status"
+      onClick={async () => {
+        setGot(false);
+        await window.electronAPI.gitActions.fetch().then((result) => {
+          setGot(true);
+        });
+      }}
+    >
+      {status}
+    </span>
+  );
 }
 
 export default Status;
