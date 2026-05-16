@@ -14,6 +14,8 @@ import Status from "../Components/Status.jsx";
 export default function CreateWindow() {
   const [diffMode, setDiffMode] = useState(false);
   const [fileBurgerMenu, setFileBurgerMenu] = useState(false);
+  const [file_submoduleBurgerMenu, setFile_submoduleBurgerMenu] =
+    useState(false);
   const [editBurgerMenu, setEditBurgerMenu] = useState(false);
   const [edit_cleanBurgerMenu, setEdit_cleanBurgerMenu] = useState(false);
 
@@ -23,6 +25,9 @@ export default function CreateWindow() {
 
   const toggleFileBurgerMenu = () => {
     setFileBurgerMenu((prev) => !prev);
+  };
+  const toggleFile_submoduleBurgerMenu = () => {
+    setFile_submoduleBurgerMenu((prev) => !prev);
   };
   const toggleEditBurgerMenu = () => {
     setEditBurgerMenu((prev) => !prev);
@@ -86,7 +91,7 @@ export default function CreateWindow() {
                     Fermer
                   </li>
 
-                  <div>
+                  <div style={{ width: "100%" }}>
                     <li
                       onClick={() => {
                         window.electronAPI.openListRemote();
@@ -95,6 +100,50 @@ export default function CreateWindow() {
                       Remotes
                     </li>
                   </div>
+                  <li
+                    style={{ width: "100%", display: "flex" }}
+                    onClick={() => {
+                      toggleFile_submoduleBurgerMenu();
+                    }}
+                    onMouseLeave={() => {
+                      setFile_submoduleBurgerMenu(false);
+                    }}
+                  >
+                    <p style={{ width: "100%", "margin-bottom": "0px" }}>
+                      Submodule
+                    </p>
+                    {fileBurgerMenu && file_submoduleBurgerMenu && (
+                      <ul
+                        style={{
+                          "margin-left": "90%",
+                          "min-width": "15em",
+                        }}
+                        className="BurgerMenu"
+                      >
+                        <li
+                          onClick={() => {
+                            window.electronAPI.gitActions.submodule("add");
+                          }}
+                        >
+                          Add
+                        </li>
+                        <li
+                          onClick={() => {
+                            window.electronAPI.gitActions.submodule("update");
+                          }}
+                        >
+                          Update
+                        </li>
+                        <li
+                          onClick={() => {
+                            window.electronAPI.gitActions.submodule("init");
+                          }}
+                        >
+                          Init
+                        </li>
+                      </ul>
+                    )}
+                  </li>
                 </ul>
               )}
             </li>

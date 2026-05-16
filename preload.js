@@ -60,7 +60,7 @@ try {
       clean: (mode) => ipcRenderer.send('git-clean', mode),                             // utilisé
       reflog: () => ipcRenderer.invoke('git-reflog'),                                   // pas utilisé
       gc: () => ipcRenderer.send('git-gc'),                                             // utilisé
-      submodule: (action, path) => ipcRenderer.send('git-submodule', action, path),     // pas utilisé
+      submodule: (action, path, name) => ipcRenderer.invoke('git-submodule', action, path, name),     // pas utilisé
       worktree: (action, path) => ipcRenderer.send('git-worktree', action, path),       // pas utilisé
     }
   });
