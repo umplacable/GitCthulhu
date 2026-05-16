@@ -214,6 +214,35 @@ function createConfig(scope) {
   return modalWin;
 }
 
+function openAddSubModule() {
+  const modalWin = new BrowserWindow({
+    name: `Add a submodule`,
+    width: 500,
+    height: 300,
+    icon: path.join(
+      __dirname,
+      nativeTheme.shouldUseDarkColors
+        ? "public/icons/favicon-light.ico"
+        : "public/icons/favicon-dark.ico",
+    ),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+    autoHideMenuBar: true,
+  });
+
+  modalWin.loadURL(getFilePath("AddSubModule.html"));
+
+  modalWin.once("ready-to-show", () => {
+    modalWin.show();
+  });
+
+  win.push(modalWin);
+  return modalWin;
+}
+
 // ------------------------------------ FONCTION ------------------------------------
 
 // Trouver le premier terminal disponible
@@ -525,7 +554,7 @@ ipcMain.on("git-clone", (event, url) => {
     fs.rmdirSync(gitDirRepo, { recursive: true });
   }
   git
-    .clone(url, gitDirRepo)
+    .clone(url, gitDirRepo, ["--recurse-submodules"])
     .then(() => {
       dialog
         .showMessageBox({
@@ -1036,24 +1065,28 @@ ipcMain.on("git-gc", async () => {
   }
 });
 
-ipcMain.handle("git-submodule", async (_event, action, options) => {
-  const git = simpleGit(gitDirRepo);
-  try {
-    if (action === "add") {
-      await git.submoduleAdd(options);
-    } else if (action === "update") {
-      await git.submoduleUpdate(options);
-    } else if (action === "init") {
-      await git.submoduleInit();
-    } else if (action === "sync") {
-      await git.submoduleSync();
+ipcMain.handle(
+  "git-submodule",
+  async (_event, action, repoUrl = "", repoName = "") => {
+    const git = simpleGit(gitDirRepo);
+    try {
+      if (action === "add") {
+        if (repoUrl === "" || repoName === "") {
+          openAddSubModule();
+        } else {
+          return await git.submoduleAdd(repoUrl, repoName, ["--force"]);
+        }
+      } else if (action === "update") {
+        return await git.submoduleUpdate(["--init", "--recursive"]);
+      } else if (action === "init") {
+        return await git.submoduleInit();
+      }
+    } catch (err) {
+      dialog.showErrorBox("Error", `Git submodule error: ${err.message}`);
+      return null;
     }
-    return { success: true };
-  } catch (err) {
-    dialog.showErrorBox("Error", `Git submodule error: ${err.message}`);
-    return null;
-  }
-});
+  },
+);
 
 ipcMain.handle("git-worktree", async (_event, action, options) => {
   const git = simpleGit(gitDirRepo);
