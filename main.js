@@ -971,23 +971,7 @@ ipcMain.handle("git-cherry-pick", async (_event, commit) => {
   }
 });
 
-ipcMain.handle("git-bisect", async (_event, action, commit) => {
-  const git = simpleGit(gitDirRepo);
-  try {
-    if (action === "start") {
-      await git.bisectStart();
-      await git.bisectBad(commit);
-    } else if (action === "good") {
-      await git.bisectGood(commit);
-    } else if (action === "reset") {
-      await git.bisectReset();
-    }
-    return { success: true };
-  } catch (err) {
-    dialog.showErrorBox("Error", `Git bisect error: ${err.message}`);
-    return null;
-  }
-});
+// ipcMain.handle("git-bisect", ()=>{});
 
 ipcMain.on("git-archive", async (_event) => {
   const git = simpleGit(gitDirRepo);

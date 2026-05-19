@@ -52,16 +52,16 @@ try {
       blame: (file) => ipcRenderer.invoke('git-blame', file),                           // pas utilisé
       
       /* Liste de commandes da la partie COULD */
-      chery_pick: (commit) => ipcRenderer.send('git-cherry-pick', commit),              // pas utilisé
-      bisect: (action) => ipcRenderer.send('git-bisect', action),                       // pas utilisé
+      chery_pick: (commit) => ipcRenderer.send('git-cherry-pick', commit),              // Imposible (pas dans la doc simple git)
+      bisect: () => {},                                                                 // Imposible (pas dans la doc simple git)
       archive: () => ipcRenderer.send('git-archive'),                                   // utilisé
-      shortlog: () => ipcRenderer.invoke('git-shortlog'),                               // pas utilisé
-      describe: (commit) => ipcRenderer.invoke('git-describe', commit),                 // pas utilisé
+      shortlog: () => ipcRenderer.invoke('git-shortlog'),                               // Imposible (pas dans la doc simple git. Deplus, déja utilisée sur github / gitea / ...)
+      describe: (commit) => ipcRenderer.invoke('git-describe', commit),                 // Imposible (pas dans la doc simple git)
       clean: (mode) => ipcRenderer.send('git-clean', mode),                             // utilisé
-      reflog: () => ipcRenderer.invoke('git-reflog'),                                   // pas utilisé
+      reflog: () => ipcRenderer.invoke('git-reflog'),                                   // pas utilisé, possible (mais pas dans la doc simple git)
       gc: () => ipcRenderer.send('git-gc'),                                             // utilisé
-      submodule: (action, path, name) => ipcRenderer.invoke('git-submodule', action, path, name),     // pas utilisé
-      worktree: (action, path) => ipcRenderer.send('git-worktree', action, path),       // pas utilisé
+      submodule: (action, path, name) => ipcRenderer.invoke('git-submodule', action, path, name),     // utilisé
+      worktree: (action, path) => ipcRenderer.send('git-worktree', action, path),       // Complexitée (fonctionalitée trops compliquée a implémentée)
     }
   });
 
