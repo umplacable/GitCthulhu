@@ -43,10 +43,10 @@ try {
       del_config : (key, scope) =>ipcRenderer.send('git-del-config', key, scope),       // utilisé
       list_config: () => ipcRenderer.invoke('git-list-config'),                         // utilisé
       reset: (mode) => ipcRenderer.send('git-reset', mode),                             // pas utilisé
-      revert: (commit) => ipcRenderer.send('git-revert', commit),                       // pas utilisé
+      revert: (commit) => ipcRenderer.send('git-revert', commit),                       // utilisé
       stash: (action) => ipcRenderer.send('git-stash', action),                         // pas utilisé
       fetch: () => ipcRenderer.invoke('git-fetch'),                                     // utilisé
-      show: (commit) => ipcRenderer.invoke('git-show', commit),                         // pas utilisé
+      show: (commit) => ipcRenderer.invoke('git-show', commit),                         // utilisé
       tag: (name) => ipcRenderer.send('git-tag', name),                                 // pas utilisé
       rebase: (branch) => ipcRenderer.send('git-rebase', branch),                       // pas utilisé
       blame: (file) => ipcRenderer.invoke('git-blame', file),                           // pas utilisé

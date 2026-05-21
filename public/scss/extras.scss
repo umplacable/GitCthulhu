@@ -2,13 +2,14 @@
 /*variables*/
 $bg-col-dark: rgba(19, 22, 30, 1);
 $nav-col-dark: lighten($bg-col-dark, 6%);
-$height-nav: 10%;
-$height-foot: 5%;
+$height-nav: 56px;
+$height-foot: 45px;
 $width-left: 45%;
 
 /*styles*/
 body {
     text-align : left;
+    height: 100vh;
 }
 
 h4 {
@@ -65,8 +66,8 @@ div.GitCthulhuLeft {
     width : $width-left;
     background : $bg-col-dark;
     position : fixed;
-    top : calc(10% + 20px);
-    bottom : calc($height-foot + 30px);
+    top : calc($height-nav + 20px);
+    bottom : calc($height-foot + 10px);
     overflow-y: auto;
 }
 
@@ -74,7 +75,7 @@ div.GitCthulhuLeft {
     width: 100%;
     position: fixed;
     top : 0;
-    bottom : calc($height-foot + 30px);;
+    bottom : calc($height-foot + 10px);
     padding: 10px;
     overflow-x: hidden;
     overflow-y: auto;
@@ -84,8 +85,8 @@ div.GitCthulhuSideshow {
     width: calc(100% - $width-left);
     background : $bg-col-dark;
     position : fixed;
-    top : calc(10% + 20px);
-    bottom : calc($height-foot + 30px);
+    top : calc($height-nav + 20px);
+    bottom : calc($height-foot + 10px);
     left : $width-left;
     border-left : solid 1px rgba(136,207,182, 0.25);
     overflow-y: auto;
@@ -164,6 +165,8 @@ ul.BurgerMenu{
         background-color : lighten($bg-col-dark, 1%);
         width: 100%;
         padding: 0 10px;
+        margin: 0;
+        list-style: none;
     }
     div{
         border: 3px solid lighten($bg-col-dark, 3%);
@@ -206,7 +209,6 @@ div.GitCthulhuFoot>button{
 
 .CommitList{
     font-size: medium;
-    width: fit-content;
 }
 
 .GitCthulhuSideshow > div.GraphBranches{
