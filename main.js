@@ -868,14 +868,12 @@ ipcMain.handle("git-reset", async (_event, mode, commit) => {
   }
 });
 
-ipcMain.handle("git-revert", async (_event, commit) => {
+ipcMain.on("git-revert", async (_event, commit) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.revert([commit]);
-    return { success: true };
+    await git.revert(commit);
   } catch (err) {
     dialog.showErrorBox("Error", `Git revert error: ${err.message}`);
-    return null;
   }
 });
 
