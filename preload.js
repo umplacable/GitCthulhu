@@ -52,7 +52,7 @@ try {
       blame: (file) => ipcRenderer.invoke('git-blame', file),                           // pas utilisé
       
       /* Liste de commandes da la partie COULD */
-      chery_pick: (commit) => ipcRenderer.send('git-cherry-pick', commit),              // Imposible (pas dans la doc simple git)
+      chery_pick: (commit) => ipcRenderer.send('git-cherry-pick', commit),              // pas utilisé, possible (pas dans la doc simple git)
       bisect: () => {},                                                                 // Imposible (pas dans la doc simple git)
       archive: () => ipcRenderer.send('git-archive'),                                   // utilisé
       shortlog: () => ipcRenderer.invoke('git-shortlog'),                               // Imposible (pas dans la doc simple git. Deplus, déja utilisée sur github / gitea / ...)

@@ -958,14 +958,12 @@ git submodule → gérer des dépôts imbriqués
 git worktree → travailler sur plusieurs branches à la fois
 */
 
-ipcMain.handle("git-cherry-pick", async (_event, commit) => {
+ipcMain.on("git-cherry-pick", async (_event, commit) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.cherryPick([commit]);
-    return { success: true };
+    await git.raw(["cherry-pick", commit]);
   } catch (err) {
     dialog.showErrorBox("Error", `Git cherry-pick error: ${err.message}`);
-    return null;
   }
 });
 

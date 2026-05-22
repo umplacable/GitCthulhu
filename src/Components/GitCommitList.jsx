@@ -239,11 +239,20 @@ function GitCommitList(props) {
                           <li
                             onClick={(event) => {
                               event.stopPropagation();
-                              console.log(commit.hash);
                               window.electronAPI.gitActions.revert(commit.hash);
                             }}
                           >
                             Revert
+                          </li>
+                          <li
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              window.electronAPI.gitActions.chery_pick(
+                                commit.hash,
+                              );
+                            }}
+                          >
+                            Cherry-pick
                           </li>
                           {index === 0 && (
                             <li
