@@ -746,7 +746,7 @@ ipcMain.on("git-checkout-dist", (_event, branch) => {
 ipcMain.handle("git-merge", async (_event, branch) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.merge([branch]);
+    await git.merge(["--no-ff",branch]);
     return { success: true };
   } catch (err) {
     // Vérifier s'il y a des conflits
