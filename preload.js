@@ -24,9 +24,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     addbranch: (name) => ipcRenderer.invoke('git-add-branch', name),                  // utilisé
     delbranch: (name) => ipcRenderer.invoke('git-del-branch', name),                  // utilisé
     branchList: () => ipcRenderer.invoke('git-branch-local'),                         // utilisé
-    checkout: (branch) => ipcRenderer.send('git-checkout', branch),                   // utilisé
-    merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé
-    pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
-    push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
   }
 });

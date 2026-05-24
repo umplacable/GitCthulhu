@@ -43,41 +43,6 @@ function createGitCreatorWindow() {
   win.push(creatorWin);
 }
 
-function createGitSelectorWindow() {
-  const selectorWin = new BrowserWindow({
-    width: 600,
-    height: 450,
-    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
-    },
-    autoHideMenuBar: true,
-    resizable: false,
-  });
-
-  selectorWin.loadURL(getFilePath('GitSelector.html'));
-  win.push(selectorWin);
-}
-
-function OpenRepoInit() {
-  const initWin = new BrowserWindow({
-    width: 600,
-    height: 450,
-    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
-    },
-    autoHideMenuBar: true,
-    resizable: false,
-  });
-
-  initWin.loadURL(getFilePath('InitRepo.html'));
-  win.push(initWin);
-}
 
 function createWindow(nom, dirpath) {
   const mainWin = new BrowserWindow({
@@ -94,51 +59,6 @@ function createWindow(nom, dirpath) {
   });
 
   mainWin.loadURL(getFilePath('index.html'));
-  mainWin.setTitle(`${nom} - ${dirpath}`);
-  win.push(mainWin);
-  return mainWin
-}
-
-function createIsGit() {
-  const modalWin = new BrowserWindow({
-    name: `No git repo detected`,
-    width: 500,
-    height: 400,
-    icon: path.join(__dirname, nativeTheme.shouldUseDarkColors ? 'public/icons/favicon-light.ico' : 'public/icons/favicon-dark.ico'),
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
-    },
-    autoHideMenuBar: true,
-  });
-
-  modalWin.loadURL(getFilePath('InitRepo.html'));
-
-  modalWin.once('ready-to-show', () => {
-    modalWin.show();
-  });
-
-  win.push(modalWin);
-  return modalWin
-}
-
-// --- FONCTION ---
-
-// Trouver le premier terminal disponible
-function findTerminal(terminals) {
-  return new Promise((resolve) => {
-    const tryNext = (index) => {
-      if (index >= terminals.length) return resolve(null);
-
-      exec(terminals[index], (error) => {
-        if (!error) return resolve(terminals[index]);
-        tryNext(index + 1);
-      });
-    };
-    tryNext(0);
-  });
-};
 
 // --- APP READY ---
 app.whenReady().then(() => {
