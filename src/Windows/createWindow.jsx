@@ -4,6 +4,7 @@ import GitBranchList from "../Components/GitBranchList.jsx";
 import GitCommitAction from "../Components/GitCommitAction.jsx";
 import GitCommitList from "../Components/GitCommitList.jsx";
 import GitDelBranch from "../Components/GitDelBranch.jsx";
+import GitMergeAction from "../Components/GitMergeAction.jsx";
 import GitSimpleAction from "../Components/GitSimpleAction.jsx";
 import Status from "../Components/Status.jsx";
 
@@ -303,6 +304,7 @@ export default function CreateWindow() {
             nom="Delete"
             action={window.electronAPI.gitActions.branch}
           />
+          <GitMergeAction />
 
           <h5>Commits</h5>
           <li
