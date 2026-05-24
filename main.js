@@ -237,10 +237,6 @@ function createMergeConflictWindow() {
   conflictWin.loadURL(getFilePath("GitMergeConflict.html"));
   conflictWin.setTitle("Git — Résolution de conflits");
 
-  conflictWin.once("ready-to-show", () => {
-    conflictWin.show();
-  });
-
   win.push(conflictWin);
   return conflictWin;
 }
@@ -745,6 +741,7 @@ ipcMain.on("git-checkout-dist", (_event, branch) => {
 
 ipcMain.handle("git-merge", async (_event, branch) => {
   const git = simpleGit(gitDirRepo);
+  let conflictWin = createMergeConflictWindow();
   try {
     await git.merge([branch]);
     return { success: true };
@@ -754,7 +751,9 @@ ipcMain.handle("git-merge", async (_event, branch) => {
       const status = await git.status();
       if (status.conflicted && status.conflicted.length > 0) {
         gitConflicts = { branch, files: [...status.conflicted] };
-        createMergeConflictWindow();
+        conflictWin.once("ready-to-show", () => {
+          conflictWin.show();
+        });
         return { success: false, conflicts: status.conflicted };
       }
     } catch (_) {}

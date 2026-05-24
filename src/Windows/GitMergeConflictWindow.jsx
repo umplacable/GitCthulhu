@@ -75,9 +75,10 @@ export default function GitMergeConflictWindow() {
     }
   };
 
-  const allResolved = resolvedFiles.length >= conflicts.files.length;
-  const currentFile = conflicts.files[currentIndex];
-  const isCurrentResolved = resolvedFiles.includes(currentFile);
+  const allResolved =
+    conflicts && resolvedFiles.length >= conflicts.files.length;
+  const currentFile = conflicts ? conflicts.files[currentIndex] : null;
+  const isCurrentResolved = currentFile && resolvedFiles.includes(currentFile);
 
   return (
     <>
@@ -87,137 +88,137 @@ export default function GitMergeConflictWindow() {
         </div>
       ) : (
         <>
-          !conflicts || conflicts.files.length === 0(
-          <div className="conflict-loading">
-            <p>Aucun conflit détecté.</p>
-            <button onClick={() => window.electronAPI.closeWindow()}>
-              Fermer
-            </button>
-          </div>
+          {!conflicts || conflicts.files.length === 0 ? (
+            <div className="conflict-loading">
+              <p>Aucun conflit détecté.</p>
+              <button onClick={() => window.electronAPI.closeWindow()}>
+                Fermer
+              </button>
+            </div>
           ) : (
-          <div className="conflict-root">
-            {/* En-tête */}
-            <div className="conflict-header">
-              <div className="conflict-header-info">
-                <h4>🔀 Résolution de conflits</h4>
-                <p className="conflict-subtitle">
-                  Merge de <strong>"{conflicts.branch}"</strong> —{" "}
-                  <span
-                    className={
-                      allResolved ? "resolved-count-done" : "resolved-count"
-                    }
-                  >
-                    {resolvedFiles.length}/{conflicts.files.length} fichier(s)
-                    résolu(s)
-                  </span>
-                </p>
-              </div>
-              <div className="conflict-header-actions">
-                <button
-                  className="conflict-abort-btn"
-                  onClick={abortMerge}
-                  aria-busy={aborting}
-                  disabled={aborting || completing}
-                >
-                  ✕ Annuler le merge
-                </button>
-                {allResolved && (
+            <div className="conflict-root" key="conflict-root">
+              {/* En-tête */}
+              <div className="conflict-header">
+                <div className="conflict-header-info">
+                  <h4>🔀 Résolution de conflits</h4>
+                  <p className="conflict-subtitle">
+                    Merge de <strong>"{conflicts.branch}"</strong> —{" "}
+                    <span
+                      className={
+                        allResolved ? "resolved-count-done" : "resolved-count"
+                      }
+                    >
+                      {resolvedFiles.length}/{conflicts.files.length} fichier(s)
+                      résolu(s)
+                    </span>
+                  </p>
+                </div>
+                <div className="conflict-header-actions">
                   <button
-                    className="conflict-complete-btn"
-                    onClick={completeMerge}
-                    aria-busy={completing}
-                    disabled={completing || aborting}
+                    className="conflict-abort-btn"
+                    onClick={abortMerge}
+                    aria-busy={aborting}
+                    disabled={aborting || completing}
                   >
-                    ✓ Compléter le merge
+                    ✕ Annuler le merge
                   </button>
-                )}
-              </div>
-            </div>
-
-            {/* Liste des fichiers en conflit */}
-            <div className="conflict-file-tabs">
-              {conflicts.files.map((file, index) => {
-                const isResolved = resolvedFiles.includes(file);
-                const isActive = index === currentIndex;
-                return (
-                  <button
-                    key={file}
-                    className={`conflict-file-tab ${isActive ? "active" : ""} ${isResolved ? "resolved" : ""}`}
-                    onClick={() => setCurrentIndex(index)}
-                    title={file}
-                  >
-                    {isResolved ? "✓ " : "⚠ "}
-                    {file.split("/").pop()}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Zone principale */}
-            {allResolved ? (
-              <div className="conflict-all-resolved">
-                <p>✅ Tous les conflits ont été résolus.</p>
-                <p>
-                  Cliquez sur <strong>"Compléter le merge"</strong> pour
-                  finaliser.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="conflict-file-path">
-                  <span>📄 {currentFile}</span>
-                  {isCurrentResolved && (
-                    <span className="resolved-badge">✓ Résolu</span>
+                  {allResolved && (
+                    <button
+                      className="conflict-complete-btn"
+                      onClick={completeMerge}
+                      aria-busy={completing}
+                      disabled={completing || aborting}
+                    >
+                      ✓ Compléter le merge
+                    </button>
                   )}
                 </div>
+              </div>
 
-                {loadingVersions ? (
-                  <div className="conflict-loading-versions">
-                    <span aria-busy="true">Chargement du fichier...</span>
+              {/* Liste des fichiers en conflit */}
+              <div className="conflict-file-tabs">
+                {conflicts.files.map((file, index) => {
+                  const isResolved = resolvedFiles.includes(file);
+                  const isActive = index === currentIndex;
+                  return (
+                    <button
+                      key={file}
+                      className={`conflict-file-tab ${isActive ? "active" : ""} ${isResolved ? "resolved" : ""}`}
+                      onClick={() => setCurrentIndex(index)}
+                      title={file}
+                    >
+                      {isResolved ? "✓ " : "⚠ "}
+                      {file.split("/").pop()}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Zone principale */}
+              {allResolved ? (
+                <div className="conflict-all-resolved">
+                  <p>✅ Tous les conflits ont été résolus.</p>
+                  <p>
+                    Cliquez sur <strong>"Compléter le merge"</strong> pour
+                    finaliser.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="conflict-file-path">
+                    <span>📄 {currentFile}</span>
+                    {isCurrentResolved && (
+                      <span className="resolved-badge">✓ Résolu</span>
+                    )}
                   </div>
-                ) : versions ? (
-                  <div className="conflict-viewer">
-                    {/* Panneau NOTRE VERSION */}
-                    <div className="conflict-panel">
-                      <div className="conflict-panel-header ours-header">
-                        ← NOTRE VERSION (HEAD — branche courante)
-                      </div>
-                      <pre className="conflict-code">{versions.ours}</pre>
-                      <button
-                        className="keep-ours-btn"
-                        onClick={() => resolveConflict("ours")}
-                        disabled={isCurrentResolved}
-                      >
-                        ✓ Garder notre version
-                      </button>
+
+                  {loadingVersions ? (
+                    <div className="conflict-loading-versions">
+                      <span aria-busy="true">Chargement du fichier...</span>
                     </div>
-
-                    <div className="conflict-panel-divider" />
-
-                    {/* Panneau LEUR VERSION */}
-                    <div className="conflict-panel">
-                      <div className="conflict-panel-header theirs-header">
-                        VERSION À MERGER ({conflicts.branch}) →
+                  ) : versions ? (
+                    <div className="conflict-viewer">
+                      {/* Panneau NOTRE VERSION */}
+                      <div className="conflict-panel">
+                        <div className="conflict-panel-header ours-header">
+                          ← NOTRE VERSION (HEAD — branche courante)
+                        </div>
+                        <pre className="conflict-code">{versions.ours}</pre>
+                        <button
+                          className="keep-ours-btn"
+                          onClick={() => resolveConflict("ours")}
+                          disabled={isCurrentResolved}
+                        >
+                          ✓ Garder notre version
+                        </button>
                       </div>
-                      <pre className="conflict-code">{versions.theirs}</pre>
-                      <button
-                        className="keep-theirs-btn"
-                        onClick={() => resolveConflict("theirs")}
-                        disabled={isCurrentResolved}
-                      >
-                        ✓ Garder leur version
-                      </button>
+
+                      <div className="conflict-panel-divider" />
+
+                      {/* Panneau LEUR VERSION */}
+                      <div className="conflict-panel">
+                        <div className="conflict-panel-header theirs-header">
+                          VERSION À MERGER ({conflicts.branch}) →
+                        </div>
+                        <pre className="conflict-code">{versions.theirs}</pre>
+                        <button
+                          className="keep-theirs-btn"
+                          onClick={() => resolveConflict("theirs")}
+                          disabled={isCurrentResolved}
+                        >
+                          ✓ Garder leur version
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="conflict-loading-versions">
-                    <span>Impossible de charger le fichier.</span>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-          )
+                  ) : (
+                    <div className="conflict-loading-versions">
+                      <span>Impossible de charger le fichier.</span>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </>
       )}
     </>
