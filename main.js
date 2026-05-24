@@ -19,6 +19,7 @@ const isDev = !app.isPackaged;
 let configPath;
 let ammend = false;
 let currentConfigScope = "local"; // "local" ou "global"
+let gitConflicts = null; // { branch, files: [...] } — état de merge en cours
 
 // ------------------------------------ FONCTION UTILITAIRE POUR LES CHEMINS ------------------------------------
 function getFilePath(filename) {
@@ -212,6 +213,36 @@ function createConfig(scope) {
 
   win.push(modalWin);
   return modalWin;
+}
+
+function createMergeConflictWindow() {
+  const conflictWin = new BrowserWindow({
+    width: 1100,
+    height: 650,
+    icon: path.join(
+      __dirname,
+      nativeTheme.shouldUseDarkColors
+        ? "public/icons/favicon-light.ico"
+        : "public/icons/favicon-dark.ico",
+    ),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
+    autoHideMenuBar: true,
+    show: false,
+  });
+
+  conflictWin.loadURL(getFilePath("GitMergeConflict.html"));
+  conflictWin.setTitle("Git — Résolution de conflits");
+
+  conflictWin.once("ready-to-show", () => {
+    conflictWin.show();
+  });
+
+  win.push(conflictWin);
+  return conflictWin;
 }
 
 function openAddSubModule() {
@@ -712,13 +743,84 @@ ipcMain.on("git-checkout-dist", (_event, branch) => {
     );
 });
 
-ipcMain.on("git-merge", (_event, branch) => {
+ipcMain.handle("git-merge", async (_event, branch) => {
   const git = simpleGit(gitDirRepo);
-  git
-    .merge([branch])
-    .catch((err) =>
-      dialog.showErrorBox("Error", `Could not merge: ${err.message}`),
-    );
+  try {
+    await git.merge(["--no-ff",branch]);
+    return { success: true };
+  } catch (err) {
+    // Vérifier s'il y a des conflits
+    try {
+      const status = await git.status();
+      if (status.conflicted && status.conflicted.length > 0) {
+        gitConflicts = { branch, files: [...status.conflicted] };
+        createMergeConflictWindow();
+        return { success: false, conflicts: status.conflicted };
+      }
+    } catch (_) {}
+    dialog.showErrorBox("Error", `Could not merge: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle("git-merge-get-conflicts", async () => {
+  return gitConflicts;
+});
+
+ipcMain.handle("git-merge-get-versions", async (_event, filepath) => {
+  const git = simpleGit(gitDirRepo);
+  // Normaliser le chemin pour git (slashes)
+  const gitPath = filepath.replace(/\\/g, "/");
+  let ours = "";
+  let theirs = "";
+  try {
+    ours = await git.show([`HEAD:${gitPath}`]);
+  } catch (e) {
+    ours = `(fichier absent dans HEAD)\n${e.message}`;
+  }
+  try {
+    theirs = await git.show([`MERGE_HEAD:${gitPath}`]);
+  } catch (e) {
+    theirs = `(fichier absent dans la branche entrante)\n${e.message}`;
+  }
+  return { ours, theirs, filepath };
+});
+
+ipcMain.handle("git-merge-resolve", async (_event, filepath, content) => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    const fullPath = path.join(gitDirRepo, filepath.replace(/\//g, path.sep));
+    fs.writeFileSync(fullPath, content, "utf-8");
+    await git.add(filepath.replace(/\\/g, "/"));
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not resolve conflict: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle("git-merge-complete", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.raw(["commit", "--no-edit"]);
+    gitConflicts = null;
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not complete merge: ${err.message}`);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle("git-merge-abort", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.merge(["--abort"]);
+    gitConflicts = null;
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not abort merge: ${err.message}`);
+    return { success: false, error: err.message };
+  }
 });
 
 ipcMain.handle("git-pull", async () => {

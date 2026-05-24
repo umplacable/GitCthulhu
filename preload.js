@@ -31,7 +31,12 @@ try {
       branchList: () => ipcRenderer.invoke('git-branch-local'),                         // utilisé
       checkout: (branch) => ipcRenderer.send('git-checkout', branch),                   // utilisé
       checkout_dist: (branch) => ipcRenderer.send('git-checkout-dist', branch),         // utilisé
-      merge: (branch) => ipcRenderer.send('git-merge', branch),                         // pas utilisé (Riad)
+      merge: (branch) => ipcRenderer.invoke('git-merge', branch),                       // utilisé (Riad)
+      getMergeConflicts: () => ipcRenderer.invoke('git-merge-get-conflicts'),           // utilisé (Riad)
+      getMergeVersions: (file) => ipcRenderer.invoke('git-merge-get-versions', file),  // utilisé (Riad)
+      resolveConflict: (file, content) => ipcRenderer.invoke('git-merge-resolve', file, content), // utilisé (Riad)
+      completeMerge: () => ipcRenderer.invoke('git-merge-complete'),                   // utilisé (Riad)
+      abortMerge: () => ipcRenderer.invoke('git-merge-abort'),                         // utilisé (Riad)
       pull: () => ipcRenderer.invoke('git-pull'),                                       // utilisé
       push: () => ipcRenderer.invoke('git-push'),                                       // utilisé
       list_remotes: () => ipcRenderer.invoke('git-list-remote'),                        // utilisé

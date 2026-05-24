@@ -10,6 +10,7 @@ module.exports = {
     ListRemoteApp: "./src/ListRemoteApp.jsx",
     GitConfigApp: "./src/GitConfigApp.jsx",
     AddSubmoduleApp: "./src/AddSubmoduleApp.jsx",
+    GitMergeConflictApp: "./src/GitMergeConflictApp.jsx",
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -63,6 +64,11 @@ module.exports = {
       template: "./public/AddSubModule.html",
       filename: "AddSubModule.html",
       chunks: ["AddSubmoduleApp"],
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/GitMergeConflict.html",
+      filename: "GitMergeConflict.html",
+      chunks: ["GitMergeConflictApp"],
     }),
   ],
   devServer: {
