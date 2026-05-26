@@ -22,6 +22,7 @@ export default function CreateWindow() {
   const [editBurgerMenu, setEditBurgerMenu] = useState(false);
   const [edit_cleanBurgerMenu, setEdit_cleanBurgerMenu] = useState(false);
   const [branchLog, setBranchLog] = useState("");
+  const [sideshowContent, setSideshowContent] = useState("Commit"); // Commit || Topologie
 
   const toggleDiffMode = () => {
     setDiffMode((prev) => !prev);
@@ -51,6 +52,12 @@ export default function CreateWindow() {
     let res = await window.electronAPI.gitActions.log_branch();
     setBranchLog(res);
   }, []);
+
+  useEffect(() => {
+    if (diffMode) {
+      setSideshowContent("Commit");
+    }
+  }, [diffMode]);
 
   return (
     <>
@@ -322,8 +329,74 @@ export default function CreateWindow() {
       </div>
 
       <div class="GitCthulhuSideshow">
-        <GitTopologie ascii={branchLog} />
-        {/*<GitCommitList diffMode={diffMode} />*/}
+        <nav
+          style={{
+            "justify-content": "flex-start",
+            padding: "0.5em",
+            "padding-bottom": "0",
+            "border-bottom": "#304444 1px solid",
+          }}
+        >
+          <span
+            onClick={() => {
+              setSideshowContent("Commit");
+            }}
+            style={
+              sideshowContent === "Commit"
+                ? {
+                    padding: "0.5em",
+                    border: "#304444 1px solid",
+                    "border-bottom": "#00000000 0px",
+                    "border-radius": "5px",
+                    margin: "0.5em",
+                    marginBottom: "0px",
+                    cursor: "pointer",
+                  }
+                : {
+                    padding: "0.5em",
+                    margin: "0.5em",
+                    marginBottom: "0px",
+                    cursor: "pointer",
+                  }
+            }
+          >
+            Commit
+          </span>
+          <span
+            onClick={() => {
+              if (!diffMode) {
+                setSideshowContent("Topologie");
+              }
+            }}
+            style={
+              sideshowContent === "Topologie"
+                ? {
+                    padding: "0.5em",
+                    border: "#304444 1px solid",
+                    "border-bottom": "#00000000 0px",
+                    "border-radius": "5px",
+                    margin: "0.5em",
+                    marginBottom: "0px",
+                    cursor: "pointer",
+                  }
+                : {
+                    padding: "0.5em",
+                    margin: "0.5em",
+                    marginBottom: "0px",
+                    cursor: "pointer",
+                  }
+            }
+          >
+            Topologie
+          </span>
+        </nav>
+        {sideshowContent === "Commit" ? (
+          <GitCommitList diffMode={diffMode} />
+        ) : sideshowContent === "Topologie" ? (
+          <GitTopologie ascii={branchLog} />
+        ) : (
+          ""
+        )}
       </div>
 
       <div class="GitCthulhuFoot">
