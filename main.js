@@ -666,6 +666,24 @@ ipcMain.handle("git-log", async () => {
   }
 });
 
+ipcMain.handle("git-log-branch", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    const log = await git.raw([
+      "log",
+      "--graph",
+      "--abbrev-commit",
+      "--decorate",
+      "--format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)#=cthulhu=#- %an%C(reset)%C(auto)%d%C(reset)'",
+      "--all",
+    ]);
+    return log;
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not get log: ${err.message}`);
+    return null;
+  }
+});
+
 ipcMain.handle("git-diff", async (_event, commit1, commit2) => {
   const git = simpleGit(gitDirRepo);
   try {
@@ -746,7 +764,7 @@ ipcMain.on("git-checkout-dist", (_event, branch) => {
 ipcMain.handle("git-merge", async (_event, branch) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.merge(["--no-ff",branch]);
+    await git.merge(["--no-ff", branch]);
     return { success: true };
   } catch (err) {
     // Vérifier s'il y a des conflits

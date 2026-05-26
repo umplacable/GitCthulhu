@@ -1,3 +1,4 @@
+import { use } from "marked";
 import React, { useEffect, useState } from "react";
 import GitAddBranchAction from "../Components/GitAddBranchAction.jsx";
 import GitBranchList from "../Components/GitBranchList.jsx";
@@ -6,6 +7,7 @@ import GitCommitList from "../Components/GitCommitList.jsx";
 import GitDelBranch from "../Components/GitDelBranch.jsx";
 import GitMergeAction from "../Components/GitMergeAction.jsx";
 import GitSimpleAction from "../Components/GitSimpleAction.jsx";
+import GitTopologie from "../Components/GitTopologie.jsx";
 import Status from "../Components/Status.jsx";
 
 // import "../public/scss/extras.scss";
@@ -19,6 +21,7 @@ export default function CreateWindow() {
     useState(false);
   const [editBurgerMenu, setEditBurgerMenu] = useState(false);
   const [edit_cleanBurgerMenu, setEdit_cleanBurgerMenu] = useState(false);
+  const [branchLog, setBranchLog] = useState("");
 
   const toggleDiffMode = () => {
     setDiffMode((prev) => !prev);
@@ -43,8 +46,10 @@ export default function CreateWindow() {
     } catch (error) {}
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     checkFetch();
+    let res = await window.electronAPI.gitActions.log_branch();
+    setBranchLog(res);
   }, []);
 
   return (
@@ -317,7 +322,8 @@ export default function CreateWindow() {
       </div>
 
       <div class="GitCthulhuSideshow">
-        <GitCommitList diffMode={diffMode} />
+        <GitTopologie ascii={branchLog} />
+        {/*<GitCommitList diffMode={diffMode} />*/}
       </div>
 
       <div class="GitCthulhuFoot">

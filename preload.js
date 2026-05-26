@@ -25,6 +25,7 @@ try {
       ammend: (message) => ipcRenderer.send('git-togle-amend', message),                // utilisé
       status: () => ipcRenderer.invoke('git-status'),                                   // utilisé
       log: () => ipcRenderer.invoke('git-log'),                                         // utilisé
+      log_branch: () => ipcRenderer.invoke('git-log-branch'),                                         // utilisé
       diff: (commit1, commit2) => ipcRenderer.invoke('git-diff', commit1, commit2),     // utilisé (Riad)
       addbranch: (name) => ipcRenderer.invoke('git-add-branch', name),                  // utilisé
       delbranch: (name) => ipcRenderer.invoke('git-del-branch', name),                  // utilisé
