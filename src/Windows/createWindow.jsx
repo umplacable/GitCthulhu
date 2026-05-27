@@ -6,6 +6,7 @@ import GitCommitAction from "../Components/GitCommitAction.jsx";
 import GitCommitList from "../Components/GitCommitList.jsx";
 import GitDelBranch from "../Components/GitDelBranch.jsx";
 import GitMergeAction from "../Components/GitMergeAction.jsx";
+import GitRebaseAction from "../Components/GitRebaseAction.jsx";
 import GitSimpleAction from "../Components/GitSimpleAction.jsx";
 import GitTopologie from "../Components/GitTopologie.jsx";
 import Status from "../Components/Status.jsx";
@@ -317,6 +318,7 @@ export default function CreateWindow() {
             action={window.electronAPI.gitActions.branch}
           />
           <GitMergeAction />
+          <GitRebaseAction />
 
           <h5>Commits</h5>
           <li

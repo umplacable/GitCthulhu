@@ -1055,14 +1055,40 @@ ipcMain.handle("git-tag", async (_event, tag) => {
   }
 });
 
-ipcMain.handle("git-rebase", async (_event, branch) => {
+ipcMain.handle("git-rebase", async (event, branch) => {
   const git = simpleGit(gitDirRepo);
   try {
     await git.rebase([branch]);
     return { success: true };
   } catch (err) {
-    dialog.showErrorBox("Error", `Git rebase error: ${err.message}`);
-    return null;
+    // Proposer à l'utilisateur d'annuler le rebase en cas d'échec (ex: conflits)
+    const win = BrowserWindow.fromWebContents(event.sender);
+    const choice = await dialog.showMessageBox(win, {
+      type: "error",
+      title: "Rebase échoué",
+      message: `Le rebase sur "${branch}" a échoué.`,
+      detail: err.message + "\n\nVoulez-vous annuler le rebase et restaurer l'état précédent ?",
+      buttons: ["Annuler le rebase", "Laisser en l'état"],
+      defaultId: 0,
+      cancelId: 1,
+    });
+    if (choice.response === 0) {
+      try {
+        await git.rebase(["--abort"]);
+      } catch (_) {}
+    }
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle("git-rebase-abort", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    await git.rebase(["--abort"]);
+    return { success: true };
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not abort rebase: ${err.message}`);
+    return { success: false };
   }
 });
 

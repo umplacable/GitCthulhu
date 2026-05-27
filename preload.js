@@ -54,7 +54,8 @@ try {
       fetch: () => ipcRenderer.invoke('git-fetch'),                                     // utilisé
       show: (commit) => ipcRenderer.invoke('git-show', commit),                         // utilisé
       tag: (name) => ipcRenderer.send('git-tag', name),                                 // pas utilisé
-      rebase: (branch) => ipcRenderer.send('git-rebase', branch),                       // pas utilisé
+      rebase: (branch) => ipcRenderer.invoke('git-rebase', branch),                    // utilisé
+      rebase_abort: () => ipcRenderer.invoke('git-rebase-abort'),                         // utilisé
       blame: (file) => ipcRenderer.invoke('git-blame', file),                           // pas utilisé
       
       /* Liste de commandes da la partie COULD */
