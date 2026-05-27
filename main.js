@@ -327,7 +327,7 @@ nativeTheme.on("updated", () => {
 
 // ------------------------------------ IPC HANDLERS / EVENTS ------------------------------------
 
-ipcMain.on("open-select-window", async (event, nom, dirpath) => {
+const openRepoWin = async (event, nom, dirpath) => {
   try {
     gitDirRepo = dirpath;
     const senderWin = BrowserWindow.fromWebContents(event.sender);
@@ -371,39 +371,18 @@ ipcMain.on("open-select-window", async (event, nom, dirpath) => {
       `Impossible d’ouvrir la fenêtre : ${err.message}`,
     );
   }
-});
+};
 
-ipcMain.on("open-select_create-repo-window", () => {
-  createGitCreatorWindow();
-});
+ipcMain.on("open-select-window", openRepoWin);
 
-ipcMain.on("open-init-repo-window", () => {
-  OpenRepoInit();
-});
-
-ipcMain.on("open-list-remote-window", () => {
-  createListRemote();
-});
-
-ipcMain.on("close-window", (event) => {
-  const senderWin = BrowserWindow.fromWebContents(event.sender);
-  if (senderWin) senderWin.close();
-});
-
-ipcMain.handle("get-config", () => {
-  if (!fs.existsSync(configPath)) return null;
-  const content = fs.readFileSync(configPath, "utf-8");
-  return content ? ini.parse(content) : null;
-});
-
-ipcMain.on("add-repository", async (event) => {
+const addRepository = async (event) => {
   const senderWin = BrowserWindow.fromWebContents(event.sender);
   if (!senderWin) return;
 
   const result = await dialog.showOpenDialog(senderWin, {
     properties: ["openDirectory"],
   });
-  if (result.canceled) return;
+  if (result.canceled) return null;
 
   const dirpath = result.filePaths[0];
   const git = simpleGit(dirpath);
@@ -436,7 +415,40 @@ ipcMain.on("add-repository", async (event) => {
   win.forEach((elt) => {
     if (elt && !elt.isDestroyed()) elt.reload();
   });
+
+  return dirpath;
+};
+
+ipcMain.on("open-select_create-repo-window", () => {
+  createGitCreatorWindow();
 });
+
+ipcMain.on("open-init-repo-window", async (event) => {
+  const res = await addRepository(event);
+  if (!res) return;
+  const repo = simpleGit(res);
+
+  if (await repo.checkIsRepo().catch(() => false))
+    openRepoWin(event, res.split(/[\\/]/).pop(), res);
+  else OpenRepoInit();
+});
+
+ipcMain.on("open-list-remote-window", () => {
+  createListRemote();
+});
+
+ipcMain.on("close-window", (event) => {
+  const senderWin = BrowserWindow.fromWebContents(event.sender);
+  if (senderWin) senderWin.close();
+});
+
+ipcMain.handle("get-config", () => {
+  if (!fs.existsSync(configPath)) return null;
+  const content = fs.readFileSync(configPath, "utf-8");
+  return content ? ini.parse(content) : null;
+});
+
+ipcMain.on("add-repository", addRepository);
 
 ipcMain.handle("get-readme", async (_event, dirpath) => {
   try {
@@ -666,6 +678,24 @@ ipcMain.handle("git-log", async () => {
   }
 });
 
+ipcMain.handle("git-log-branch", async () => {
+  const git = simpleGit(gitDirRepo);
+  try {
+    const log = await git.raw([
+      "log",
+      "--graph",
+      "--abbrev-commit",
+      "--decorate",
+      "--format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)#=cthulhu=#- %an%C(reset)%C(auto)%d%C(reset)'",
+      "--all",
+    ]);
+    return log;
+  } catch (err) {
+    dialog.showErrorBox("Error", `Could not get log: ${err.message}`);
+    return null;
+  }
+});
+
 ipcMain.handle("git-diff", async (_event, commit1, commit2) => {
   const git = simpleGit(gitDirRepo);
   try {
@@ -746,7 +776,7 @@ ipcMain.on("git-checkout-dist", (_event, branch) => {
 ipcMain.handle("git-merge", async (_event, branch) => {
   const git = simpleGit(gitDirRepo);
   try {
-    await git.merge(["--no-ff",branch]);
+    await git.merge(["--no-ff", branch]);
     return { success: true };
   } catch (err) {
     // Vérifier s'il y a des conflits
