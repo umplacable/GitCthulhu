@@ -310,7 +310,7 @@ export default function GitTopologie({ ascii }) {
     let previousLanes = [];
     let nextColorIndex = 0;
 
-    return asciiMap.map((line) => {
+    return asciiMap.map((line, index) => {
       const splited = line.split("'");
       const hashMatch = line.match(HASH_RE);
 
@@ -339,19 +339,105 @@ export default function GitTopologie({ ascii }) {
 
         let color;
         if (char === "|" || char === "*") {
-          color =
-            previousLanes[col] ?? COLORS[nextColorIndex++ % COLORS.length];
-          currentLanes[col] = color;
+          try {
+            let char00 = asciiMap[index - 1][col - 2] ?? "";
+            let char0 = asciiMap[index - 1][col - 1] ?? "";
+            let char1 = asciiMap[index - 1][col] ?? "";
+            let char2 = asciiMap[index - 1][col + 1] ?? "";
+
+            if (char1 === "|" || char1 === "*") {
+              color = previousLanes[col];
+            } else if (char === "|" && char0 === "\\") {
+              color = previousLanes[col - 1];
+            } else if (char2 === "/") {
+              color = previousLanes[col + 1];
+            } else {
+              color = COLORS[nextColorIndex++ % COLORS.length];
+            }
+          } catch {
+            color =
+              previousLanes[col] ?? COLORS[nextColorIndex++ % COLORS.length];
+          } finally {
+            currentLanes[col] = color;
+          }
         } else if (char === "/") {
-          color =
-            previousLanes[col + 1] ?? COLORS[nextColorIndex++ % COLORS.length];
-          currentLanes[col] = color;
+          try {
+            let char1 = asciiMap[index - 1][col] ?? "";
+            let char22 = asciiMap[index - 1][col + 2] ?? "";
+
+            if (char1 === "\\") {
+              color = previousLanes[col];
+            } else if (char22 === "/" || char22 === "_") {
+              color = previousLanes[col + 2];
+            } else {
+              color =
+                previousLanes[col + 1] ??
+                COLORS[nextColorIndex++ % COLORS.length];
+            }
+          } catch {
+            color =
+              previousLanes[col + 1] ??
+              COLORS[nextColorIndex++ % COLORS.length];
+          } finally {
+            currentLanes[col] = color;
+          }
         } else if (char === "\\") {
-          color =
-            previousLanes[col - 1] ?? COLORS[nextColorIndex++ % COLORS.length];
-          currentLanes[col] = color;
+          try {
+            let char00 = asciiMap[index - 1][col - 2] ?? "";
+            let char1 = asciiMap[index - 1][col] ?? "";
+            if (char1 === "/") {
+              color = previousLanes[col];
+            } else if (char00 === "\\" || char00 === "_") {
+              color = previousLanes[col - 2];
+            } else {
+              color =
+                previousLanes[col - 1] ??
+                COLORS[nextColorIndex++ % COLORS.length];
+            }
+          } catch {
+            color =
+              previousLanes[col - 1] ??
+              COLORS[nextColorIndex++ % COLORS.length];
+          } finally {
+            currentLanes[col] = color;
+          }
         } else if (char === "_") {
-          color = "#c9d1d9";
+          try {
+            try {
+              let i = 0;
+              while (true) {
+                i += 1;
+
+                let tempchar = chars[col + i];
+                console.log(1, "=>", tempchar);
+                if (tempchar === "_" || tempchar === "|") continue;
+                if (tempchar === "/") {
+                  color = previousLanes[col + i];
+                  break;
+                }
+              }
+            } catch (error) {
+              let i = 0;
+              while (true) {
+                i += 1;
+
+                let tempchar = chars[col - i];
+
+                console.log(1, "<=", tempchar);
+                if (tempchar === "_" || tempchar === "|") continue;
+                if (tempchar === "\\") {
+                  color = previousLanes[col - i];
+                  break;
+                }
+              }
+            } finally {
+            }
+          } catch (error) {
+            color =
+              previousLanes[col] ?? COLORS[nextColorIndex++ % COLORS.length];
+          } finally {
+            currentLanes[col] = color;
+          }
         }
         if (char === "*") branchColor = color;
         renderedGraph.push({ char, color });
