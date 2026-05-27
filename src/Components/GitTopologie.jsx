@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 // ── Palette de couleurs style GitKraken ───────────────────────────────────────
 const COLORS = [
@@ -17,7 +17,7 @@ const COLORS = [
 ];
 
 const HASH_COLOR = "#20c997";
-const GRAPH_CHARS = new Set(["|", "/", "\\", "*"]);
+const GRAPH_CHARS = new Set(["|", "/", "\\", "*", "_"]);
 const HASH_RE = /\b([0-9a-f]{7})\b/;
 
 // ── Dimensions du graphe SVG par ligne ───────────────────────────────────────
@@ -105,7 +105,7 @@ function RefBadge({ label, kind }) {
 // On reçoit `chars` = tableau { char, color } de la partie graphe de la ligne courante
 // et `prevChars` de la ligne précédente pour pouvoir tracer les connexions entre lignes.
 // Le SVG couvre UNE seule ligne : hauteur ROW_H, largeur = nb_cols * COL_W + PAD_L*2
-function GraphLineSVG({ chars, prevChars, width }) {
+function GraphLineSVG({ chars, prevChars, nextChars, width }) {
   const h = ROW_H;
   const midY = h / 2;
 
@@ -137,7 +137,13 @@ function GraphLineSVG({ chars, prevChars, width }) {
       // Nœud commit : ligne verticale + cercle
       // Ligne du haut (si un "|" était là avant)
       const prevHere = prevChars && prevChars[col];
-      if (prevHere && prevHere.char !== " ") {
+      const prevHere0 = prevChars && prevChars[col - 1];
+      const prevHere2 = prevChars && prevChars[col + 1];
+      if (
+        (prevHere && prevHere.char !== " ") ||
+        (prevHere0 && prevHere0.char === "\\") ||
+        (prevHere2 && prevHere2.char === "/")
+      ) {
         paths.push(
           <line
             key={`vt${col}`}
@@ -192,33 +198,92 @@ function GraphLineSVG({ chars, prevChars, width }) {
     } else if (char === "/") {
       // Branche qui rejoint depuis la droite (col+1) vers (col) en montant
       // Courbe bézier du bas-droite vers haut-gauche
-      const x0 = cx(col - 1);
-      const x2 = cx(col + 1);
-      paths.push(
-        <path
-          key={`sl${col}`}
-          d={`M ${x0} ${h} C ${x0} ${midY}, ${x2} ${midY}, ${x2} ${0}`}
-          stroke={color}
-          strokeWidth={2}
-          fill="none"
-        />,
-      );
+      const prevHere = prevChars && prevChars[col - 1];
+      const nextHere = nextChars && nextChars[col + 1];
+
+      let x0 = cx(col - 1);
+      let x2 = cx(col + 1);
+
+      if (
+        prevHere &&
+        prevHere.char == "/" &&
+        nextHere &&
+        nextHere.char == "/"
+      ) {
+        paths.push(
+          <line
+            key={`v${col}`}
+            x1={x}
+            y1={0}
+            x2={x}
+            y2={h}
+            stroke={color}
+            strokeWidth={2}
+          />,
+        );
+      } else {
+        paths.push(
+          <path
+            key={`sl${col}`}
+            d={`M ${x0} ${h} C ${x0} ${midY}, ${x2} ${midY}, ${x2} ${0}`}
+            stroke={color}
+            strokeWidth={2}
+            fill="none"
+          />,
+        );
+      }
     } else if (char === "\\") {
       // Branche qui part vers la droite (col, haut) vers (col+1, bas)
-      const x0 = cx(col - 1);
-      const x2 = cx(col + 1);
+      const prevHere = prevChars && prevChars[col - 1];
+      const nextHere = nextChars && nextChars[col + 1];
+
+      let x0 = cx(col - 1);
+      let x2 = cx(col + 1);
+
+      if (
+        prevHere &&
+        prevHere.char == "\\" &&
+        nextHere &&
+        nextHere.char == "\\"
+      ) {
+        paths.push(
+          <line
+            key={`v${col}`}
+            x1={x}
+            y1={0}
+            x2={x}
+            y2={h}
+            stroke={color}
+            strokeWidth={2}
+          />,
+        );
+      } else {
+        paths.push(
+          <path
+            key={`bs${col}`}
+            d={`M ${x0} ${0} C ${x0} ${midY}, ${x2} ${midY}, ${x2} ${h}`}
+            stroke={color}
+            strokeWidth={2}
+            fill="none"
+          />,
+        );
+      }
+    } else if (char === "_") {
+      let x0 = cx(col - 1);
+      let x2 = cx(col + 1);
       paths.push(
-        <path
-          key={`bs${col}`}
-          d={`M ${x0} ${0} C ${x0} ${midY}, ${x2} ${midY}, ${x2} ${h}`}
+        <line
+          key={`vt${col}`}
+          x1={x0}
+          y1={h - 1}
+          x2={x2}
+          y2={h - 1}
           stroke={color}
           strokeWidth={2}
-          fill="none"
         />,
       );
     }
   });
-
   return (
     <svg width={width} height={h} style={{ display: "block", flexShrink: 0 }}>
       {paths}
@@ -285,6 +350,8 @@ export default function GitTopologie({ ascii }) {
           color =
             previousLanes[col - 1] ?? COLORS[nextColorIndex++ % COLORS.length];
           currentLanes[col] = color;
+        } else if (char === "_") {
+          color = "#c9d1d9";
         }
         if (char === "*") branchColor = color;
         renderedGraph.push({ char, color });
@@ -538,6 +605,9 @@ export default function GitTopologie({ ascii }) {
               <GraphLineSVG
                 chars={line.graph}
                 prevChars={i > 0 ? parsedLines[i - 1].graph : null}
+                nextChars={
+                  i < parsedLines.length - 1 ? parsedLines[i + 1].graph : null
+                }
                 width={maxGraphWidth}
               />
             </div>
