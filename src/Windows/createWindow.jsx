@@ -337,6 +337,10 @@ export default function CreateWindow() {
             padding: "0.5em",
             "padding-bottom": "0",
             "border-bottom": "#304444 1px solid",
+            position: "sticky",
+            top: 0,
+            zIndex: 5,
+            "background-color": "#13171f",
           }}
         >
           <span

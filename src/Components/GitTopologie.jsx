@@ -510,7 +510,7 @@ export default function GitTopologie({ ascii }) {
       style={{
         overflow: "auto",
         background: "#0d1117",
-        height: "100%",
+        height: "calc(100%-58px)",
         fontFamily: "'Segoe UI', system-ui, sans-serif",
       }}
     >
