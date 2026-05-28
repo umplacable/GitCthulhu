@@ -403,11 +403,11 @@ const addRepository = async (event) => {
   if (config.Depo.paths) {
     config.Depo.paths += `,${dirpath}`;
     config.Depo.names += `,${dirpath.split(/[\\/]/).pop()}`;
-    config.Depo.ids += `,${config.Depo.ids ? config.Depo.ids.split(",").length + 1 : 1}`;
+    config.Depo.ids += `,${config.Depo.ids ? config.Depo.ids.split(",").length : 1}`;
   } else {
     config.Depo.paths = dirpath;
     config.Depo.names = `${dirpath.split(/[\\/]/).pop()}`;
-    config.Depo.ids = "1";
+    config.Depo.ids = "0";
   }
 
   fs.writeFileSync(configPath, ini.stringify(config));
@@ -528,7 +528,7 @@ ipcMain.on("delete-repository", (_event, id) => {
 
   config.Depo.names = names.join(",");
   config.Depo.paths = paths.join(",");
-  config.Depo.ids = ids.join(",");
+  config.Depo.ids = [...Array(ids.length).keys()].join(",");
 
   if (config.Depo.names === "" && config.Depo.paths === "") {
     fs.unlinkSync(configPath);
@@ -1067,7 +1067,9 @@ ipcMain.handle("git-rebase", async (event, branch) => {
       type: "error",
       title: "Rebase échoué",
       message: `Le rebase sur "${branch}" a échoué.`,
-      detail: err.message + "\n\nVoulez-vous annuler le rebase et restaurer l'état précédent ?",
+      detail:
+        err.message +
+        "\n\nVoulez-vous annuler le rebase et restaurer l'état précédent ?",
       buttons: ["Annuler le rebase", "Laisser en l'état"],
       defaultId: 0,
       cancelId: 1,
