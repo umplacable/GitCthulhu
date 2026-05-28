@@ -31,7 +31,7 @@ npm run start   # fera automatiquement le build de l'app et le lancement.
 ## Dévelopement
 ### Ajout de fenêtres
 
-Pour ajouter une fenêtre, il y a pluxieur étapes a respecter:
+Pour ajouter une fenêtre, il y a plusieurs étapes a respecter:
 
 1. Créer une fichier HTML comme les autre fenêtres et en ne metant dans le body que la ligne `<div id="root"></div>`. 
 2. Dans [`main.js`](main.js), il faut créer une méthode pour créer la fenêtre.
