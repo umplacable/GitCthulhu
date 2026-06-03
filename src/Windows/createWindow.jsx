@@ -50,8 +50,6 @@ export default function CreateWindow() {
 
   useEffect(async () => {
     checkFetch();
-    let res = await window.electronAPI.gitActions.log_branch();
-    setBranchLog(res);
   }, []);
 
   useEffect(() => {
@@ -399,7 +397,7 @@ export default function CreateWindow() {
         {sideshowContent === "Commit" ? (
           <GitCommitList diffMode={diffMode} />
         ) : sideshowContent === "Topologie" ? (
-          <GitTopologie ascii={branchLog} />
+          <GitTopologie />
         ) : (
           ""
         )}

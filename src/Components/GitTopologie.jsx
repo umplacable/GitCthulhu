@@ -293,9 +293,9 @@ function GraphLineSVG({ chars, prevChars, nextChars, width }) {
 }
 
 // ── Composant principal ───────────────────────────────────────────────────────
-export default function GitTopologie({ ascii }) {
+export default function GitTopologie() {
   const [hoveredRow, setHoveredRow] = useState(null);
-
+  const [ascii, setAscii] = useState("");
   const asciiMap = useMemo(
     () =>
       (ascii || "")
@@ -304,6 +304,14 @@ export default function GitTopologie({ ascii }) {
         .filter(Boolean),
     [ascii],
   );
+
+  useEffect(async () => {
+    const interval = setInterval(async () => {
+      let res = await window.electronAPI.gitActions.log_branch();
+      setAscii(res);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Parse chaque ligne : partie graphe colorée + hash + infos commit
   const parsedLines = useMemo(() => {
