@@ -22,7 +22,6 @@ export default function CreateWindow() {
     useState(false);
   const [editBurgerMenu, setEditBurgerMenu] = useState(false);
   const [edit_cleanBurgerMenu, setEdit_cleanBurgerMenu] = useState(false);
-  const [branchLog, setBranchLog] = useState("");
   const [sideshowContent, setSideshowContent] = useState("Commit"); // Commit || Topologie
 
   const toggleDiffMode = () => {

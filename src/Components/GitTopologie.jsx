@@ -305,12 +305,21 @@ export default function GitTopologie() {
     [ascii],
   );
 
-  useEffect(async () => {
-    const interval = setInterval(async () => {
-      let res = await window.electronAPI.gitActions.log_branch();
-      setAscii(res);
-    }, 5000);
-    return () => clearInterval(interval);
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchAscii = async () => {
+      const res = await window.electronAPI.gitActions.log_branch();
+      if (mounted) setAscii(res);
+    };
+
+    fetchAscii();
+    const intervalID = setInterval(fetchAscii, 5000);
+
+    return () => {
+      mounted = false;
+      clearInterval(intervalID);
+    };
   }, []);
 
   // Parse chaque ligne : partie graphe colorée + hash + infos commit
